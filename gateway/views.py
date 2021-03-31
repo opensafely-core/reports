@@ -7,7 +7,7 @@ from social_django.views import complete
 
 
 def landing(request):
-    return render(request, "landing.html")
+    return render(request, "gateway/landing.html")
 
 
 @never_cache
