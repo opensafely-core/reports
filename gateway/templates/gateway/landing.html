@@ -2,12 +2,9 @@
 {% load static %}
 
 {% block content %}
-    <h1 class="mt-2">OpenSAFELY Dashboards</h1>
     {% if request.user.is_authenticated %}
-    <p>Logged in as <strong>{{ request.user.profile.display_name }} ({{ request.user.username }})</strong></p>
         {% if request.user.profile.organisations.exists %}
-            <p>
-                Organisations:
+        <h1>Organisations</h1>
                 <ul>
                     {% for organisation in request.user.profile.organisations.all %}
                     <li><a href="{% url 'gateway:organisation_detail' organisation.code %}">{{ organisation.name }}</a></li>
@@ -15,8 +12,8 @@
                 </ul>
             </p>
         {% endif %}
-        <p><a class="btn btn-dark"  href="{% url "gateway:logout" %}">Logout</a></p>
     {% else %}
-        <p>Login with <a class="btn btn-primary" href="{% url "social:begin" "nhsid" %}">NHS Identity</a></p>
+        <h1>Login</h1>
+        <p><a class="btn btn-primary" href="{% url "social:begin" "nhsid" %}">NHS Identity Login</a></p>
     {% endif %}
 {% endblock %}
