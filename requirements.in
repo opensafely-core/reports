@@ -7,8 +7,10 @@ social-auth-app-django
 black
 django-extensions
 flake8
+httpretty
 isort
 pre-commit
 pytest-cov
 pytest-django
 pytest-env
+requests-mock
