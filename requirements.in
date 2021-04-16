@@ -13,4 +13,3 @@ pre-commit
 pytest-cov
 pytest-django
 pytest-env
-requests-mock
