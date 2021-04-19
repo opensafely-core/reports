@@ -18,8 +18,10 @@ def landing(request):
 @csrf_exempt
 def nhsid_complete(request, *args, **kwargs):
     """
-    Return the complete view with expected arguments. A successful authentication from NHS ID returns to
-    /auth. social_django expects to find the backend name in the url (by default /complete/<backend>)
+    Return the complete view with expected arguments.
+
+    A successful authentication from  NHS ID returns to /auth. social_django expects to
+    find the backend name in the url (by default /complete/<backend>)
     """
     backend = "nhsid"
     uri = reverse("gateway:nhsid_complete")
@@ -30,7 +32,8 @@ def nhsid_complete(request, *args, **kwargs):
 
 class OrganisationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     """
-    View details for a single organisation
+    View details for a single organisation.
+
     Permission is denied if the user is not a member of the requested organisation.
     """
 
@@ -38,6 +41,7 @@ class OrganisationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView
     model = Organisation
 
     def test_func(self):
+        """Check if the user is a member of the organisation"""
         organisation = self.get_object()
         return self.request.user.profile.organisations.filter(
             id=organisation.id

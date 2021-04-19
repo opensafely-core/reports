@@ -7,5 +7,6 @@ from .models import UserProfile
 
 @receiver(post_save, sender=User)
 def ensure_user_profile(sender, instance, created, *args, **kwargs):
+    """Ensure a user always has a UserProfile"""
     if not hasattr(instance, "profile"):
         UserProfile.objects.create(user=instance)

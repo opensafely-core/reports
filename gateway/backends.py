@@ -5,6 +5,10 @@ from social_core.backends.open_id_connect import OpenIdConnectAuth
 
 
 class NHSIDConnectAuth(OpenIdConnectAuth):
+    """
+    Open ID Connect backend for NHS Identity
+    """
+
     name = "nhsid"
 
     def __init__(self, *args, **kwargs):
@@ -13,11 +17,15 @@ class NHSIDConnectAuth(OpenIdConnectAuth):
 
     @property
     def OIDC_ENDPOINT(self):
+        """OIDC_ENDPOINT as a property so tests can mock it"""
         return settings.SOCIAL_AUTH_NHSID_API_URL
 
     def auth_params(self, state=None):
         """
-        Include the `prompt` param to require users to re-authenticate with NHS Identity even if already authenticated
+        Update auth params to prompt re-login
+
+        Include the `prompt` param to require users to re-authenticate with NHS Identity
+        even if already authenticated
         """
         params = super().auth_params(state)
         params.update({"prompt": "login"})
