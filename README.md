@@ -1,4 +1,4 @@
-# OpenSAFELY Dashboards
+# OpenSAFELY Short Data Reports
 
 This is a Django app providing a location for data content that limits
 access based on a user's NHS organisation membership.  Some content is
