@@ -3,10 +3,10 @@
 
 {% block content %}
     {% if request.user.is_authenticated %}
-        {% if request.user.profile.organisations.exists %}
+        {% if request.user.organisations.exists %}
         <h1>Organisations</h1>
                 <ul>
-                    {% for organisation in request.user.profile.organisations.all %}
+                    {% for organisation in request.user.organisations.all %}
                     <li><a href="{% url 'gateway:organisation_detail' organisation.code %}">{{ organisation.name }}</a></li>
                     {% endfor %}
                 </ul>

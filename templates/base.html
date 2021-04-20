@@ -20,7 +20,7 @@
         {% if user.is_authenticated %}
             <ul class="navbar-nav ml-auto">
               <span class="navbar-text">
-                <em>Logged in as <strong>{{ request.user.profile.display_name }} ({{ request.user.username }})</strong></em>
+                <em>Logged in as <strong>{{ request.user.display_name }} ({{ request.user.username }})</strong></em>
               </span>
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'gateway:logout' %}">Logout</a>

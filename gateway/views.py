@@ -43,9 +43,7 @@ class OrganisationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView
     def test_func(self):
         """Check if the user is a member of the organisation"""
         organisation = self.get_object()
-        return self.request.user.profile.organisations.filter(
-            id=organisation.id
-        ).exists()
+        return self.request.user.organisations.filter(id=organisation.id).exists()
 
     def get_object(self, queryset=None):
         return get_object_or_404(Organisation, code=self.kwargs["org_code"])

@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 import pytest
 import requests
 from django.conf import settings as django_settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from jose import jwt
 from social_core.exceptions import AuthTokenError
@@ -21,6 +21,8 @@ from gateway.backends import NHSIDConnectAuth
 from gateway.models import Organisation
 
 from .mocks import JWK_KEY, JWK_PUBLIC_KEY
+
+User = get_user_model()
 
 
 @dataclass
@@ -44,13 +46,10 @@ class AuthTestOptions:
 def assert_user_attributes(user, expected):
     for user_attribute, expected_attribute in expected["user"].items():
         assert getattr(user, user_attribute) == expected_attribute
-    profile = user.profile
-    for profile_attribute, expected_attribute in expected["profile"].items():
-        assert getattr(profile, profile_attribute) == expected_attribute
-    organisations = list(profile.organisations.values_list("name", flat=True))
+    organisations = list(user.organisations.values_list("name", flat=True))
     assert Organisation.objects.count() == len(organisations)
     assert (
-        list(str(organisation) for organisation in profile.organisations.all())
+        list(str(organisation) for organisation in user.organisations.all())
         == expected["organisations"]
     )
 
@@ -220,8 +219,9 @@ def test_nhsid_backend_complete(httpretty, mock_settings, mock_backend_and_strat
             "first_name": "",
             "last_name": "",
             "email": "",
+            "title": None,
+            "display_name": "Test User",
         },
-        "profile": {"title": None, "display_name": "Test User"},
         "organisations": [],
     }
     assert_user_attributes(user, expected)
@@ -284,8 +284,9 @@ def test_nhsid_backend_token_errors(
                     "first_name": "",
                     "last_name": "",
                     "email": "",
+                    "title": None,
+                    "display_name": "Test User",
                 },
-                "profile": {"title": None, "display_name": "Test User"},
                 "organisations": [],
             },
         ),
@@ -303,8 +304,9 @@ def test_nhsid_backend_token_errors(
                     "first_name": "",
                     "last_name": "",
                     "email": "",
+                    "title": "Dr",
+                    "display_name": "Testy",
                 },
-                "profile": {"title": "Dr", "display_name": "Testy"},
                 "organisations": [],
             },
         ),
@@ -322,8 +324,9 @@ def test_nhsid_backend_token_errors(
                     "first_name": "",
                     "last_name": "",
                     "email": "",
+                    "title": "Dr",
+                    "display_name": "Test User2",
                 },
-                "profile": {"title": "Dr", "display_name": "Test User2"},
                 "organisations": ["ORG-123 - Test org"],
             },
         ),
@@ -347,8 +350,9 @@ def test_nhsid_backend_token_errors(
                     "first_name": "Test",
                     "last_name": "User3",
                     "email": "",
+                    "title": "Dr",
+                    "display_name": "Dr Test User3",
                 },
-                "profile": {"title": "Dr", "display_name": "Dr Test User3"},
                 "organisations": ["ORG-123 - Test org", "ORG-456 - Test org 1"],
             },
         ),
@@ -447,11 +451,11 @@ def test_login_existing_organisation(
 
     # New Organisations are only created if they don't already exist
     assert (
-        user.profile.organisations.count()
+        user.organisations.count()
         == len(expected_organisations)
         == Organisation.objects.count()
     )
-    assert existing_organisation in user.profile.organisations.all()
+    assert existing_organisation in user.organisations.all()
 
 
 @pytest.mark.django_db
@@ -472,8 +476,9 @@ def test_login_existing_organisation(
                     "last_name": "User",
                     "username": "test1",
                     "email": "",
+                    "title": None,
+                    "display_name": "Test User",
                 },
-                "profile": {"title": None, "display_name": "Test User"},
                 "organisations": [],
             },
             {
@@ -491,9 +496,9 @@ def test_login_existing_organisation(
                     "first_name": "New",
                     "last_name": "Name",
                     "email": "",
+                    "title": "Dr",
+                    "display_name": "Testy",
                 },
-                # "user": {},
-                "profile": {"title": "Dr", "display_name": "Testy"},
                 "organisations": [],
             },
         ),

@@ -135,6 +135,8 @@ EMAIL_BACKEND = env.str("EMAIL_BACKEND", "django.core.mail.backends.dummy.EmailB
 
 # SOCIAL AUTH
 
+AUTH_USER_MODEL = "gateway.User"
+
 AUTHENTICATION_BACKENDS = (
     "gateway.backends.NHSIDConnectAuth",
     "django.contrib.auth.backends.ModelBackend",
