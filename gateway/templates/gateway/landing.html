@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        {% if request.user.organisations.exists %}
+        <h1>Organisations</h1>
+                <ul>
+                    {% for organisation in request.user.organisations.all %}
+                    <li><a href="{% url 'gateway:organisation_detail' organisation.code %}">{{ organisation.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </p>
+        {% endif %}
+    {% else %}
+        <h1>Login</h1>
+        <p><a class="btn btn-primary" href="{% url "social:begin" "nhsid" %}">NHS Identity Login</a></p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+# Debug on
+DEBUG=True
+
+# A long random string
+SECRET_KEY=abcdefg
+
+# Our NHS ID client ID and secret
+SOCIAL_AUTH_NHSID_KEY=dummy
+SOCIAL_AUTH_NHSID_SECRET=dummy
+
+# sandbox Simple OIDC URL
+SOCIAL_AUTH_NHSID_API_URL= 'https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk/openam/oauth2/realms/root/realms/oidc'

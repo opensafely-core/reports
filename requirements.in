@@ -1,0 +1,15 @@
+environs[django]
+furl
+gunicorn
+social-auth-app-django
+
+# dev requirements
+black
+django-extensions
+flake8
+httpretty
+isort
+pre-commit
+pytest-cov
+pytest-django
+pytest-env

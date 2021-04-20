@@ -1,5 +1,7 @@
 *.pyc
 .env
 .idea/
+.coverage
+htmlcov/
 .DS_Store
 db.sqlite3
