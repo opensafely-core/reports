@@ -266,9 +266,8 @@ def test_nhsid_backend_token_errors(
     auth_options = AuthTestOptions(
         backend=backend, strategy=strategy, **auth_option_kwargs
     )
-    with pytest.raises(AuthTokenError) as error:
+    with pytest.raises(AuthTokenError, match=f"Token error: {expected_error}"):
         do_login(httpretty, auth_options)
-    assert error.match(f"Token error: {expected_error}")
     assert User.objects.exists() is False
 
 
