@@ -8,24 +8,31 @@ associated organisation information retrieved from NHS Identity.
 
 ## Local development
 
-### Install requirements
+### Install system requirements
 ```
-pip install -r requirements.txt
+# OSX
+brew install just
+
+# Linux
+apt install just
+
+# Add completion for your shell. E.g. for bash:
+just --completion bash > just.bash
+source just.bash
+
+# Show all available commands
+just #  shortcut for just --list
 ```
 
-### Install pre-commit hooks
+### Set up local dev env
 ```
-pre-commit install
+just dev-config
+just setup
 ```
-
-### Setup environment variables
-Copy `nhsid_openid_connect/dotenv-sample` to `nhsid_openid_connect/.env`
-and update the `SOCIAL_AUTH_NHSID_KEY` and `SOCIAL_AUTH_NHSID_SECRET`
-variables.
 
 ### Run local django server
 ```
-./manage.py runserver
+just run
 ```
 Access at http://localhost:8000
 
@@ -38,5 +45,9 @@ The password for all three is welcomecakebanana
 
 ### Run tests
 ```
-pytest tests/
+# all tests and coverage
+just test
+
+# specific test
+just test-only <path/to/test>
 ```

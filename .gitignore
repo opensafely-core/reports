@@ -5,3 +5,10 @@
 htmlcov/
 .DS_Store
 db.sqlite3
+
+# just completion files
+just.bash
+just.elvish
+just.fish
+just.powershell
+just.zsh
