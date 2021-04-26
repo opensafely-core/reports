@@ -1,13 +1,13 @@
-import logging
 from urllib.parse import urljoin
 
+import structlog
 from django.conf import settings
 from jose import jwk
 from jose.exceptions import JWKError
 from jose.utils import base64url_decode
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 
-logger = logging.getLogger(__name__)
+logger = structlog.getLogger()
 
 
 class NHSIDConnectAuth(OpenIdConnectAuth):

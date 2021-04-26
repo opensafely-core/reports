@@ -1,7 +1,9 @@
 environs[django]
+django-structlog
 furl
 gunicorn
 social-auth-app-django
+sentry-sdk
 
 # dev requirements
 black

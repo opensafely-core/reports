@@ -15,6 +15,9 @@ from django.urls import reverse_lazy
 from environs import Env
 from furl import furl
 
+from services.logging import logging_config_dict
+from services.sentry import initialise_sentry
+
 env = Env()
 env.read_env()
 
@@ -89,6 +92,9 @@ WSGI_APPLICATION = "nhsd_openid_connect.wsgi.application"
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {"default": env.dj_db_url("DATABASE_URL", "sqlite:///db.sqlite3")}
+
+# Default primary key field type to use for models that don’t have a field with primary_key=True.
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -168,3 +174,7 @@ SOCIAL_AUTH_NHSID_SECRET = env.str("SOCIAL_AUTH_NHSID_SECRET")
 SOCIAL_AUTH_NHSID_API_URL = env.str("SOCIAL_AUTH_NHSID_API_URL")
 SOCIAL_AUTH_NHSID_USERNAME_KEY = "nhsid_useruid"
 SOCIAL_AUTH_NHSID_SCOPE = ["nhsperson", "associatedorgs"]
+
+# Logging
+LOGGING = logging_config_dict
+initialise_sentry()
