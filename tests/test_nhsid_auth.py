@@ -32,6 +32,7 @@ class AuthTestOptions:
     backend: NHSIDConnectAuth
     strategy: DjangoStrategy
     user_data_body: Optional[dict] = None
+    jwk_keys: Optional[list] = None
     # The following are options for testing invalid tokens
     nonce: Optional[str] = None
     token_expiry_datetime: Optional[datetime] = None
@@ -68,12 +69,12 @@ def do_auth(httpretty, start_url, auth_options, access_token_body):
     httpretty.register_uri(httpretty.GET, start_url, status=301, location=target_url)
     httpretty.register_uri(httpretty.GET, target_url, status=200, body="foobar")
 
-    # Mock the JWKS token request (used to validate JWT id_token)
+    # Mock the JWK keys request (used to validate JWT id_token)
     httpretty.register_uri(
         httpretty.GET,
         auth_options.backend.jwks_uri(),
         status=200,
-        body=json.dumps({"keys": [JWK_PUBLIC_KEY]}),
+        body=json.dumps({"keys": auth_options.jwk_keys or [JWK_PUBLIC_KEY]}),
     )
     # Mock the call to get the access token
     httpretty.register_uri(
@@ -225,6 +226,47 @@ def test_nhsid_backend_complete(httpretty, mock_settings, mock_backend_and_strat
         "organisations": [],
     }
     assert_user_attributes(user, expected)
+
+
+@pytest.mark.django_db
+def test_unsupported_algorithm(httpretty, mock_settings, mock_backend_and_strategy):
+    assert User.objects.exists() is False
+    user_data_body = {"sub": 1, "name": "Test User", "nhsid_useruid": "test"}
+    backend, strategy = mock_backend_and_strategy
+    # Mock the keys returned from the JWKS uri to include an unsupported algorithm
+    # before the supported one; the unsupported algorithm will be tried first and
+    # should not raise an error
+    unsupported = dict(JWK_PUBLIC_KEY)
+    unsupported["alg"] = "UNK"
+    auth_options = AuthTestOptions(
+        backend=backend,
+        strategy=strategy,
+        user_data_body=user_data_body,
+        jwk_keys=[unsupported, JWK_PUBLIC_KEY],
+    )
+    user = do_login(httpretty, auth_options)
+    assert user.username == "test"
+
+
+@pytest.mark.django_db
+def test_no_supported_algorithms(httpretty, mock_settings, mock_backend_and_strategy):
+    assert User.objects.exists() is False
+    user_data_body = {"sub": 1, "name": "Test User", "nhsid_useruid": "test"}
+    backend, strategy = mock_backend_and_strategy
+    # Mock the keys returned from the JWKS uri so that no algorithms returned are
+    # supported
+    unsupported = dict(JWK_PUBLIC_KEY)
+    unsupported["alg"] = "UNK"
+    auth_options = AuthTestOptions(
+        backend=backend,
+        strategy=strategy,
+        user_data_body=user_data_body,
+        jwk_keys=[unsupported],
+    )
+    with pytest.raises(
+        AuthTokenError, match="Token error: Signature verification failed"
+    ):
+        do_login(httpretty, auth_options)
 
 
 @pytest.mark.django_db
