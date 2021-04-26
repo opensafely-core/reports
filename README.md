@@ -10,7 +10,7 @@ associated organisation information retrieved from NHS Identity.
 
 ### Install system requirements
 ```
-# OSX
+# macOS
 brew install just
 
 # Linux
