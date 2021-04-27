@@ -1,3 +1,4 @@
+import structlog
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -8,6 +9,8 @@ from social_django.utils import load_backend, load_strategy
 from social_django.views import complete
 
 from .models import Organisation
+
+logger = structlog.getLogger()
 
 
 def landing(request):
@@ -27,7 +30,9 @@ def nhsid_complete(request, *args, **kwargs):
     uri = reverse("gateway:nhsid_complete")
     request.social_strategy = load_strategy(request)
     request.backend = load_backend(request.social_strategy, backend, uri)
-    return complete(request, backend, *args, **kwargs)
+    completed = complete(request, backend, *args, **kwargs)
+    logger.info("User logged in", user=str(request.user))
+    return completed
 
 
 class OrganisationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

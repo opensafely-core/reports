@@ -8,7 +8,6 @@ User = get_user_model()
 
 
 class UserAdmin(BaseUserAdmin):
-    ...
     fieldsets = BaseUserAdmin.fieldsets + (
         (None, {"fields": ("title", "display_name", "organisations")}),
     )

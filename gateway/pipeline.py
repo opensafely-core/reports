@@ -1,4 +1,8 @@
+import structlog
+
 from .models import Organisation
+
+logger = structlog.getLogger()
 
 
 def update_user_profile(strategy, details, backend, user=None, *args, **kwargs):
@@ -16,3 +20,6 @@ def update_user_profile(strategy, details, backend, user=None, *args, **kwargs):
                 name=organisation_item["org_name"], code=org_code
             )
             user.organisations.add(organisation)
+            logger.info(
+                "Organisation added", user=str(user), organisation=str(organisation)
+            )
