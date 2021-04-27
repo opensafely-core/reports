@@ -31,7 +31,9 @@ def nhsid_complete(request, *args, **kwargs):
     request.social_strategy = load_strategy(request)
     request.backend = load_backend(request.social_strategy, backend, uri)
     completed = complete(request, backend, *args, **kwargs)
-    logger.info("User logged in", user=str(request.user))
+    logger.info(
+        "User logged in", user_id=request.user.pk, username=request.user.username
+    )
     return completed
 
 
