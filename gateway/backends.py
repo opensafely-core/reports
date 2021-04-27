@@ -1,13 +1,13 @@
-import logging
 from urllib.parse import urljoin
 
+import structlog
 from django.conf import settings
 from jose import jwk
 from jose.exceptions import JWKError
 from jose.utils import base64url_decode
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 
-logger = logging.getLogger(__name__)
+logger = structlog.getLogger()
 
 
 class NHSIDConnectAuth(OpenIdConnectAuth):
@@ -68,9 +68,7 @@ class NHSIDConnectAuth(OpenIdConnectAuth):
                     message, encoded_sig = id_token.rsplit(".", 1)
                     decoded_sig = base64url_decode(encoded_sig.encode("utf-8"))
                     if rsakey.verify(message.encode("utf-8"), decoded_sig):
-                        logger.info("Key verified with algorithm %s.", key["alg"])
+                        logger.info("Key verified", alg=key["alg"])
                         return key
                 else:
-                    logger.warning(
-                        "Algorithm %s is not currently supported.", key["alg"]
-                    )
+                    logger.warning("Unsupported algorithm", alg=key["alg"])
