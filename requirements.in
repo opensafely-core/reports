@@ -2,6 +2,5 @@ environs[django]
 django-structlog
 furl
 gunicorn
-pip-tools
 social-auth-app-django
 sentry-sdk

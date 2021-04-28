@@ -14,6 +14,7 @@ dev-config:
 
 # set up/update the local dev env
 setup:
+    pip install pip-tools
     pip-sync requirements.txt requirements.dev.txt
     pre-commit install
 
