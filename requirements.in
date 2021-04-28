@@ -4,14 +4,3 @@ furl
 gunicorn
 social-auth-app-django
 sentry-sdk
-
-# dev requirements
-black
-django-extensions
-flake8
-httpretty
-isort
-pre-commit
-pytest-cov
-pytest-django
-pytest-env
