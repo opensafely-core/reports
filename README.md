@@ -1,8 +1,8 @@
-# OpenSAFELY Short Data Reports
+# OpenSAFELY Output Explorer
 
-This is a Django app providing a location for data content that limits
-access based on a user's NHS organisation membership.  Some content is
-publicly accessible; private content is accessed via authentication with
+This is a Django app providing a location for viewing and exploring OpenSAFELY outputs,
+both publicly available and content that limits access based on a user's NHS organisation membership.
+Some content is publicly accessible; private content is accessed via authentication with
 NHS Identity via Open ID Connect.  Authorisation is based on the NHS
 associated organisation information retrieved from NHS Identity.
 
