@@ -1,0 +1,42 @@
+body {
+    padding-top: 76px;
+    font-size: 1.25rem;
+}
+
+.navbar {
+    min-height: 76px;
+}
+
+.sticky-offset {
+    top: 76px;
+}
+
+#body-row {
+    margin-left:0;
+    margin-right:0;
+}
+
+#sidebar-container {
+    min-height: 100vh;
+    padding: 0;
+    border-right: 1px solid rgba(0,0,0,.125);
+}
+
+/* Menu item*/
+#sidebar-container .list-group a {
+    height: auto;
+}
+
+#sidebar-container .list-group-item {
+    border-right-width: 0;
+}
+
+/* Separators */
+.sidebar-separator-title {
+    background-color: rgba(0,0,0,.125);
+}
+
+.list-group-item:first-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
