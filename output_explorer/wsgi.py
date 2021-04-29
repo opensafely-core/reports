@@ -1,5 +1,5 @@
 """
-WSGI config for nhsd_openid_connect project.
+WSGI config for output_explorer project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nhsd_openid_connect.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "output_explorer.settings")
 
 application = get_wsgi_application()
