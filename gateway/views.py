@@ -1,14 +1,17 @@
 import structlog
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, render
+from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 from social_django.utils import load_backend, load_strategy
 from social_django.views import complete
 
-from .models import Organisation
+from .github import get_html
+from .models import Organisation, Output
+
 
 logger = structlog.getLogger()
 
@@ -54,3 +57,18 @@ class OrganisationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView
 
     def get_object(self, queryset=None):
         return get_object_or_404(Organisation, code=self.kwargs["org_code"])
+
+
+@cache_page(86400)
+def output_view(request, slug):
+    """
+    Fetches the html output from github, and renders the style and body tags within the
+    the output template page.  Caches for 24 hours.
+    """
+    output = get_object_or_404(Output, slug=slug)
+    extracted = get_html(output)
+    return TemplateResponse(
+        request,
+        "gateway/output.html",
+        {"notebook_style": extracted["style"], "contents": extracted["body"]},
+    )

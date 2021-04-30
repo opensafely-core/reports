@@ -12,3 +12,6 @@ just.elvish
 just.fish
 just.powershell
 just.zsh
+
+# downloaded output content html files
+gateway/templates/gateway/output-content/

@@ -1,10 +1,27 @@
-body {
-    padding-top: 76px;
-    font-size: 1.25rem;
+html {
+    font-size: 16px
 }
 
-.navbar {
+#mainbody {
+    padding-top: 76px;
+    font-size: 1.25rem;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#mainnav.navbar {
     min-height: 76px;
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    position: fixed;
+}
+
+#mainnav.navbar > .navbar-brand {
+  font-size: 1.25rem;
+}
+
+#notebook-container.container {
+  margin-left: 20px;
 }
 
 .sticky-offset {
@@ -39,4 +56,14 @@ body {
 .list-group-item:first-child {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
 }

@@ -18,6 +18,7 @@ if (test $session_from_env = "not-found"); then
     export BW_SESSION
 fi
 
+GH_DEV_TOKEN_BW_ID=10242708-234a-4162-982f-ace700ee5c53
 NHSID_DEV_TOKEN_BW_ID=d56dc9f4-d732-45d9-90fd-ad1200b7e27c
 
 write() {
@@ -26,5 +27,6 @@ write() {
     sed -i "" -e "s/$name=.*/$name=$value/" "$target"
 }
 
+write GITHUB_TOKEN "$(bw get password $GH_DEV_TOKEN_BW_ID)"
 write SOCIAL_AUTH_NHSID_KEY "$(bw get username $NHSID_DEV_TOKEN_BW_ID)"
 write SOCIAL_AUTH_NHSID_SECRET "$(bw get password $NHSID_DEV_TOKEN_BW_ID)"
