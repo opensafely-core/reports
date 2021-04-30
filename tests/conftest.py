@@ -12,13 +12,6 @@ from .mocks import OPENID_CONFIG
 
 
 @pytest.fixture
-def mock_settings(settings):
-    settings.SOCIAL_AUTH_NHSID_KEY = "dummy-client-id"
-    settings.SOCIAL_AUTH_NHSID_SECRET = "dummy-secret"
-    settings.SOCIAL_AUTH_NHSID_API_URL = "https://dummy-nhs.net/oidc"
-
-
-@pytest.fixture
 def httpretty():
     _httpretty.reset()
     _httpretty.enable()
