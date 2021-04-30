@@ -72,12 +72,6 @@ source just.bash
 just #  shortcut for just --list
 ```
 
-### Run development server with Docker
-```
-just dev-config
-docker-compose up --build
-```
-
 ### Run local development server
 #### Set up local dev env
 ```
