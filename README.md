@@ -6,6 +6,54 @@ Some content is publicly accessible; private content is accessed via authenticat
 NHS Identity via Open ID Connect.  Authorisation is based on the NHS
 associated organisation information retrieved from NHS Identity.
 
+
+## Deployment
+Deployment uses `dokku` and requires the environment variables defined in `dotenv-sample`.
+It is deployed to our `dokku2` instance.
+
+## Deployment instructions
+
+### Create app
+```
+dokku$ dokku apps:create output-explorer
+dokku$ dokku domains:add output-explorer output-explorer.opensafely.org
+dokku$ dokku git:set output-explorer deploy-branch main
+```
+
+### Create storage for sqlite db
+```
+dokku$ mkdir /var/lib/dokku/data/storage/output-explorer
+dokku$ chown dokku:dokku /var/lib/dokku/data/storage/output-explorer
+dokku$ dokku storage:mount output-explorer /var/lib/dokku/data/storage/output-explorer/:/storage
+```
+
+### Configure app
+```
+dokku$ dokku config:set output-explorer BASE_URL='https://output-explorer.opensafely.org'
+dokku$ dokku config:set output-explorer DATABASE_URL='sqlite:////storage/db.sqlite3'
+dokku$ dokku config:set output-explorer SECRET_KEY='xxx'
+dokku$ dokku config:set output-explorer SENTRY_DSN='https://xxx@xxx.ingest.sentry.io/xxx'
+dokku$ dokku config:set output-explorer SENTRY_ENVIRONMENT='production'
+dokku$ dokku config:set output-explorer SOCIAL_AUTH_NHSID_KEY='xxx'
+dokku$ dokku config:set output-explorer SOCIAL_AUTH_NHSID_SECRET='xxx'
+dokku$ dokku config:set output-explorer SOCIAL_AUTH_NHSID_API_URL='xxx'
+dokku$ dokku config:set output-explorer SHOW_LOGIN=False
+```
+
+### Deploy by manually pushing
+```
+local$ git clone git@github.com:opensafely-core/output-explorer.git
+local$ cd output-explorer
+local$ git remote add dokku dokku@MYSERVER:output-explorer
+local$ git push dokku main
+```
+
+### extras
+```
+dokku letsencrypt output-explorer
+dokku plugin:install sentry-webhook
+```
+
 ## Local development
 
 ### Install system requirements
@@ -24,13 +72,19 @@ source just.bash
 just #  shortcut for just --list
 ```
 
-### Set up local dev env
+### Run development server with Docker
+```
+just dev-config
+docker-compose up --build
+```
+
+### Run local development server
+#### Set up local dev env
 ```
 just dev-config
 just setup
 ```
-
-### Run local django server
+#### Run local django server
 ```
 just run
 ```
@@ -41,9 +95,7 @@ Login with one of the test user accounts:
 - 555036633104
 - 555036634105
 
-The password for all three is welcomecakebanana
-
-### Run tests
+#### Run tests
 ```
 # all tests and coverage
 just test
