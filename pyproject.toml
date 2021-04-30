@@ -1,0 +1,49 @@
+[tool.black]
+exclude = '''
+(
+  /(
+      \.git         # exclude a few common directories in the
+    | \.direnv
+    | \.venv
+    | venv
+  )/
+)
+'''
+
+[tool.coverage.run]
+branch = true
+omit = [
+  "output_explorer/asgi.py",
+  "output_explorer/settings.py",
+  "output_explorer/wsgi.py",
+  "services/sentry.py",
+  "gateway/migrations/*",
+]
+
+[tool.coverage.report]
+fail_under = 95
+skip_covered = true
+
+[tool.coverage.html]
+
+[tool.isort]
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 88
+lines_after_imports = 2
+multi_line_output = 3
+skip_glob = [".direnv", "venv", ".venv"]
+use_parentheses = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "output_explorer.settings"
+env = [
+  "GITHUB_TOKEN=dummy_token",
+  "SECRET_KEY=12345",
+  "SOCIAL_AUTH_NHSID_KEY=dummy-client-id",
+  "SOCIAL_AUTH_NHSID_SECRET=dummy-secret",
+  "SOCIAL_AUTH_NHSID_API_URL=https://dummy-nhs.net/oidc"
+]
+filterwarnings = [
+    "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working:DeprecationWarning:social_core",
+]

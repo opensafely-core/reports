@@ -78,7 +78,7 @@ logging_config_dict = {
             "level": "INFO",
             "propagate": False,
         },
-        "nhsd_openid_connect": {
+        "output_explorer": {
             "handlers": ["console"],
             "level": "INFO",
             "propagate": False,

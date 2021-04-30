@@ -1,4 +1,5 @@
 environs[django]
+django-extensions
 django-structlog
 furl
 gunicorn

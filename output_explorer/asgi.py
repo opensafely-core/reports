@@ -1,5 +1,5 @@
 """
-ASGI config for nhsd_openid_connect project.
+ASGI config for output_explorer project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nhsd_openid_connect.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "output_explorer.settings")
 
 application = get_asgi_application()

@@ -22,6 +22,7 @@ from gateway.models import Organisation
 
 from .mocks import JWK_KEY, JWK_PUBLIC_KEY
 
+
 User = get_user_model()
 
 
@@ -193,7 +194,7 @@ def do_client_login(test_client, httpretty, auth_options):
 
 
 @pytest.mark.django_db
-def test_nhsid_backend_complete(httpretty, mock_settings, mock_backend_and_strategy):
+def test_nhsid_backend_complete(httpretty, mock_backend_and_strategy):
     """
     Test logging in a new user
     """
@@ -229,7 +230,7 @@ def test_nhsid_backend_complete(httpretty, mock_settings, mock_backend_and_strat
 
 
 @pytest.mark.django_db
-def test_unsupported_algorithm(httpretty, mock_settings, mock_backend_and_strategy):
+def test_unsupported_algorithm(httpretty, mock_backend_and_strategy):
     assert User.objects.exists() is False
     user_data_body = {"sub": 1, "name": "Test User", "nhsid_useruid": "test"}
     backend, strategy = mock_backend_and_strategy
@@ -249,7 +250,7 @@ def test_unsupported_algorithm(httpretty, mock_settings, mock_backend_and_strate
 
 
 @pytest.mark.django_db
-def test_no_supported_algorithms(httpretty, mock_settings, mock_backend_and_strategy):
+def test_no_supported_algorithms(httpretty, mock_backend_and_strategy):
     assert User.objects.exists() is False
     user_data_body = {"sub": 1, "name": "Test User", "nhsid_useruid": "test"}
     backend, strategy = mock_backend_and_strategy
@@ -294,7 +295,6 @@ def test_no_supported_algorithms(httpretty, mock_settings, mock_backend_and_stra
 )
 def test_nhsid_backend_token_errors(
     httpretty,
-    mock_settings,
     mock_backend_and_strategy,
     auth_option_kwargs,
     expected_error,
@@ -406,7 +406,7 @@ def test_nhsid_backend_token_errors(
     ],
 )
 def test_login_new_user(
-    client, httpretty, mock_settings, mock_backend_and_strategy, user_data, expected
+    client, httpretty, mock_backend_and_strategy, user_data, expected
 ):
     """
     Test that the pipeline creates a new user with relevant user data provided by NHS Identity.
@@ -464,7 +464,6 @@ def test_login_new_user(
 def test_login_existing_organisation(
     client,
     httpretty,
-    mock_settings,
     mock_backend_and_strategy,
     user_data,
     expected_organisations,
@@ -548,7 +547,6 @@ def test_login_existing_organisation(
 def test_login_existing_user(
     client,
     httpretty,
-    mock_settings,
     mock_backend_and_strategy,
     initial_user_data,
     initial_expected,

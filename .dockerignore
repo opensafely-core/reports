@@ -1,0 +1,11 @@
+.direnv
+.flake8
+.github
+.pre-commit-config.yaml
+.venv
+pyproject.toml
+tests
+venv
+just.*
+.pytest_cache/
+htmlcov/
