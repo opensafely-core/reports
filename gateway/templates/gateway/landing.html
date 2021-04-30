@@ -2,18 +2,13 @@
 {% load static %}
 
 {% block content %}
-    {% if request.user.is_authenticated %}
-        {% if request.user.organisations.exists %}
-        <h1>Organisations</h1>
-                <ul>
-                    {% for organisation in request.user.organisations.all %}
-                    <li><a href="{% url 'gateway:organisation_detail' organisation.code %}">{{ organisation.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </p>
-        {% endif %}
-    {% else %}
-        <h1>Login</h1>
-        <p><a class="btn btn-primary" href="{% url "social:begin" "nhsid" %}">NHS Identity Login</a></p>
-    {% endif %}
+    <h1>Output Explorer</h1>
+    <p>
+        OpenSAFELY is a new secure analytics platform for electronic health records in the NHS,
+        created to deliver urgent results during the global COVID-19 emergency. It is now successfully
+        delivering analyses across more than 58 million patients’ full pseudonymised primary care NHS
+        records. All our analytic software is open for security review, scientific review, and re-use.
+    </p>
+    <p>You can read about the principles of OpenSAFELY <a href="https://opensafely.org/principles/">here</a>.</p>
+    <p>Use the side menu to explore selected outputs from OpenSAFELY.</p>
 {% endblock %}

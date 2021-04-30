@@ -10,3 +10,6 @@ SOCIAL_AUTH_NHSID_SECRET=dummy
 
 # sandbox Simple OIDC URL
 SOCIAL_AUTH_NHSID_API_URL=https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk/openam/oauth2/realms/root/realms/oidc
+
+# flag for showing/hiding login option
+SHOW_LOGIN=True

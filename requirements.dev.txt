@@ -19,9 +19,7 @@ black==21.4b1
 cfgv==3.2.0
     # via pre-commit
 click==7.1.2
-    # via
-    #   -c requirements.txt
-    #   black
+    # via black
 coverage==5.5
     # via pytest-cov
 distlib==0.3.1
@@ -95,7 +93,6 @@ sqlparse==0.4.1
     #   django
 toml==0.10.2
     # via
-    #   -c requirements.txt
     #   black
     #   pre-commit
     #   pytest

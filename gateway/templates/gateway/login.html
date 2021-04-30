@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>Login</h1>
+    {% if request.user.is_anonymous %}
+        <p><a class="btn btn-primary" href="{% url "social:begin" "nhsid" %}">NHS Identity Login</a></p>
+    {% else %}
+        <p>You are loggged in as {{ request.user.display_name }}</p>
+    {% endif %}
+{% endblock %}
