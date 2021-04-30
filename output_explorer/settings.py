@@ -18,6 +18,7 @@ from furl import furl
 from services.logging import logging_config_dict
 from services.sentry import initialise_sentry
 
+
 env = Env()
 env.read_env()
 
@@ -81,6 +82,7 @@ TEMPLATES = [
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
                 "gateway.context_processors.show_login",
+                "gateway.context_processors.outputs",
             ],
         },
     },
