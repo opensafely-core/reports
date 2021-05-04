@@ -16,6 +16,11 @@ def get_repo(output):
     return repo
 
 
+def get_parent_contents(repo, output):
+    parent_folder = str(Path(output.output_html_file_path).parent)
+    return repo.get_contents(parent_folder, ref=output.branch)
+
+
 def get_html(repo, output):
     """
     Fetches an output html file (an exported jupyter notebook) from a github repo based
@@ -31,8 +36,7 @@ def get_html(repo, output):
         # files from the parent folder instead (this doesn't download the actual content
         # itself, but gives us a list of ContentFile objects, from which we can obtain the
         # sha and retrieve the git blob instead
-        parent_folder = str(Path(output.output_html_file_path).parent)
-        parent_contents = repo.get_contents(parent_folder, ref=output.branch)
+        parent_contents = get_parent_contents(repo, output)
         content_file = next(
             content_file
             for content_file in parent_contents
@@ -41,6 +45,8 @@ def get_html(repo, output):
         blob = repo.get_git_blob(content_file.sha)
         contents = b64decode(blob.content)
 
+    # if not contents:
+    #     raise
     soup = BeautifulSoup(contents, "html.parser")
     style = soup.find_all("style")
     body = soup.find("body")

@@ -1,7 +1,13 @@
+from pathlib import Path
+
 import structlog
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
+from github import GithubException, UnknownObjectException
+
+from .github import get_parent_contents, get_repo
 
 
 logger = structlog.getLogger()
@@ -51,3 +57,28 @@ class Output(models.Model):
 
     def __str__(self):
         return self.slug
+
+    def clean(self):
+        """Validate the repo, branch and output file path on save"""
+        try:
+            repo = get_repo(self)
+        except UnknownObjectException:
+            raise ValidationError(f'Repo "{self.repo}" could not be found')
+
+        try:
+            parent_contents = get_parent_contents(repo, self)
+        except GithubException as error:
+            # This happens if either the branch or the output file's parent path is invalid
+            raise ValidationError(
+                f"Error fetching output file: {error.data['message']}"
+            )
+
+        if not any(
+            content
+            for content in parent_contents
+            if content.name == Path(self.output_html_file_path).name
+        ):
+            raise ValidationError(
+                f'File "{self.output_html_file_path}" could not be found (branch {self.branch})'
+            )
+        super().clean()
