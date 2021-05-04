@@ -20,6 +20,16 @@ html {
   font-size: 1.25rem;
 }
 
+#mainnav.navbar > span.navbar-text {
+  margin: 0;
+  padding: 0;
+}
+
+#login-name {
+  display: inline-block;
+  margin: 0;
+}
+
 #notebook-container.container {
   margin-left: 20px;
 }

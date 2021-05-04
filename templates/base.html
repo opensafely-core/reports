@@ -39,9 +39,9 @@
             {% if show_login %}
                 <ul class="navbar-nav pull-right ml-auto">
                     {% if user.is_authenticated %}
-                      <span class="navbar-text">
+                      <li class="text-secondary" id="login-name">
                         <em>Logged in as <strong>{{ request.user.display_name }} ({{ request.user.username }})</strong></em>
-                      </span>
+                      </li>
                       <li class="nav-item active">
                         <a class="nav-link" href="{% url 'gateway:logout' %}">Logout</a>
                       </li>

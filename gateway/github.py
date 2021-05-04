@@ -10,15 +10,19 @@ from github import Github, GithubException
 env = Env()
 
 
-def get_html(output):
+def get_repo(output):
+    gh = Github(env.str("GITHUB_TOKEN"))
+    repo = gh.get_repo(f"opensafely/{output.repo}")
+    return repo
+
+
+def get_html(repo, output):
     """
     Fetches an output html file (an exported jupyter notebook) from a github repo based
     on `output`, an Output model instance.
     The notebook html consists of style, body and script tags.  Ignores any script tags.
     Return the style tags and html body content for display in template.
     """
-    gh = Github(env.str("GITHUB_TOKEN"))
-    repo = gh.get_repo(f"opensafely/{output.repo}")
     try:
         contents = repo.get_contents(output.output_html_file_path, ref=output.branch)
         contents = contents.decoded_content
