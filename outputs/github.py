@@ -11,8 +11,9 @@ env = Env()
 
 
 def get_repo(output):
-    gh = Github(env.str("GITHUB_TOKEN"))
-    repo = gh.get_repo(f"opensafely/{output.repo}")
+    token = env.str("GITHUB_TOKEN", None)
+    github_client = Github(token) if token else Github()
+    repo = github_client.get_repo(f"opensafely/{output.repo}")
     return repo
 
 

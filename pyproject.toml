@@ -40,7 +40,6 @@ use_parentheses = true
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "output_explorer.settings"
 env = [
-  "GITHUB_TOKEN=dummy_token",
   "SECRET_KEY=12345",
   "SOCIAL_AUTH_NHSID_KEY=dummy-client-id",
   "SOCIAL_AUTH_NHSID_SECRET=dummy-secret",

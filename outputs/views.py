@@ -10,6 +10,10 @@ from .models import Output
 logger = structlog.getLogger()
 
 
+def output_view_cache_key(output, sha):
+    return f"{output.slug}_{sha}"
+
+
 def output_view(request, slug):
     """
     Fetches an html output file from github, and renders the style and body tags within
@@ -19,7 +23,7 @@ def output_view(request, slug):
     # Get the repo and find the last commit sha.  Fetch cached response by repo and sha.
     repo = get_repo(output)
     last_commit_sha = repo.get_commits()[0].sha
-    cache_key = f"{output.slug}_{last_commit_sha}"
+    cache_key = output_view_cache_key(output, last_commit_sha)
     response = cache.get(cache_key)
     if response is None:
         # not cached; fetch it and cache for 24 hrs

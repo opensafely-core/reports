@@ -155,7 +155,7 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_ERROR_URL = "/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-LOGIN_URL = reverse_lazy("social:begin", kwargs={"backend": "nhsid"})
+LOGIN_URL = reverse_lazy("gateway:login")
 
 SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_details",
