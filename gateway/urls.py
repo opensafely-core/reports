@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
-from .views import OrganisationDetailView, landing, nhsid_complete, output_view
+from .views import OrganisationDetailView, landing, nhsid_complete
 
 
 app_name = "gateway"
@@ -15,6 +15,5 @@ urlpatterns = [
         OrganisationDetailView.as_view(),
         name="organisation_detail",
     ),
-    path("outputs/<slug:slug>", output_view, name="output_view"),
     path("", landing, name="landing"),
 ]

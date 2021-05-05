@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "social_django",
     "gateway",
+    "outputs",
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ TEMPLATES = [
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
                 "gateway.context_processors.show_login",
-                "gateway.context_processors.outputs",
+                "outputs.context_processors.outputs",
             ],
         },
     },

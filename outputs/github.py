@@ -31,6 +31,7 @@ def get_html(repo, output):
     try:
         contents = repo.get_contents(output.output_html_file_path, ref=output.branch)
         contents = contents.decoded_content
+
     except GithubException:
         # If the single file was too big (>1Mb), we get an exception.  Get all the content
         # files from the parent folder instead (this doesn't download the actual content
@@ -45,8 +46,6 @@ def get_html(repo, output):
         blob = repo.get_git_blob(content_file.sha)
         contents = b64decode(blob.content)
 
-    # if not contents:
-    #     raise
     soup = BeautifulSoup(contents, "html.parser")
     style = soup.find_all("style")
     body = soup.find("body")

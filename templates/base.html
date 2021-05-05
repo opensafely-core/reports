@@ -30,7 +30,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
                         {% for output in outputs %}
-                        <a class="dropdown-item" href="{% url 'gateway:output_view' output.slug %}">{{ output.menu_name }}</a>
+                        <a class="dropdown-item" href="{% url 'outputs:output_view' output.slug %}">{{ output.menu_name }}</a>
                         {% endfor %}
                     </div>
                 </li>
@@ -67,7 +67,7 @@
                 </li>
                 <!-- /END Separator -->
                 {% for output in outputs %}
-                <a href="{% url 'gateway:output_view' output.slug %}" class="bg-light list-group-item list-group-item-action">
+                <a href="{% url 'outputs:output_view' output.slug %}" class="bg-light list-group-item list-group-item-action">
                     <div class="d-flex justify-content-start align-items-center">
                         {{ output.menu_name }}
                     </div>
