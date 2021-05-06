@@ -41,7 +41,7 @@ def test_output_view(client):
         '<style type="text/css">a {background-color: blue;}</style>',
     ]
     assert (
-        response.context["contents"]
+        response.context["notebook_contents"]
         == "\n<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>"
     )
 

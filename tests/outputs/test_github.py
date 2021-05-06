@@ -1,4 +1,5 @@
 from base64 import b64encode
+from datetime import date
 
 import pytest
 from github import GithubException
@@ -52,6 +53,7 @@ def test_get_large_html_from_github(mock_repo, mocker):
     output = baker.make(Output, output_html_file_path="foo.html")
     extracted_html = get_html(repo, output)
     assert extracted_html == {"body": "<p>blob</p>", "style": []}
+    assert output.last_updated == date(2021, 4, 27)
 
 
 @pytest.mark.django_db

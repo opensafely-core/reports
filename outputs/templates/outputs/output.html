@@ -10,7 +10,24 @@
 
 
 {% block content %}
-  {{ contents }}
+  <div id="output-front-matter" class="container">
+      {% if output.title %}
+        <h1>{{ output.title }}</h1>
+      {% endif %}
+
+      {% if output.authors %}
+      <h2><em>{{ output.authors }}</em></h2>
+      {% endif %}
+
+      {% if output.description %}
+        <p>{{ output.description }}</p>
+      {% endif %}
+
+      <p><strong>Published:</strong> {{ output.publication_date|date:"d M Y"}}</p>
+      <p><strong>Last updated:</strong> {{ output.last_updated|date:"d M Y"}}</p>
+  </div>
+
+  {{ notebook_contents }}
 {% endblock %}
 
 

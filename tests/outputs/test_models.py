@@ -48,7 +48,6 @@ from outputs.models import Output
 def test_output_model_validation(fields, expected_valid, expected_errors):
     """Fetch and extract html from a real repo"""
     defaults = {
-        "menu_name": "test",
         "repo": "output-explorer-test-repo",
         "branch": "master",
         "output_html_file_path": "test-outputs/output.html",

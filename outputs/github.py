@@ -1,4 +1,5 @@
 from base64 import b64decode
+from datetime import datetime
 from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
@@ -31,6 +32,7 @@ def get_html(repo, output):
     """
     try:
         contents = repo.get_contents(output.output_html_file_path, ref=output.branch)
+        last_updated = contents.last_modified
         contents = contents.decoded_content
 
     except GithubException:
@@ -44,8 +46,15 @@ def get_html(repo, output):
             for content_file in parent_contents
             if content_file.name == Path(output.output_html_file_path).name
         )
+        last_updated = content_file.last_modified
         blob = repo.get_git_blob(content_file.sha)
         contents = b64decode(blob.content)
+    last_updated_date = datetime.strptime(
+        last_updated, "%a, %d %b %Y %H:%M:%S %Z"
+    ).date()
+    if output.last_updated != last_updated_date:
+        output.last_updated = last_updated_date
+        output.save()
 
     soup = BeautifulSoup(contents, "html.parser")
     style = soup.find_all("style")

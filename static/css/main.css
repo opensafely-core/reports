@@ -30,10 +30,6 @@ html {
   margin: 0;
 }
 
-#notebook-container.container {
-  margin-left: 20px;
-}
-
 .sticky-offset {
     top: 76px;
 }
@@ -68,12 +64,9 @@ html {
     border-top-right-radius: 0;
 }
 
-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
+
+/*OUTPUT View*/
+
+#notebook-container.container, #output-front-matter.container {
+  margin-left: 20px;
 }

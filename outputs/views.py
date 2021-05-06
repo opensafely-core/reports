@@ -45,5 +45,9 @@ def output_fetch_view(request, repo, output):
     return TemplateResponse(
         request,
         "outputs/output.html",
-        {"notebook_style": extracted["style"], "contents": extracted["body"]},
+        {
+            "notebook_style": extracted["style"],
+            "notebook_contents": extracted["body"],
+            "output": output,
+        },
     )

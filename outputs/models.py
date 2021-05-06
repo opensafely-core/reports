@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from pathlib import Path
 
 import structlog
@@ -41,6 +42,23 @@ class Output(models.Model):
         validators=[validate_html_filename],
     )
     slug = AutoSlugField(max_length=100, populate_from=["menu_name"], unique=True)
+
+    # front matter fields
+    authors = models.TextField(null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Optional description to display before rendered output",
+    )
+    publication_date = models.DateField(
+        default=datetime.today, help_text="Date published; defaults to today"
+    )
+    last_updated = models.DateField(
+        null=True,
+        blank=True,
+        help_text="File last modified date; autopopulated from GitHub",
+    )
 
     def __str__(self):
         return self.slug

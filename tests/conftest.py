@@ -61,6 +61,7 @@ def mock_repo(mocker):
             mock_file = mocker.Mock()
             mock_file.name = name
             mock_file.sha = "foo"
+            mock_file.last_modified = "Tue, 27 Apr 2021 10:00:00 GMT"
             return mock_file
 
         content_files = [
@@ -75,7 +76,10 @@ def mock_repo(mocker):
 
         else:
             repo.get_contents = mocker.Mock(
-                return_value=mocker.Mock(decoded_content=kwargs.get("contents"))
+                return_value=mocker.Mock(
+                    decoded_content=kwargs.get("contents"),
+                    last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
+                )
             )
 
         repo.get_git_blob = mocker.Mock(
