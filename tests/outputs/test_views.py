@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import pytest
 from django.core.cache import cache
 from django.urls import reverse
@@ -53,25 +55,30 @@ def assert_last_log(log_entries, expected_log_items):
 
 
 @pytest.mark.django_db
-def test_output_view_cache(client, mocker, log_output):
-    """Test a single output page"""
-    mocker.patch("outputs.views.output_view_cache_key", return_value="test_sha123")
-    output = baker.make_recipe("outputs.real_output")
+def test_output_view_cache(client, log_output):
+    """
+    Test caching a single output page.  Cache is updated if last updated date changed,
+    """
+    cache.clear()
+    todays_date = datetime.today()
+    last_updated = todays_date - timedelta(days=1)
+    output = baker.make_recipe("outputs.real_output", last_updated=last_updated)
 
+    # response is cached by slug
     # nothing cached yet
-    assert cache.get("test_sha123") is None
-    assert cache.get("test_sha234") is None
+    assert cache.get("test") is None
     client.get(reverse("outputs:output_view", args=(output.slug,)))
-    assert_last_log(log_output, {"key": "test_sha123", "event": "Cache missed"})
-    # response is cached by slug and last commit sha
-    assert cache.get("test_sha123") is not None
+    assert_last_log(log_output, {"key": "test", "event": "Cache missed"})
+    assert cache.get("test") is not None
 
     # fetch it again
     client.get(reverse("outputs:output_view", args=(output.slug,)))
-    assert_last_log(log_output, {"key": "test_sha123", "event": "Cache hit"})
+    assert_last_log(log_output, {"key": "test", "event": "Cache hit"})
 
-    # a new commit sha invalidates cache and caches again
-    mocker.patch("outputs.views.output_view_cache_key", return_value="test_sha234")
+    # force update
+    client.get(reverse("outputs:output_view", args=(output.slug,)) + "?force-update=")
+    assert_last_log(log_output, {"key": "test", "event": "Cache update forced"})
+
+    # fetch it again
     client.get(reverse("outputs:output_view", args=(output.slug,)))
-    assert cache.get("test_sha234") is not None
-    assert_last_log(log_output, {"key": "test_sha234", "event": "Cache missed"})
+    assert_last_log(log_output, {"key": "test", "event": "Cache hit"})
