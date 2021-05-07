@@ -8,6 +8,7 @@ from .models import Organisation
 User = get_user_model()
 
 
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
         (None, {"fields": ("title", "display_name", "organisations")}),
@@ -26,6 +27,4 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
-# Re-register UserAdmin
-admin.site.register(User, UserAdmin)
 admin.site.register(Organisation)
