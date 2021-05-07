@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_head %}
+    {% for style in notebook_style %}
+        {{ style }}
+    {% endfor %}
+{% endblock %}
+
+
+{% block content %}
+  <div id="output-front-matter" class="container">
+      {% if output.title %}
+        <h1>{{ output.title }}</h1>
+      {% endif %}
+
+      {% if output.authors %}
+      <h2><em>{{ output.authors }}</em></h2>
+      {% endif %}
+
+      {% if output.description %}
+        <p>{{ output.description }}</p>
+      {% endif %}
+
+      <p><strong>Published:</strong> {{ output.publication_date|date:"d M Y"}}</p>
+      <p><strong>Last updated:</strong> {{ output.last_updated|date:"d M Y"}}</p>
+  </div>
+
+  {{ notebook_contents }}
+{% endblock %}
+
+
+
+{% block extra_js %}
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": {
+            styles: {'.MathJax_Display': {"margin": 0}},
+            linebreaks: { automatic: true }
+        }
+    });
+    </script>
+{% endblock %}

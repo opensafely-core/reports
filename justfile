@@ -29,7 +29,7 @@ run:
 
 # run the test suite and coverage
 test:
-	pytest --cov=nhs_openid_connect --cov=gateway --cov=tests
+	pytest --cov=output_explorer --cov=gateway --cov=outputs --cov=tests
 
 # run specific test(s)
 test-only TESTPATH:

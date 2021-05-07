@@ -18,6 +18,7 @@ from furl import furl
 from services.logging import logging_config_dict
 from services.sentry import initialise_sentry
 
+
 env = Env()
 env.read_env()
 
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "social_django",
     "gateway",
+    "outputs",
 ]
 
 MIDDLEWARE = [
@@ -81,6 +83,7 @@ TEMPLATES = [
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
                 "gateway.context_processors.show_login",
+                "outputs.context_processors.outputs",
             ],
         },
     },
@@ -152,7 +155,7 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_ERROR_URL = "/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-LOGIN_URL = reverse_lazy("social:begin", kwargs={"backend": "nhsid"})
+LOGIN_URL = reverse_lazy("gateway:login")
 
 SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_details",

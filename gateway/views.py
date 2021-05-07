@@ -10,6 +10,7 @@ from social_django.views import complete
 
 from .models import Organisation
 
+
 logger = structlog.getLogger()
 
 

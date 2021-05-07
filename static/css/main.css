@@ -1,10 +1,33 @@
-body {
-    padding-top: 76px;
-    font-size: 1.25rem;
+html {
+    font-size: 16px
 }
 
-.navbar {
+#mainbody {
+    padding-top: 76px;
+    font-size: 1.25rem;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#mainnav.navbar {
     min-height: 76px;
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    position: fixed;
+}
+
+#mainnav.navbar > .navbar-brand {
+  font-size: 1.25rem;
+}
+
+#mainnav.navbar > span.navbar-text {
+  margin: 0;
+  padding: 0;
+}
+
+#login-name {
+  display: inline-block;
+  margin: 0;
 }
 
 .sticky-offset {
@@ -39,4 +62,11 @@ body {
 .list-group-item:first-child {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+
+/*OUTPUT View*/
+
+#notebook-container.container, #output-front-matter.container {
+  margin-left: 20px;
 }

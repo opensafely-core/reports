@@ -4,6 +4,9 @@ DEBUG=True
 # A long random string
 SECRET_KEY=abcdefg
 
+# github token for fetching files from private repos
+GITHUB_TOKEN=dummy
+
 # Our NHS ID client ID and secret
 SOCIAL_AUTH_NHSID_KEY=dummy
 SOCIAL_AUTH_NHSID_SECRET=dummy

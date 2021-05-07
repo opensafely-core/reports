@@ -2,13 +2,25 @@ import json
 
 import httpretty as _httpretty
 import pytest
+import structlog
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory
 from social_django.utils import load_strategy
+from structlog.testing import LogCapture
 
 from gateway.backends import NHSIDConnectAuth
 
-from .mocks import OPENID_CONFIG
+from .gateway.mocks import OPENID_CONFIG
+
+
+@pytest.fixture(name="log_output", scope="module")
+def fixture_log_output():
+    return LogCapture()
+
+
+@pytest.fixture(autouse=True)
+def fixture_configure_structlog(log_output):
+    structlog.configure(processors=[log_output])
 
 
 @pytest.fixture
@@ -35,3 +47,44 @@ def mock_backend_and_strategy(httpretty):
     )
 
     return backend, strategy
+
+
+@pytest.fixture
+def mock_repo(mocker):
+    """Mock a PyGitHub Repo and its methods"""
+
+    def create_repo(**kwargs):
+        repo = mocker.Mock()
+        exception = kwargs.get("get_contents_exception", [])
+
+        def mock_content_file(name):
+            mock_file = mocker.Mock()
+            mock_file.name = name
+            mock_file.sha = "foo"
+            mock_file.last_modified = "Tue, 27 Apr 2021 10:00:00 GMT"
+            return mock_file
+
+        content_files = [
+            mock_content_file(content_file)
+            for content_file in kwargs.get("content_files", [])
+        ]
+        if content_files:
+            contents = [exception] + [content_files]
+            repo.get_contents = mocker.MagicMock(
+                side_effect=contents, __iter__=content_files
+            )
+
+        else:
+            repo.get_contents = mocker.Mock(
+                return_value=mocker.Mock(
+                    decoded_content=kwargs.get("contents"),
+                    last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
+                )
+            )
+
+        repo.get_git_blob = mocker.Mock(
+            side_effect=[mocker.Mock(content=kwargs.get("blob"))]
+        )
+        return repo
+
+    return create_repo

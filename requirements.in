@@ -1,8 +1,10 @@
+bs4
 environs[django]
 django-extensions
 django-structlog
 furl
 gunicorn
+PyGithub
 social-auth-core[openidconnect]
 social-auth-app-django
 sentry-sdk

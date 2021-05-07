@@ -3,7 +3,9 @@ black
 flake8
 httpretty
 isort
+model-bakery
 pre-commit
 pytest-cov
 pytest-django
 pytest-env
+pytest-mock
