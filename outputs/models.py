@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from pathlib import Path
 
 import structlog
 from django.core.exceptions import ValidationError
@@ -9,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from github import GithubException, UnknownObjectException
 
-from .github import get_parent_contents, get_repo
+from .github import GitHubOutput
 
 
 logger = structlog.getLogger()
@@ -65,15 +64,16 @@ class Output(models.Model):
 
     def clean(self):
         """Validate the repo, branch and output file path on save"""
+        github_output = GitHubOutput(self)
         try:
-            repo = get_repo(self)
+            github_output.repo
         except UnknownObjectException:
             raise ValidationError(
                 {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
             )
 
         try:
-            parent_contents = get_parent_contents(repo, self)
+            github_output.get_parent_contents()
         except GithubException as error:
             # This happens if either the branch or the output file's parent path is invalid
             raise ValidationError(
@@ -81,11 +81,7 @@ class Output(models.Model):
                 params={"error_message": error.data["message"]},
             )
 
-        if not any(
-            content
-            for content in parent_contents
-            if content.name == Path(self.output_html_file_path).name
-        ):
+        if not any(github_output.matching_output_file_from_parent_contents()):
             raise ValidationError(
                 {
                     "output_html_file_path": _(

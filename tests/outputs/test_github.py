@@ -5,12 +5,12 @@ import pytest
 from github import GithubException
 from model_bakery import baker
 
-from outputs.github import get_html, get_repo
+from outputs.github import GitHubOutput
 from outputs.models import Output
 
 
 @pytest.mark.django_db
-def test_get_html_from_github(mock_repo, mocker):
+def test_get_html_from_github(mock_repo):
     """
     Test that html content retrieved from github is appropriately parsed
     """
@@ -26,9 +26,9 @@ def test_get_html_from_github(mock_repo, mocker):
         </html>
         """
     )
-    mocker.patch("outputs.github.get_repo", return_value=repo)
     output = baker.make(Output, output_html_file_path="foo.html")
-    extracted_html = get_html(repo, output)
+    github_output = GitHubOutput(output, repo=repo)
+    extracted_html = github_output.get_html()
     assert extracted_html == {
         "body": "<p>foo</p>",
         "style": [
@@ -39,7 +39,7 @@ def test_get_html_from_github(mock_repo, mocker):
 
 
 @pytest.mark.django_db
-def test_get_large_html_from_github(mock_repo, mocker):
+def test_get_large_html_from_github(mock_repo):
     """
     Test that a GithubException for a too-large file is caught and the content fetched
     from the git_blob by sha instead
@@ -49,9 +49,9 @@ def test_get_large_html_from_github(mock_repo, mocker):
         blob=b64encode(b"<html><body><p>blob</p></body></html>"),
         get_contents_exception=GithubException(status=400, data={}, headers={}),
     )
-    mocker.patch("outputs.github.get_repo", return_value=repo)
     output = baker.make(Output, output_html_file_path="foo.html")
-    extracted_html = get_html(repo, output)
+    github_output = GitHubOutput(output, repo=repo)
+    extracted_html = github_output.get_html()
     assert extracted_html == {"body": "<p>blob</p>", "style": []}
     assert output.last_updated == date(2021, 4, 27)
 
@@ -66,8 +66,8 @@ def test_integration():
         output_html_file_path="test-outputs/output.html",
     )
     output.clean()
-    repo = get_repo(output)
-    extracted_html = get_html(repo, output)
+    github_output = GitHubOutput(output)
+    extracted_html = github_output.get_html()
     assert extracted_html == {
         "body": "\n<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>",
         "style": [

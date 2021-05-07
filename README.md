@@ -37,6 +37,7 @@ dokku$ dokku config:set output-explorer SENTRY_ENVIRONMENT='production'
 dokku$ dokku config:set output-explorer SOCIAL_AUTH_NHSID_KEY='xxx'
 dokku$ dokku config:set output-explorer SOCIAL_AUTH_NHSID_SECRET='xxx'
 dokku$ dokku config:set output-explorer SOCIAL_AUTH_NHSID_API_URL='xxx'
+dokku$ dokku config:set output-explorer GITHUB_TOKEN='xxx'
 dokku$ dokku config:set output-explorer SHOW_LOGIN=False
 ```
 
