@@ -1,6 +1,7 @@
 import structlog
 from environs import Env
 
+
 # add logging before app has booted
 env = Env()
 DEBUG = env.bool("DEBUG", default=False)
