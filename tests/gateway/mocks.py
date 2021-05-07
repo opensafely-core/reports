@@ -241,3 +241,4 @@ JWK_KEY = {
 }
 
 JWK_PUBLIC_KEY = {key: value for key, value in JWK_KEY.items() if key != "d"}
+JWK_PUBLIC_KEYS = [{**JWK_PUBLIC_KEY, "alg": "UNK"}, JWK_PUBLIC_KEY]
