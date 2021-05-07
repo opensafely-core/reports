@@ -100,11 +100,6 @@ jobs:
           path: ${{ github.workspace }}/venv
           key: venv-${{ github.ref }}-${{ hashFiles('requirements.txt', 'requirements.dev.txt') }}
       - name: Run tests
-        env:
-          SECRET_KEY: 12345
-          SOCIAL_AUTH_NHSID_KEY: test
-          SOCIAL_AUTH_NHSID_SECRET: test
-          SOCIAL_AUTH_NHSID_API_URL: https://dummy-nhs.net/oidc
         run: |
           source ${{ github.workspace }}/venv/bin/activate
           just test
