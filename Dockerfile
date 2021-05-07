@@ -16,7 +16,7 @@ RUN apt-get update && \
 # installation if they haven't changed
 WORKDIR /
 COPY requirements.txt .
-RUN pip install --requirement requirements.txt
+RUN pip install --no-cache-dir --requirement requirements.txt
 
 WORKDIR /app
 COPY . /app
