@@ -65,7 +65,7 @@ dokku plugin:install sentry-webhook
 brew install just
 
 # Linux
-apt install just
+# Install from https://github.com/casey/just/releases
 
 # Add completion for your shell. E.g. for bash:
 source <(just --completions bash)
