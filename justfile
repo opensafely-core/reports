@@ -32,7 +32,7 @@ migrate:
 
 # run the dev server
 run:
-    python manage.py runserver
+    python manage.py runserver localhost:8000
 
 # run the test suite and coverage
 test:
