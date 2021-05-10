@@ -4,7 +4,6 @@ html {
 
 #mainbody {
     padding-top: 76px;
-    font-size: 1.25rem;
     padding-left: 0;
     padding-right: 0;
 }
@@ -12,12 +11,7 @@ html {
 #mainnav.navbar {
     min-height: 76px;
     margin-bottom: 0;
-    font-size: 1.25rem;
     position: fixed;
-}
-
-#mainnav.navbar > .navbar-brand {
-  font-size: 1.25rem;
 }
 
 #mainnav.navbar > span.navbar-text {
