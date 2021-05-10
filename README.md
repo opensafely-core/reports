@@ -68,8 +68,7 @@ brew install just
 apt install just
 
 # Add completion for your shell. E.g. for bash:
-just --completions bash > just.bash
-source just.bash
+source <(just --completions bash)
 
 # Show all available commands
 just #  shortcut for just --list
