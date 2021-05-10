@@ -2,6 +2,7 @@ import structlog
 
 from .models import Organisation
 
+
 logger = structlog.getLogger()
 
 

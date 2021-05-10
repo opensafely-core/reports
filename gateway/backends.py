@@ -7,6 +7,7 @@ from jose.exceptions import JWKError
 from jose.utils import base64url_decode
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 
+
 logger = structlog.getLogger()
 
 
