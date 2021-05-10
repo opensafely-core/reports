@@ -8,3 +8,4 @@ PyGithub
 social-auth-core[openidconnect]
 social-auth-app-django
 sentry-sdk
+whitenoise

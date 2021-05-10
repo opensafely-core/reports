@@ -29,6 +29,7 @@ run:
 
 # run the test suite and coverage
 test:
+	python manage.py collectstatic --no-input && \
 	pytest --cov=output_explorer --cov=gateway --cov=outputs --cov=tests
 
 # run specific test(s)

@@ -5,6 +5,7 @@
 htmlcov/
 .DS_Store
 db.sqlite3
+collected-static/
 
 # just completion files
 just.bash
