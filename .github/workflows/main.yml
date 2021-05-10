@@ -106,6 +106,9 @@ jobs:
       - name: Run tests
         env:
           SECRET_KEY: 12345
+          SOCIAL_AUTH_NHSID_KEY: dummy-client-id
+          SOCIAL_AUTH_NHSID_SECRET: dummy-secret
+          SOCIAL_AUTH_NHSID_API_URL: https://dummy-nhs.net/oidc
         run: |
           source ${{ github.workspace }}/venv/bin/activate
           just test
