@@ -128,9 +128,9 @@ environs[django]==9.3.2 \
     --hash=sha256:2eb671afd37e6e9820131b918bbbcaa6658d0fb420ebf35bdfb750ae39c51a66 \
     --hash=sha256:6bef733b88cc901e787cf24fb2eaa72621b0656226ea4e332ab24ed0cba36fcf
     # via -r requirements.in
-furl==2.1.0 \
-    --hash=sha256:c0e0231a1feee2acd256574b7033df3144775451c610cb587060d6a0d7e0b621 \
-    --hash=sha256:f4d6f1e5479c376a5b7bdc62795d736d8c1b2a754f366a2ad2816e46e946e22e
+furl==2.1.2 \
+    --hash=sha256:a2c6adb472fc5faba2e18b6c28b83464b80201f168fd10b81997895a7cb5d5a6 \
+    --hash=sha256:f7dba33eafbee7dbc83963534b25e72f816cced48ac53191ee60bfcc62933918
     # via -r requirements.in
 gunicorn==20.1.0 \
     --hash=sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e \
