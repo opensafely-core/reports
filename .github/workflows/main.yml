@@ -100,6 +100,8 @@ jobs:
           path: ${{ github.workspace }}/venv
           key: venv-${{ github.ref }}-${{ hashFiles('requirements.txt', 'requirements.dev.txt') }}
       - name: Run tests
+        env:
+          SECRET_KEY: 12345
         run: |
           source ${{ github.workspace }}/venv/bin/activate
           just test
