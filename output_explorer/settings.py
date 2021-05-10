@@ -187,3 +187,6 @@ SOCIAL_AUTH_NHSID_SCOPE = ["nhsperson", "associatedorgs"]
 # Logging
 LOGGING = logging_config_dict
 initialise_sentry()
+
+# Needed for the debug context processor to work locally
+INTERNAL_IPS = ["127.0.0.1"]
