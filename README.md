@@ -49,9 +49,11 @@ local$ git remote add dokku dokku@MYSERVER:output-explorer
 local$ git push dokku main
 ```
 
+You may need to add your ssh key to dokku's authorised keys; use the method described [here](https://dokku.com/docs/deployment/user-management/)
+
 ### extras
 ```
-dokku letsencrypt output-explorer
+dokku letsencrypt:enable output-explorer
 dokku plugin:install sentry-webhook
 ```
 
