@@ -20,8 +20,8 @@ setup:
 
 # compile requirements
 compile:
-    pip-compile requirements.in
-    pip-compile requirements.dev.in
+    pip-compile --generate-hashes requirements.in
+    pip-compile --generate-hashes requirements.dev.in
 
 # run the dev server
 run:
