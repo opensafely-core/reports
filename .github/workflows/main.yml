@@ -99,6 +99,10 @@ jobs:
         with:
           path: ${{ github.workspace }}/venv
           key: venv-${{ github.ref }}-${{ hashFiles('requirements.txt', 'requirements.dev.txt') }}
+      - name: Check requirements
+        run: |
+          source ${{ github.workspace }}/venv/bin/activate
+          pip list
       - name: Run tests
         env:
           SECRET_KEY: 12345
