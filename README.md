@@ -86,7 +86,7 @@ just run
 ```
 Access at http://localhost:8000
 
-Login with one of the test user accounts (see Bitwarden entry for password):
+Login with one of the test user accounts (see Bitwarden entry "Output Explorer NHS Identity Open ID Connect" for password):
 - 555036632103
 - 555036633104
 - 555036634105
