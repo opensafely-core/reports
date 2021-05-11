@@ -65,11 +65,10 @@ dokku plugin:install sentry-webhook
 brew install just
 
 # Linux
-apt install just
+# Install from https://github.com/casey/just/releases
 
 # Add completion for your shell. E.g. for bash:
-just --completion bash > just.bash
-source just.bash
+source <(just --completions bash)
 
 # Show all available commands
 just #  shortcut for just --list
@@ -87,7 +86,7 @@ just run
 ```
 Access at http://localhost:8000
 
-Login with one of the test user accounts (see Bitwarden entry for password):
+Login with one of the test user accounts (see Bitwarden entry "Output Explorer NHS Identity Open ID Connect" for password):
 - 555036632103
 - 555036633104
 - 555036634105

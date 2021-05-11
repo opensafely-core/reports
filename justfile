@@ -13,7 +13,10 @@ dev-config:
 	./scripts/dev-env.sh .env
 
 # set up/update the local dev env
-setup:
+setup: pip-install migrate
+
+# install correct versions of all Python dependencies
+pip-install:
     pip install pip-tools
     pip-sync requirements.txt requirements.dev.txt
     pre-commit install
@@ -23,9 +26,13 @@ compile:
     pip-compile --generate-hashes requirements.in
     pip-compile --generate-hashes requirements.dev.in
 
+# run django migrations locally
+migrate:
+    ./manage.py migrate
+
 # run the dev server
 run:
-    python manage.py runserver
+    python manage.py runserver localhost:8000
 
 # run the test suite and coverage
 test:

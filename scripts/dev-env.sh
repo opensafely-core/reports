@@ -24,7 +24,7 @@ NHSID_DEV_TOKEN_BW_ID=d56dc9f4-d732-45d9-90fd-ad1200b7e27c
 write() {
     local name="$1"
     local value="$2"
-    sed -i "" -e "s/$name=.*/$name=$value/" "$target"
+    sed -i"" -e "s/$name=.*/$name=$value/" "$target"
 }
 
 write GITHUB_TOKEN "$(bw get password $GH_DEV_TOKEN_BW_ID)"
