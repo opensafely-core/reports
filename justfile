@@ -34,6 +34,11 @@ migrate:
 ensure-superuser:
     ./manage.py ensure_superuser
 
+# blow away the local database and repopulate it
+dev-reset:
+    rm db.sqlite3
+    just setup
+
 # run the dev server
 run:
     python manage.py runserver localhost:8000
