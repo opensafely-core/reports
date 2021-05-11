@@ -5,6 +5,7 @@ django-structlog
 furl
 gunicorn
 PyGithub
+pymemcache
 social-auth-core[openidconnect]
 social-auth-app-django
 sentry-sdk
