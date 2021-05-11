@@ -2,7 +2,20 @@
   "name": "output-explorer",
   "version": "1.0.0",
   "scripts": {
-    "build": "echo 'Build test complete'"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^4.0.3",
+    "autoprefixer": "^10.2.5",
+    "cssnano": "^5.0.2",
+    "purgecss": "^4.0.3",
+    "sass": "^1.32.12",
+    "vite": "^2.3.0"
+  },
+  "dependencies": {
+    "bootstrap": "4.6.0",
+    "jquery": "3.5.1"
+  }
 }

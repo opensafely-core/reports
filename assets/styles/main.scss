@@ -1,0 +1,66 @@
+html {
+  font-size: 16px;
+}
+
+#mainbody {
+  padding-top: 76px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#mainnav.navbar {
+  min-height: 76px;
+  margin-bottom: 0;
+  position: fixed;
+}
+
+#mainnav.navbar > span.navbar-text {
+  margin: 0;
+  padding: 0;
+}
+
+#login-name {
+  display: inline-block;
+  margin: 0;
+}
+
+.sticky-offset {
+  top: 76px;
+}
+
+#body-row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#sidebar-container {
+  min-height: 100vh;
+  padding: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Menu item*/
+#sidebar-container .list-group a {
+  height: auto;
+}
+
+#sidebar-container .list-group-item {
+  border-right-width: 0;
+}
+
+/* Separators */
+.sidebar-separator-title {
+  background-color: rgba(0, 0, 0, 0.125);
+}
+
+.list-group-item:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/*OUTPUT View*/
+
+#notebook-container.container,
+#output-front-matter.container {
+  margin-left: 20px;
+}
