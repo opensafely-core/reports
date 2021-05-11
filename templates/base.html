@@ -3,17 +3,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta property="og:site_name" content="OpenSAFELY Output Explorer" />
-    <title>OpenSAFELY Output Explorer</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-    <link rel="stylesheet" href="{% static 'main.css' %}">
-    {% block extra_head %}{% endblock %}
+  <title>OpenSAFELY Output Explorer</title>
+
+  <link rel="stylesheet" href="{% static 'main.css' %}">
+  {% block extra_head %}{% endblock %}
+
+  {# TODO: SEO tags #}
+  {# <meta name="description" content="Page description"> #}
+  {# <meta property="og:title" content="Unique page title - My Site"> #}
+  {# <meta property="og:description" content="Page description"> #}
+  {# <meta property="og:image" content="https://www.mywebsite.com/image.jpg"> #}
+  {# <meta property="og:image:alt" content="Image description"> #}
+  {# <meta property="og:locale" content="en_GB"> #}
+  {# <meta property="og:type" content="website"> #}
+  {# <meta name="twitter:card" content="summary_large_image"> #}
+  {# <meta property="og:url" content="https://www.mywebsite.com/page"> #}
+  {# <link rel="canonical" href="https://www.mywebsite.com/page"> #}
+
+  {# TODO: Favicons #}
+  {# <link rel="icon" href="/favicon.ico"> #}
+  {# <link rel="icon" href="/favicon.svg" type="image/svg+xml"> #}
+  {# <link rel="apple-touch-icon" href="/apple-touch-icon.png"> #}
+  {# <link rel="manifest" href="/my.webmanifest"> #}
+  {# <meta name="theme-color" content="#FF00FF"> #}
 </head>
 
 <body id="mainbody">
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3 fixed-top" id="mainnav">
       <a class="navbar-brand" href="/">OpenSAFELY Output Explorer</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +110,7 @@
          <!-- Body row END-->
       </div>
 
-    <script type="module" defer src="{% static 'main.js' %}"></script>
-    {% block extra_js %}{% endblock %}
-  </body>
+  <script async src="{% static 'main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
 </html>
