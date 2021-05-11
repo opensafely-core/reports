@@ -6,3 +6,8 @@ htmlcov/
 .DS_Store
 db.sqlite3
 collected-static/
+
+### Node ###
+npm-debug.log*
+node_modules/
+/dist
