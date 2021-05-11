@@ -13,7 +13,7 @@ dev-config:
 	./scripts/dev-env.sh .env
 
 # set up/update the local dev env
-setup: pip-install migrate
+setup: pip-install migrate ensure-superuser
 
 # install correct versions of all Python dependencies
 pip-install:
@@ -29,6 +29,10 @@ compile:
 # run django migrations locally
 migrate:
     ./manage.py migrate
+
+# create an admin/admin superuser locally if necessary
+ensure-superuser:
+    ./manage.py ensure_superuser
 
 # run the dev server
 run:
