@@ -28,10 +28,10 @@ dokku$ dokku storage:mount output-explorer /var/lib/dokku/data/storage/output-ex
 ```
 
 
-### Set up Memcached
+### Set up Redis
 ```
-dokku$ dokku memcached:create oe-cache
-dokku$ dokku memcached:link oe-cache output-explorer
+dokku$ dokku redis:create oe-cache
+dokku$ dokku redis:link oe-cache output-explorer
 ```
 
 ### Configure app
@@ -39,8 +39,8 @@ dokku$ dokku memcached:link oe-cache output-explorer
 dokku$ dokku config:set output-explorer BASE_URL='https://output-explorer.opensafely.org'
 dokku$ dokku config:set output-explorer DATABASE_URL='sqlite:////storage/db.sqlite3'
 dokku$ dokku config:set output-explorer SECRET_KEY='xxx'
-dokku$ dokku config:set output-explorer CACHE_BACKEND='django.core.cache.backends.memcached.PyMemcacheCache'
-dokku$ dokku config:set output-explorer CACHE_LOCATION='dokku-memcached-oe-cache:11211'
+dokku$ dokku config:set output-explorer CACHE_BACKEND='django_redis.cache.RedisCache'
+dokku$ dokku config:set output-explorer CACHE_LOCATION=$(dokku redis:info oe-cache --dsn)
 dokku$ dokku config:set output-explorer SENTRY_DSN='https://xxx@xxx.ingest.sentry.io/xxx'
 dokku$ dokku config:set output-explorer SENTRY_ENVIRONMENT='production'
 dokku$ dokku config:set output-explorer SOCIAL_AUTH_NHSID_KEY='xxx'
