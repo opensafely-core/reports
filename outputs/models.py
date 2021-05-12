@@ -61,6 +61,9 @@ class Output(models.Model):
         help_text="File last modified date; autopopulated from GitHub",
     )
     cache_token = models.UUIDField(default=uuid4)
+    # Flag to remember if this output needed to use the git blob method (see github.py),
+    # to avoid re-calling the contents endpoint if we know it will fail
+    use_git_blob = models.BooleanField(default=False)
 
     def __str__(self):
         return self.slug

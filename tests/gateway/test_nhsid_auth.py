@@ -365,7 +365,7 @@ def test_nhsid_backend_token_errors(
     ],
 )
 def test_login_new_user(
-    client, httpretty, mock_backend_and_strategy, user_data, expected
+    client, httpretty, no_requests_cache, mock_backend_and_strategy, user_data, expected
 ):
     """
     Test that the pipeline creates a new user with relevant user data provided by NHS Identity.
@@ -423,6 +423,7 @@ def test_login_new_user(
 def test_login_existing_organisation(
     client,
     httpretty,
+    no_requests_cache,
     mock_backend_and_strategy,
     user_data,
     expected_organisations,
@@ -506,6 +507,7 @@ def test_login_existing_organisation(
 def test_login_existing_user(
     client,
     httpretty,
+    no_requests_cache,
     mock_backend_and_strategy,
     initial_user_data,
     initial_expected,

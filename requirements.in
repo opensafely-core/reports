@@ -6,6 +6,7 @@ furl
 gunicorn
 PyGithub
 django-redis
+requests-cache
 social-auth-core[openidconnect]
 social-auth-app-django
 sentry-sdk

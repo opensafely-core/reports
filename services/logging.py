@@ -79,6 +79,11 @@ logging_config_dict = {
             "level": "INFO",
             "propagate": False,
         },
+        "requests_cache": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
         "output_explorer": {
             "handlers": ["console"],
             "level": "INFO",
