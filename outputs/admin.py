@@ -1,7 +1,12 @@
 from django.contrib import admin, messages
 from django.utils.translation import ngettext
 
-from .models import Output
+from .models import Category, Output
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    fields = ("name",)
 
 
 @admin.register(Output)

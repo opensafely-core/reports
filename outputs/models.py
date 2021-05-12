@@ -24,12 +24,21 @@ def validate_html_filename(value):
         )
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+
 class Output(models.Model):
     """
     An Output retrieved from an OpenSAFELY github repo
     Currently allows for single HTML output files only
     """
 
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        help_text="Output category; used for navigation",
+    )
     menu_name = models.CharField(
         max_length=255, help_text="A short name to display in the side nav"
     )
