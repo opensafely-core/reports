@@ -1,7 +1,7 @@
 import structlog
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_control
 
 from .github import GitHubOutput
 from .models import Output
@@ -10,7 +10,7 @@ from .models import Output
 logger = structlog.getLogger()
 
 
-@cache_page(86400)
+@cache_control(cache_timeout=86400)
 def output_view(request, slug, cache_token):
     """
     Fetches an html output file from github, and renders the style and body tags within
@@ -27,7 +27,7 @@ def output_view(request, slug, cache_token):
             slug=output.slug,
         )
         return redirect(output.get_absolute_url())
-    elif str(output.cache_token) != cache_token:
+    elif output.cache_token != cache_token:
         # If an invalid cache_token is encountered, redirect to the latest one
         logger.warn(
             "Cache token not found, redirecting...",

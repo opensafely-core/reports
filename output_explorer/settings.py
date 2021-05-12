@@ -60,7 +60,9 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.cache.FetchFromCacheMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -98,16 +100,6 @@ WSGI_APPLICATION = "output_explorer.wsgi.application"
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {"default": env.dj_db_url("DATABASE_URL", "sqlite:///db.sqlite3")}
-
-# Cache
-CACHES = {
-    "default": {
-        "BACKEND": env.str(
-            "CACHE_BACKEND", "django.core.cache.backends.locmem.LocMemCache"
-        ),
-        "LOCATION": env.str("CACHE_LOCATION", "default"),
-    }
-}
 
 
 # Default primary key field type to use for models that don’t have a field with primary_key=True.

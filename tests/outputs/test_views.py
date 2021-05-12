@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 import pytest
 from django.core.cache import cache
@@ -9,8 +10,9 @@ from outputs.models import Output
 
 
 @pytest.mark.django_db
-def test_landing_view(client):
+def test_landing_view(client, settings):
     """Test landing view context"""
+    settings.CACHE_MIDDLEWARE_SECONDS = 0
     assert Output.objects.exists() is False
     response = client.get(reverse("gateway:landing"))
     assert list(response.context["outputs"]) == []
@@ -52,8 +54,9 @@ def test_output_view_with_invalid_token(client):
     """Test a single output page"""
     # output for a real file
     output = baker.make_recipe("outputs.real_output")
+    invalid_uuid = uuid4()
     response = client.get(
-        reverse("outputs:output_view", args=(output.slug, "dummy-token"))
+        reverse("outputs:output_view", args=(output.slug, invalid_uuid))
     )
     assert response.status_code == 302
     assert response.url == reverse(
