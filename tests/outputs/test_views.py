@@ -36,9 +36,7 @@ def test_output_view(client):
     """Test a single output page"""
     # output for a real file
     output = baker.make_recipe("outputs.real_output")
-    response = client.get(
-        reverse("outputs:output_view", args=(output.slug, output.cache_token))
-    )
+    response = client.get(output.get_absolute_url())
     assert response.context["notebook_style"] == [
         '<style type="text/css">body {margin: 0;}</style>',
         '<style type="text/css">a {background-color: blue;}</style>',
@@ -59,9 +57,7 @@ def test_output_view_with_invalid_token(client):
         reverse("outputs:output_view", args=(output.slug, invalid_uuid))
     )
     assert response.status_code == 302
-    assert response.url == reverse(
-        "outputs:output_view", args=(output.slug, output.cache_token)
-    )
+    assert response.url == output.get_absolute_url()
 
 
 def assert_last_cache_log(log_entries, expected_log_items):
@@ -92,24 +88,19 @@ def test_output_view_cache(client, log_output):
     output = baker.make_recipe("outputs.real_output", last_updated=last_updated)
 
     # nothing cached yet
-    response = client.get(
-        reverse("outputs:output_view", args=(output.slug, output.cache_token))
-    )
+    response = client.get(output.get_absolute_url())
     assert_last_cache_log(
         log_output, {"output_id": output.id, "slug": "test", "event": "Cache missed"}
     )
     assert response.status_code == 200
 
     # fetch it again
-    client.get(reverse("outputs:output_view", args=(output.slug, output.cache_token)))
+    client.get(output.get_absolute_url())
     assert_last_cache_log(log_output, None)
     assert response.status_code == 200
 
     # force update
-    response = client.get(
-        reverse("outputs:output_view", args=(output.slug, output.cache_token))
-        + "?force-update="
-    )
+    response = client.get(output.get_absolute_url() + "?force-update=")
     old_token = output.cache_token
     output.refresh_from_db()
     assert old_token != output.cache_token
@@ -122,6 +113,4 @@ def test_output_view_cache(client, log_output):
         },
     )
     assert response.status_code == 302
-    assert response.url == reverse(
-        "outputs:output_view", args=(output.slug, output.cache_token)
-    )
+    assert response.url == output.get_absolute_url()
