@@ -1,9 +1,11 @@
 import re
 from datetime import datetime
+from uuid import uuid4
 
 import structlog
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from github import GithubException, UnknownObjectException
@@ -58,9 +60,14 @@ class Output(models.Model):
         blank=True,
         help_text="File last modified date; autopopulated from GitHub",
     )
+    cache_token = models.UUIDField(default=uuid4)
 
     def __str__(self):
         return self.slug
+
+    def refresh_cache_token(self):
+        self.cache_token = uuid4()
+        self.save()
 
     def clean(self):
         """Validate the repo, branch and output file path on save"""
@@ -91,3 +98,6 @@ class Output(models.Model):
                 }
             )
         super().clean()
+
+    def get_absolute_url(self):
+        return reverse("outputs:output_view", args=(self.slug, self.cache_token))
