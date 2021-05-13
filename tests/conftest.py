@@ -2,7 +2,6 @@ import json
 
 import httpretty as _httpretty
 import pytest
-import requests_cache
 import structlog
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory
@@ -12,11 +11,6 @@ from structlog.testing import LogCapture
 from gateway.backends import NHSIDConnectAuth
 
 from .gateway.mocks import OPENID_CONFIG
-
-
-@pytest.fixture
-def no_requests_cache():
-    requests_cache.uninstall_cache()
 
 
 @pytest.fixture(name="log_output", scope="module")

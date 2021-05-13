@@ -1,8 +1,6 @@
-from datetime import datetime, timedelta
 from uuid import uuid4
 
 import pytest
-from django.core.cache import cache
 from django.urls import reverse
 from model_bakery import baker
 
@@ -82,10 +80,7 @@ def test_output_view_cache(client, log_output):
     """
     Test caching a single output page.
     """
-    cache.clear()
-    todays_date = datetime.today()
-    last_updated = todays_date - timedelta(days=1)
-    output = baker.make_recipe("outputs.real_output", last_updated=last_updated)
+    output = baker.make_recipe("outputs.real_output")
 
     # nothing cached yet
     response = client.get(output.get_absolute_url())
