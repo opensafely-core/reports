@@ -49,7 +49,6 @@ def output_fetch_view(request, github_output):
         request,
         "outputs/output.html",
         {
-            "notebook_style": extracted["style"],
             "notebook_contents": extracted["body"],
             "output": github_output.output,
         },

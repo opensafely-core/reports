@@ -44,10 +44,6 @@ def test_output_view(client):
     # output for a real file
     output = baker.make_recipe("outputs.real_output")
     response = client.get(output.get_absolute_url())
-    assert response.context["notebook_style"] == [
-        '<style type="text/css">body {margin: 0;}</style>',
-        '<style type="text/css">a {background-color: blue;}</style>',
-    ]
     assert (
         response.context["notebook_contents"]
         == "\n<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>"

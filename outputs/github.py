@@ -80,13 +80,11 @@ class GitHubOutput:
             self.output.save()
 
         soup = BeautifulSoup(contents, "html.parser")
-        style = soup.find_all("style")
         body = soup.find("body")
-        style = [mark_safe(style_item.decode()) for style_item in style]
         contents = "".join(
             [
                 content.decode() if isinstance(content, Tag) else content
                 for content in body.contents
             ]
         )
-        return {"body": mark_safe(contents), "style": style}
+        return {"body": mark_safe(contents)}
