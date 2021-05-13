@@ -1,5 +1,5 @@
-from .models import Output
+from .models import Category
 
 
 def outputs(request):
-    return {"outputs": Output.objects.all()}
+    return {"categories": Category.populated.all()}
