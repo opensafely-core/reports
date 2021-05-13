@@ -56,17 +56,22 @@ class GitHubOutput:
         The notebook html consists of style, body and script tags.  Ignores any script tags.
         Return the style tags and html body content for display in template.
         """
-        try:
-            contents = self.repo.get_contents(
-                self.output.output_html_file_path, ref=self.output.branch
-            )
-            last_updated = contents.last_modified
-            contents = contents.decoded_content
-
-        except GithubException:
-            # If the single file was too big (>1Mb), we get an exception.  Get the git blob
-            # and retrieve the contents from there instead
+        if self.output.use_git_blob:
             contents, last_updated = self.get_contents_from_git_blob()
+        else:
+            try:
+                contents = self.repo.get_contents(
+                    self.output.output_html_file_path, ref=self.output.branch
+                )
+                last_updated = contents.last_modified
+                contents = contents.decoded_content
+
+            except GithubException:
+                # If the single file was too big (>1Mb), we get an exception.  Get the git blob
+                # and retrieve the contents from there instead
+                contents, last_updated = self.get_contents_from_git_blob()
+                self.output.use_git_blob = True
+                self.output.save()
         last_updated_date = datetime.strptime(
             last_updated, "%a, %d %b %Y %H:%M:%S %Z"
         ).date()
