@@ -24,8 +24,30 @@ def validate_html_filename(value):
         )
 
 
+class PopulatedCategoryManager(models.Manager):
+    """
+    Manager that returns only Categories that have at least one associated Output
+    """
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .annotate(count=models.Count("outputs"))
+            .filter(count__gt=0)
+        )
+
+
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    objects = models.Manager()
+    populated = PopulatedCategoryManager()
+
+    class Meta:
+        verbose_name_plural = "categories"
+
+    def __str__(self):
+        return self.name
 
 
 class Output(models.Model):
@@ -38,6 +60,7 @@ class Output(models.Model):
         Category,
         on_delete=models.CASCADE,
         help_text="Output category; used for navigation",
+        related_name="outputs",
     )
     menu_name = models.CharField(
         max_length=255, help_text="A short name to display in the side nav"
