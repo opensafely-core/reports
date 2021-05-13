@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 from model_bakery import baker
 
-from outputs.models import Output
+from outputs.models import Category, Output
 
 
 @pytest.mark.django_db
@@ -12,21 +12,30 @@ def test_landing_view(client, settings):
     """Test landing view context"""
     settings.CACHE_MIDDLEWARE_SECONDS = 0
     assert Output.objects.exists() is False
+    # By default we have one Category, set up in the migration
+    assert Category.objects.count() == 1
     response = client.get(reverse("gateway:landing"))
-    assert list(response.context["outputs"]) == []
+    # There is a category, but it isn't included in the context because it has no associated Outputs
+    assert list(response.context["categories"]) == []
 
-    # when Outputs exist, they are included in the context
+    category = Category.objects.first()
+    # when Outputs exist, their categories are included in the context
     baker.make(
-        Output, menu_name="test", repo="test-repo", output_html_file_path="output.html"
+        Output,
+        category=category,
+        menu_name="test",
+        repo="test-repo",
+        output_html_file_path="output.html",
     )
     baker.make(
         Output,
+        category=category,
         menu_name="test1",
         repo="test-repo",
         output_html_file_path="output1.html",
     )
     response = client.get(reverse("gateway:landing"))
-    assert list(response.context["outputs"]) == list(Output.objects.all())
+    assert list(response.context["categories"]) == list(Category.objects.all())
 
 
 @pytest.mark.django_db
