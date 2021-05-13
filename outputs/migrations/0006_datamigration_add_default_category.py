@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def add_default_category(apps, schema_editor):
-    # We can't import the Person model directly as it may be a newer
+    # We can't import the Category/Output models directly as they may be a newer
     # version than this migration expects. We use the historical version.
     Category = apps.get_model("outputs", "Category")
     Output = apps.get_model("outputs", "Output")
