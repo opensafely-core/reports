@@ -2,18 +2,13 @@
  * @type {import('vite').UserConfig}
  */
 const config = {
+  base: '/static/',
   build: {
-    manifest: false,
+    manifest: true,
     rollupOptions: {
       input: ["./assets/scripts/main.js"],
-      output: {
-        entryFileNames: `[name].js`,
-        chunkFileNames: `[name].js`,
-        assetFileNames: `[name].[ext]`,
-        manualChunks: {},
-      },
     },
-    outDir: "./dist",
+    outDir: "static/dist",
     emptyOutDir: true,
   },
 };

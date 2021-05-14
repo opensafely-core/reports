@@ -2,6 +2,7 @@ bs4
 environs[django]
 django-extensions
 django-structlog
+django-vite
 furl
 gunicorn
 PyGithub

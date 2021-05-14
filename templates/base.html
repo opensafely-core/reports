@@ -1,4 +1,5 @@
 {% load static %}
+{% load django_vite %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +10,8 @@
 
   <title>OpenSAFELY Output Explorer</title>
 
-  <link rel="stylesheet" href="{% static 'main.css' %}">
+  {% vite_hmr_client %}
+  {% vite_asset 'assets/scripts/main.js' %}
   {% block extra_head %}{% endblock %}
 
   {# TODO: SEO tags #}
@@ -117,7 +119,6 @@
          <!-- Body row END-->
       </div>
 
-    <script async src="{% static 'main.js' %}"></script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>
