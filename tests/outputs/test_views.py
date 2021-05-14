@@ -26,10 +26,6 @@ def test_landing_view(client):
     assert list(response.context["categories"]) == list(Category.objects.all())
 
 
-# TODO - extra tests
-# same last_updated and publication; ignore last updated
-
-
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "outputs,expected",
