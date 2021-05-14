@@ -135,7 +135,7 @@ jobs:
           fetch-depth: 0
 
       - name: Deploy to dokku
-        uses: idoberko2/dokku-deploy-github-action@v1
+        uses: opensafely-core/dokku-deploy-github-action@4b326b36625e4a10add5f9601e8ffbaf048444b9
         with:
           app-name: "output-explorer"
           dokku-host: "dokku2.ebmdatalab.net"
