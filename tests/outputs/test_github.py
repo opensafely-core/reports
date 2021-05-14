@@ -50,10 +50,25 @@ def test_get_large_html_from_github(mock_repo):
         get_contents_exception=GithubException(status=400, data={}, headers={}),
     )
     output = baker.make(Output, output_html_file_path="foo.html")
+    assert output.use_git_blob is False
+    assert repo.get_contents.call_count == 0
+
     github_output = GitHubOutput(output, repo=repo)
     extracted_html = github_output.get_html()
+    output.refresh_from_db()
     assert extracted_html == {"body": "<p>blob</p>", "style": []}
     assert output.last_updated == date(2021, 4, 27)
+
+    # After the first get_html call, use_git_blob is set to avoid re-attempting to call
+    # get_contents on the single file, which will fail
+    # get_contents is called twice, once on the single file, once for the parent folder contents
+    assert repo.get_contents.call_count == 2
+    assert output.use_git_blob is True
+
+    # re-fetch; get_contents is not called again on the single file, only on the parent folder
+    extracted_html = github_output.get_html()
+    assert extracted_html == {"body": "<p>blob</p>", "style": []}
+    assert repo.get_contents.call_count == 3
 
 
 @pytest.mark.django_db
