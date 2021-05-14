@@ -13,7 +13,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class OutputAdmin(admin.ModelAdmin):
     actions = ["update_cache"]
     fieldsets = (
-        ("Navigation", {"fields": ["menu_name"]}),
+        ("Navigation", {"fields": ["menu_name", "category"]}),
         (
             "Output file details",
             {"fields": ["repo", "branch", "output_html_file_path"]},

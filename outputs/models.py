@@ -58,7 +58,7 @@ class Output(models.Model):
 
     category = models.ForeignKey(
         Category,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         help_text="Output category; used for navigation",
         related_name="outputs",
     )
