@@ -11,4 +11,13 @@
     </p>
     <p>You can read about the principles of OpenSAFELY <a href="https://opensafely.org/principles/">here</a>.</p>
     <p>Use the side menu to explore selected outputs from OpenSAFELY.</p>
+
+    <h2>Recent activity</h2>
+    <ul>
+        {% for output in recent_activity %}
+            <li>
+                <a href="{{ output.get_absolute_url }}">{{ output.menu_name }}</a> | {{ output.activity }} | {{ output.activity_date|timesince:today }} ago
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

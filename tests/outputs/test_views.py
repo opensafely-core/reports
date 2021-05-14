@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from uuid import uuid4
 
 import pytest
@@ -8,34 +9,94 @@ from outputs.models import Category, Output
 
 
 @pytest.mark.django_db
-def test_landing_view(client, settings):
+def test_landing_view(client):
     """Test landing view context"""
-    settings.CACHE_MIDDLEWARE_SECONDS = 0
     assert Output.objects.exists() is False
     # By default we have one Category, set up in the migration
     assert Category.objects.count() == 1
     response = client.get(reverse("gateway:landing"))
+
     # There is a category, but it isn't included in the context because it has no associated Outputs
     assert list(response.context["categories"]) == []
 
-    category = Category.objects.first()
     # when Outputs exist, their categories are included in the context
-    baker.make(
-        Output,
-        category=category,
-        menu_name="test",
-        repo="test-repo",
-        output_html_file_path="output.html",
-    )
-    baker.make(
-        Output,
-        category=category,
-        menu_name="test1",
-        repo="test-repo",
-        output_html_file_path="output1.html",
-    )
+    baker.make_recipe("outputs.dummy_output")
+    baker.make_recipe("outputs.dummy_output", menu_name="test1")
     response = client.get(reverse("gateway:landing"))
     assert list(response.context["categories"]) == list(Category.objects.all())
+
+
+# TODO - extra tests
+# same last_updated and publication; ignore last updated
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "outputs,expected",
+    [
+        (
+            {
+                "test1": {"publication_date": date(2021, 2, 1)},
+                "test2": {
+                    "publication_date": date(2021, 1, 1),
+                    "last_updated": date(2021, 3, 1),
+                },
+            },
+            [
+                ("test2", "updated", date(2021, 3, 1)),
+                ("test1", "published", date(2021, 2, 1)),
+                ("test2", "published", date(2021, 1, 1)),
+            ],
+        ),
+        (
+            {
+                "test1": {"publication_date": date(2021, 2, 1)},
+                "test2": {
+                    "publication_date": date(2021, 1, 1),
+                    "last_updated": date(2021, 1, 1),
+                },
+            },
+            [
+                ("test1", "published", date(2021, 2, 1)),
+                ("test2", "published", date(2021, 1, 1)),
+            ],
+        ),
+        (
+            # setup 12 outputs published on 1st, 2nd, ...12th
+            {
+                f"test{i}": {"publication_date": date(2021, 1, 1) + timedelta(days=i)}
+                for i in range(12)
+            },
+            # expect 11 outputs published on 10th, 9th, ...1st
+            [
+                (
+                    f"test{11 - i}",
+                    "published",
+                    date(2021, 1, 1) + timedelta(days=(11 - i)),
+                )
+                for i in range(10)
+            ],
+        ),
+    ],
+    ids=[
+        "Test outputs with both publication and last updated are included, in reverse order",
+        "Test outputs with identical publication and updated dates only show publication",
+        "Test only 10 most recent events are shown",
+    ],
+)
+def test_landing_view_recent_activity(client, outputs, expected):
+    for menu_name, output_fields in outputs.items():
+        baker.make_recipe("outputs.dummy_output", menu_name=menu_name, **output_fields)
+
+    response = client.get(reverse("gateway:landing"))
+    # only outputs with dates are shown in recent_activity
+    # output activity is returned in reverse date order
+    # outputs have additional annotation fields "activity" and "activity_date"
+    context_output = [
+        (output.menu_name, output.activity, output.activity_date)
+        for output in response.context["recent_activity"]
+    ]
+    assert context_output == expected
 
 
 @pytest.mark.django_db
