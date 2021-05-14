@@ -2,7 +2,7 @@
  * @type {import('vite').UserConfig}
  */
 const config = {
-  base: '/static/',
+  base: "/static/",
   build: {
     manifest: true,
     rollupOptions: {

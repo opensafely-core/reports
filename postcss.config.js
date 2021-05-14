@@ -6,7 +6,7 @@ module.exports = {
   plugins: [
     purgecss({
       content: ["./templates/*.html", "./outputs/templates/**/*.html"],
-      safelist: ["show", "hide"]
+      safelist: ["show", "hide"],
     }),
     autoprefixer(),
     cssnano({
