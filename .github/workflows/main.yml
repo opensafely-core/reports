@@ -138,6 +138,6 @@ jobs:
         uses: idoberko2/dokku-deploy-github-action@v1
         with:
           app-name: "output-explorer"
-          dokku-host: ${{ secrets.DOKKU_HOST }}
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          dokku-host: "dokku2.ebmdatalab.net"
+          ssh-private-key: ${{ secrets.DOKKU2_DEPLOY_SSH_KEY }}
           remote-branch: "main"
