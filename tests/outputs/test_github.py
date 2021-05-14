@@ -31,10 +31,6 @@ def test_get_html_from_github(mock_repo):
     extracted_html = github_output.get_html()
     assert extracted_html == {
         "body": "<p>foo</p>",
-        "style": [
-            '<style type="text/css">body {margin: 0;}</style>',
-            '<style type="text/css">a {background-color: red;}</style>',
-        ],
     }
 
 
@@ -56,7 +52,7 @@ def test_get_large_html_from_github(mock_repo):
     github_output = GitHubOutput(output, repo=repo)
     extracted_html = github_output.get_html()
     output.refresh_from_db()
-    assert extracted_html == {"body": "<p>blob</p>", "style": []}
+    assert extracted_html == {"body": "<p>blob</p>"}
     assert output.last_updated == date(2021, 4, 27)
 
     # After the first get_html call, use_git_blob is set to avoid re-attempting to call
@@ -67,7 +63,7 @@ def test_get_large_html_from_github(mock_repo):
 
     # re-fetch; get_contents is not called again on the single file, only on the parent folder
     extracted_html = github_output.get_html()
-    assert extracted_html == {"body": "<p>blob</p>", "style": []}
+    assert extracted_html == {"body": "<p>blob</p>"}
     assert repo.get_contents.call_count == 3
 
 
@@ -85,8 +81,4 @@ def test_integration():
     extracted_html = github_output.get_html()
     assert extracted_html == {
         "body": "\n<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>",
-        "style": [
-            '<style type="text/css">body {margin: 0;}</style>',
-            '<style type="text/css">a {background-color: blue;}</style>',
-        ],
     }
