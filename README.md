@@ -3,33 +3,35 @@
 This is a Django app providing a location for viewing and exploring OpenSAFELY outputs,
 both publicly available and content that limits access based on a user's NHS organisation membership.
 Some content is publicly accessible; private content is accessed via authentication with
-NHS Identity via Open ID Connect.  Authorisation is based on the NHS
+NHS Identity via Open ID Connect. Authorisation is based on the NHS
 associated organisation information retrieved from NHS Identity.
 
-
 ## Deployment
+
 Deployment uses `dokku` and requires the environment variables defined in `dotenv-sample`.
 It is deployed to our `dokku2` instance.
 
 ## Deployment instructions
 
 ### Create app
-```
+
+```sh
 dokku$ dokku apps:create output-explorer
 dokku$ dokku domains:add output-explorer output-explorer.opensafely.org
 dokku$ dokku git:set output-explorer deploy-branch main
 ```
 
 ### Create storage for sqlite db
-```
+
+```sh
 dokku$ mkdir /var/lib/dokku/data/storage/output-explorer
 dokku$ chown dokku:dokku /var/lib/dokku/data/storage/output-explorer
 dokku$ dokku storage:mount output-explorer /var/lib/dokku/data/storage/output-explorer/:/storage
 ```
 
-
 ### Configure app
-```
+
+```sh
 dokku$ dokku config:set output-explorer BASE_URL='https://output-explorer.opensafely.org'
 dokku$ dokku config:set output-explorer DATABASE_URL='sqlite:////storage/db.sqlite3'
 dokku$ dokku config:set output-explorer SECRET_KEY='xxx'
@@ -43,7 +45,8 @@ dokku$ dokku config:set output-explorer SHOW_LOGIN=False
 ```
 
 ### Deploy by manually pushing
-```
+
+```sh
 local$ git clone git@github.com:opensafely-core/output-explorer.git
 local$ cd output-explorer
 local$ git remote add dokku dokku@MYSERVER:output-explorer
@@ -53,7 +56,8 @@ local$ git push dokku main
 You may need to add your ssh key to dokku's authorised keys; use the method described [here](https://dokku.com/docs/deployment/user-management/)
 
 ### extras
-```
+
+```sh
 dokku letsencrypt:enable output-explorer
 dokku plugin:install sentry-webhook
 ```
@@ -61,7 +65,8 @@ dokku plugin:install sentry-webhook
 ## Local development
 
 ### Install system requirements
-```
+
+```sh
 # macOS
 brew install just
 
@@ -76,24 +81,31 @@ just #  shortcut for just --list
 ```
 
 ### Run local development server
+
 #### Set up local dev env
-```
+
+```sh
 just dev-config
 just setup
 ```
+
 #### Run local django server
-```
+
+```sh
 just run
 ```
+
 Access at http://localhost:8000
 
 Login with one of the test user accounts (see Bitwarden entry "Output Explorer NHS Identity Open ID Connect" for password):
+
 - 555036632103
 - 555036633104
 - 555036634105
 
 #### Run tests
-```
+
+```sh
 # all tests and coverage
 just test
 
