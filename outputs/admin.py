@@ -1,14 +1,19 @@
 from django.contrib import admin, messages
 from django.utils.translation import ngettext
 
-from .models import Output
+from .models import Category, Output
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    fields = ("name",)
 
 
 @admin.register(Output)
 class OutputAdmin(admin.ModelAdmin):
     actions = ["update_cache"]
     fieldsets = (
-        ("Navigation", {"fields": ["menu_name"]}),
+        ("Navigation", {"fields": ["menu_name", "category"]}),
         (
             "Output file details",
             {"fields": ["repo", "branch", "output_html_file_path"]},

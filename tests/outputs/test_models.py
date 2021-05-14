@@ -2,7 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from model_bakery import baker
 
-from outputs.models import Output
+from outputs.models import Category, Output
 
 
 @pytest.mark.django_db
@@ -59,3 +59,20 @@ def test_output_model_validation(fields, expected_valid, expected_errors):
             output.full_clean()
     else:
         output.full_clean()
+
+
+@pytest.mark.django_db
+def test_category_manager():
+    # one category exists already, from the migrations.
+    category = Category.objects.first()
+    # Create a second category; neither have any associated Outputs
+    baker.make(Category, name="test")
+
+    # No populated categories
+    assert Category.populated.exists() is False
+
+    baker.make(Output, category=category)
+    # 2 category objects, only one populated
+    assert Category.objects.count() == 2
+    assert Category.populated.count() == 1
+    assert Category.populated.first() == category
