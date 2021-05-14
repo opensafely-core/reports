@@ -1,3 +1,4 @@
+import requests_cache
 import structlog
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, render
@@ -14,6 +15,7 @@ from .models import Organisation
 logger = structlog.getLogger()
 
 
+@never_cache
 def landing(request):
     return render(request, "gateway/landing.html")
 
@@ -27,15 +29,16 @@ def nhsid_complete(request, *args, **kwargs):
     A successful authentication from  NHS ID returns to /auth. social_django expects to
     find the backend name in the url (by default /complete/<backend>)
     """
-    backend = "nhsid"
-    uri = reverse("gateway:nhsid_complete")
-    request.social_strategy = load_strategy(request)
-    request.backend = load_backend(request.social_strategy, backend, uri)
-    completed = complete(request, backend, *args, **kwargs)
-    logger.info(
-        "User logged in", user_id=request.user.pk, username=request.user.username
-    )
-    return completed
+    with requests_cache.disabled():
+        backend = "nhsid"
+        uri = reverse("gateway:nhsid_complete")
+        request.social_strategy = load_strategy(request)
+        request.backend = load_backend(request.social_strategy, backend, uri)
+        completed = complete(request, backend, *args, **kwargs)
+        logger.info(
+            "User logged in", user_id=request.user.pk, username=request.user.username
+        )
+        return completed
 
 
 class OrganisationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

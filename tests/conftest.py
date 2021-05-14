@@ -69,7 +69,7 @@ def mock_repo(mocker):
             for content_file in kwargs.get("content_files", [])
         ]
         if content_files:
-            contents = [exception] + [content_files]
+            contents = [exception, *([content_files] * 2)]
             repo.get_contents = mocker.MagicMock(
                 side_effect=contents, __iter__=content_files
             )
@@ -83,7 +83,7 @@ def mock_repo(mocker):
             )
 
         repo.get_git_blob = mocker.Mock(
-            side_effect=[mocker.Mock(content=kwargs.get("blob"))]
+            side_effect=[mocker.Mock(content=kwargs.get("blob"))] * 2
         )
         return repo
 

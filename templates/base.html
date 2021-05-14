@@ -41,16 +41,18 @@
       <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav d-sm-block d-md-none">
                 <!-- This menu is hidden in bigger devices.-->
+                {% for category in categories %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Outputs
+                      {{ category.name }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
-                        {% for output in outputs %}
-                        <a class="dropdown-item" href="{% url 'outputs:output_view' output.slug %}">{{ output.menu_name }}</a>
+                        {% for output in category.outputs.all %}
+                        <a class="dropdown-item" href="{{ output.get_absolute_url }}">{{ output.menu_name }}</a>
                         {% endfor %}
                     </div>
                 </li>
+                {% endfor %}
             </ul>
 
             {% if show_login %}
@@ -83,12 +85,17 @@
                     OUTPUTS
                 </li>
                 <!-- /END Separator -->
-                {% for output in outputs %}
-                <a href="{% url 'outputs:output_view' output.slug %}" class="bg-light list-group-item list-group-item-action">
-                    <div class="d-flex justify-content-start align-items-center">
-                        {{ output.menu_name }}
-                    </div>
-                </a>
+                {% for category in categories %}
+                    <li class="list-group-item sidebar-separator-title text-dark d-flex align-items-center menu-collapsed">
+                        {{ category.name }}
+                    </li>
+                    {% for output in category.outputs.all %}
+                        <a href="{{ output.get_absolute_url }}" class="bg-light list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-start align-items-center">
+                                {{ output.menu_name }}
+                            </div>
+                        </a>
+                    {% endfor %}
                 {% endfor %}
             </ul>
             <!-- List Group END-->
@@ -110,7 +117,7 @@
          <!-- Body row END-->
       </div>
 
-  <script async src="{% static 'main.js' %}"></script>
-  {% block extra_js %}{% endblock %}
-</body>
+    <script async src="{% static 'main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
 </html>

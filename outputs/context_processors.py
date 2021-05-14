@@ -1,10 +1,5 @@
-from .models import Output
+from .models import Category
 
 
 def outputs(request):
-    return {
-        "outputs": [
-            {"menu_name": output.menu_name, "slug": output.slug}
-            for output in Output.objects.all()
-        ]
-    }
+    return {"categories": Category.populated.all()}

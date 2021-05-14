@@ -16,3 +16,5 @@ SOCIAL_AUTH_NHSID_API_URL=https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk/o
 
 # flag for showing/hiding login option
 SHOW_LOGIN=True
+
+REQUESTS_CACHE_NAME=cache

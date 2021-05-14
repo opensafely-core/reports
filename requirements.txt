@@ -144,6 +144,10 @@ django-extensions==3.1.3 \
 django-ipware==3.0.2 \
     --hash=sha256:c7df8e1410a8e5d6b1fbae58728402ea59950f043c3582e033e866f0f0cf5e94
     # via django-structlog
+django-redis==4.12.1 \
+    --hash=sha256:1133b26b75baa3664164c3f44b9d5d133d1b8de45d94d79f38d1adc5b1d502e5 \
+    --hash=sha256:306589c7021e6468b2656edc89f62b8ba67e8d5a1c8877e2688042263daa7a63
+    # via -r requirements.in
 django-structlog==2.1.0 \
     --hash=sha256:3c482bdce8b8c6f01a459198063cece14617d190fb54ddf2457bf1f88e7b38d2 \
     --hash=sha256:6c37d7e1dabc9dc3136bd02c0fb551976511d4bc43a88c303aabffedde8a8cea
@@ -153,6 +157,7 @@ django==3.2.2 \
     --hash=sha256:18dd3145ddbd04bf189ff79b9954d08fda5171ea7b57bf705789fea766a07d50
     # via
     #   django-extensions
+    #   django-redis
     #   django-structlog
 ecdsa==0.14.1 \
     --hash=sha256:64c613005f13efec6541bb0a33290d0d03c27abab5f15fbab20fb0ee162bdd8e \
@@ -174,6 +179,10 @@ idna==2.10 \
     --hash=sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6 \
     --hash=sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0
     # via requests
+itsdangerous==2.0.0 \
+    --hash=sha256:99b1053ccce68066dfc0b4465ef8779027e6d577377c8270e21a3d6289cac111 \
+    --hash=sha256:e2cb4ae918f07ab2a2f9a91dec2695bd1f25a19d31861a70015ad537ccb5e807
+    # via requests-cache
 marshmallow==3.12.0 \
     --hash=sha256:77ce3097c06d93de37394e0e0bf217dacbb4eabe0b88129e315e10d8790b1354 \
     --hash=sha256:822dfacdf6ac5c2f514182bcddde0cc60d943ca46e4006c1e14761a0605bfc0f
@@ -244,6 +253,14 @@ pytz==2021.1 \
     --hash=sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da \
     --hash=sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798
     # via django
+redis==3.5.3 \
+    --hash=sha256:0e7e0cfca8660dea8b7d5cd8c4f6c5e29e11f31158c0b0ae91a397f00e5a05a2 \
+    --hash=sha256:432b788c4530cfe16d8d943a09d40ca6c16149727e4afe8c2c9d5580c59d9f24
+    # via django-redis
+requests-cache==0.6.3 \
+    --hash=sha256:0b9b5555b3b2ecda74a9aa5abd98174bc7332de2e1d32f9f8f056583b01d6e99 \
+    --hash=sha256:6e28e461873415036ea383c2414691cf1164cb01391ad4c45b84b3ebf0fb9287
+    # via -r requirements.in
 requests-oauthlib==1.3.0 \
     --hash=sha256:7f71572defaecd16372f9006f33c2ec8c077c3cfa6f5911a9a90202beb513f3d \
     --hash=sha256:b4261601a71fd721a8bd6d7aa1cc1d6a8a93b4a9f5e96626f8e4d91e8beeaa6a
@@ -253,6 +270,7 @@ requests==2.25.1 \
     --hash=sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e
     # via
     #   pygithub
+    #   requests-cache
     #   requests-oauthlib
     #   social-auth-core
 rsa==4.7.2 \
@@ -273,6 +291,7 @@ six==1.16.0 \
     #   pynacl
     #   python-jose
     #   social-auth-app-django
+    #   url-normalize
 social-auth-app-django==4.0.0 \
     --hash=sha256:2c69e57df0b30c9c1823519c5f1992cbe4f3f98fdc7d95c840e091a752708840 \
     --hash=sha256:567ad0e028311541d7dfed51d3bf2c60440a6fd236d5d4d06c5a618b3d6c57c5 \
@@ -296,6 +315,10 @@ structlog==21.1.0 \
     --hash=sha256:62f06fc0ee32fb8580f0715eea66cb87271eb7efb0eaf9af6b639cba8981de47 \
     --hash=sha256:d9d2d890532e8db83c6977a2a676fb1889922ff0c26ad4dc0ecac26f9fafbc57
     # via django-structlog
+url-normalize==1.4.3 \
+    --hash=sha256:d23d3a070ac52a67b83a1c59a0e68f8608d1cd538783b401bc9de2c0fac999b2 \
+    --hash=sha256:ec3c301f04e5bb676d333a7fa162fa977ad2ca04b7e652bfc9fac4e405728eed
+    # via requests-cache
 urllib3==1.26.4 \
     --hash=sha256:2f4da4594db7e1e110a944bb1b551fdf4e6c136ad42e4234131391e21eb5b0df \
     --hash=sha256:e7b021f7241115872f92f43c6508082facffbd1c048e3c6e2bb9c2a157e28937

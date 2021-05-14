@@ -56,17 +56,22 @@ class GitHubOutput:
         The notebook html consists of style, body and script tags.  Ignores any script tags.
         Return the style tags and html body content for display in template.
         """
-        try:
-            contents = self.repo.get_contents(
-                self.output.output_html_file_path, ref=self.output.branch
-            )
-            last_updated = contents.last_modified
-            contents = contents.decoded_content
-
-        except GithubException:
-            # If the single file was too big (>1Mb), we get an exception.  Get the git blob
-            # and retrieve the contents from there instead
+        if self.output.use_git_blob:
             contents, last_updated = self.get_contents_from_git_blob()
+        else:
+            try:
+                contents = self.repo.get_contents(
+                    self.output.output_html_file_path, ref=self.output.branch
+                )
+                last_updated = contents.last_modified
+                contents = contents.decoded_content
+
+            except GithubException:
+                # If the single file was too big (>1Mb), we get an exception.  Get the git blob
+                # and retrieve the contents from there instead
+                contents, last_updated = self.get_contents_from_git_blob()
+                self.output.use_git_blob = True
+                self.output.save()
         last_updated_date = datetime.strptime(
             last_updated, "%a, %d %b %Y %H:%M:%S %Z"
         ).date()
@@ -75,13 +80,11 @@ class GitHubOutput:
             self.output.save()
 
         soup = BeautifulSoup(contents, "html.parser")
-        style = soup.find_all("style")
         body = soup.find("body")
-        style = [mark_safe(style_item.decode()) for style_item in style]
         contents = "".join(
             [
                 content.decode() if isinstance(content, Tag) else content
                 for content in body.contents
             ]
         )
-        return {"body": mark_safe(contents), "style": style}
+        return {"body": mark_safe(contents)}

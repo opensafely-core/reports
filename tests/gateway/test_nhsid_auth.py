@@ -545,3 +545,69 @@ def test_login_existing_user(
     assert User.objects.first().id == user.id
     user.refresh_from_db()
     assert_user_attributes(user, updated_expected)
+
+
+@pytest.mark.django_db
+def test_login_existing_user_and_organisation(
+    client,
+    httpretty,
+    mock_backend_and_strategy,
+):
+    """
+    Test that the pipeline updates an existing user with relevant user data provided by NHS Identity.
+    """
+    # Make sure we're using dummy settings
+    assert django_settings.SOCIAL_AUTH_NHSID_KEY == "dummy-client-id"
+
+    assert User.objects.exists() is False
+    assert Organisation.objects.exists() is False
+
+    backend, strategy = mock_backend_and_strategy
+    initial_user_data = {
+        "sub": 1,
+        "name": "Test User",
+        "given_name": "Test",
+        "family_name": "User",
+        "display_name": "Dr Test",
+        "nhsid_useruid": "test",
+        "title": "Dr",
+        "nhsid_user_orgs": [{"org_code": "ORG1", "org_name": "Org 1"}],
+    }
+    # login to create user and org
+    auth_options = AuthTestOptions(
+        backend=backend, strategy=strategy, user_data_body=initial_user_data
+    )
+    do_client_login(client, httpretty, auth_options)
+    assert User.objects.count() == 1
+    user = User.objects.first()
+    assert user.display_name == "Dr Test"
+    assert Organisation.objects.count() == 1
+    org1 = Organisation.objects.first()
+
+    client.logout()
+    # Login again with updated user_data for this user
+    user_data = {
+        **initial_user_data,
+        "display_name": "Test, Dr.",
+        "nhsid_user_orgs": [
+            {"org_code": "ORG1", "org_name": "Org 1"},
+            {"org_code": "ORG2", "org_name": "Org 2"},
+        ],
+    }
+
+    auth_options = AuthTestOptions(
+        backend=backend, strategy=strategy, user_data_body=user_data
+    )
+    do_client_login(client, httpretty, auth_options)
+
+    # No new user; user has been updated
+    # One new org created and assigned to the user
+    assert User.objects.count() == 1
+    assert Organisation.objects.count() == 2
+    user.refresh_from_db()
+
+    assert user.display_name == "Test, Dr."
+    user_org_ids = user.organisations.values_list("id", flat=True)
+    user_org_codes = user.organisations.values_list("code", flat=True)
+    assert org1.id in user_org_ids
+    assert list(user_org_codes) == ["ORG1", "ORG2"]
