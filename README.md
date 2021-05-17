@@ -1,10 +1,8 @@
 # OpenSAFELY Output Explorer
 
-This is a Django app providing a location for viewing and exploring OpenSAFELY outputs,
-both publicly available and content that limits access based on a user's NHS organisation membership.
-Some content is publicly accessible; private content is accessed via authentication with
-NHS Identity via Open ID Connect. Authorisation is based on the NHS
-associated organisation information retrieved from NHS Identity.
+This is a Django app providing a location for viewing and exploring OpenSAFELY outputs, both publicly available and content that limits access based on a user's NHS organisation membership.
+
+Some content is publicly accessible; private content is accessed via authentication with NHS Identity via Open ID Connect. Authorisation is based on the NHS associated organisation information retrieved from NHS Identity.
 
 ## Deployment
 
@@ -64,7 +62,15 @@ dokku plugin:install sentry-webhook
 
 ## Local development
 
-### Install system requirements
+### Prerequisites:
+
+- **Python and Pip**
+- **Node.js v16**
+  - macOS / Linux / WSL: [fnm](https://github.com/Schniz/fnm)
+  - Windows: [NVM for Windows](https://github.com/coreybutler/nvm-windows)
+- **[Just](#install-just)**
+
+### Install just
 
 ```sh
 # macOS
@@ -81,6 +87,20 @@ just #  shortcut for just --list
 ```
 
 ### Run local development server
+
+#### Install Node.js dependencies and build assets
+
+```sh
+# Set your Node.js version
+fnm use # using fnm
+nvm use # using nvm
+
+# Install dependencies
+npm ci
+
+# Build assets
+npm run build
+```
 
 #### Set up local dev env
 
@@ -112,3 +132,13 @@ just test
 # specific test
 just test-only <path/to/test>
 ```
+
+#### CSS and JS local development
+
+This project uses [Vite](https://vitejs.dev/) which allows for local hot-module reloading via a development server. To run the Vite server locally, after completing the local dev env setup:
+
+1. Set `DJANGO_VITE_DEV_MODE = True` in `output_explorer/settings.py`
+2. Open a terminal and run Django with `just run`
+3. Open a new terminal tab or window
+4. Run `npm run dev` to start the vite server
+5. Any changes you make in the `assets/` folder will now be updated without requiring a page refresh
