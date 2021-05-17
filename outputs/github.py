@@ -79,8 +79,12 @@ class GitHubOutput:
             self.output.last_updated = last_updated_date
             self.output.save()
 
+        # Reports may be formatted as proper HTML documents, or just as fragments of HTML. In the former case we want
+        # just the body, in the latter we want the whole thing.
         soup = BeautifulSoup(contents, "html.parser")
-        body = soup.find("body")
+        html = soup.find("html") or soup  # in case we get an <html> tag but no <body>
+        body = html.find("body") or html
+
         contents = "".join(
             [
                 content.decode() if isinstance(content, Tag) else content
