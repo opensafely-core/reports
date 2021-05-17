@@ -11,5 +11,4 @@ requests-cache
 social-auth-core[openidconnect]
 social-auth-app-django
 sentry-sdk
-whitenoise
 whitenoise[brotli]
