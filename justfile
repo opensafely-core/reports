@@ -13,7 +13,7 @@ dev-config:
 	./scripts/dev-env.sh .env
 
 # set up/update the local dev env
-setup: pip-install migrate ensure-superuser ensure-outputs
+setup: pip-install migrate ensure-superuser ensure-outputs collectstatic
 
 # install correct versions of all Python dependencies
 pip-install:
@@ -25,6 +25,9 @@ pip-install:
 compile:
     pip-compile --generate-hashes requirements.in
     pip-compile --generate-hashes requirements.dev.in
+
+collectstatic:
+    ./manage.py collectstatic
 
 # run django migrations locally
 migrate:
