@@ -8,3 +8,8 @@ cache.sqlite
 test_cache.sqlite
 db.sqlite3
 collected-static/
+
+### Node ###
+npm-debug.log*
+node_modules/
+/static/dist
