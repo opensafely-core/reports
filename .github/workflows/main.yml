@@ -3,6 +3,7 @@ name: CI
 
 on:
   push:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -141,3 +142,4 @@ jobs:
           dokku-host: "dokku2.ebmdatalab.net"
           ssh-private-key: ${{ secrets.DOKKU2_DEPLOY_SSH_KEY }}
           remote-branch: "main"
+          git-push-flags: "--force"
