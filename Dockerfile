@@ -1,11 +1,9 @@
 FROM node:16-buster AS nodeassets
 WORKDIR /usr/src/app
 
-COPY package.json package-lock.json ./
+COPY . ./
 RUN npm ci
 
-COPY .browserslistrc postcss.config.js vite.config.js ./
-COPY ./assets ./assets
 RUN npm run build
 
 FROM python:3.9-buster
