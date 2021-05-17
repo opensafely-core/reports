@@ -1,6 +1,7 @@
 import re
 from uuid import uuid4
 
+import requests_cache
 import structlog
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -104,31 +105,35 @@ class Output(models.Model):
     def clean(self):
         """Validate the repo, branch and output file path on save"""
         github_output = GitHubOutput(self)
-        try:
-            github_output.repo
-        except UnknownObjectException:
-            raise ValidationError(
-                {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
-            )
 
-        try:
-            github_output.get_parent_contents()
-        except GithubException as error:
-            # This happens if either the branch or the output file's parent path is invalid
-            raise ValidationError(
-                _("Error fetching output file: %(error_message)s"),
-                params={"error_message": error.data["message"]},
-            )
+        # Disable caching to fetch the repo and contents.  If this is a new output file in
+        # an existing folder, we don't want to use a previously cached request
+        with requests_cache.disabled():
+            try:
+                github_output.repo
+            except UnknownObjectException:
+                raise ValidationError(
+                    {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
+                )
 
-        if not any(github_output.matching_output_file_from_parent_contents()):
-            raise ValidationError(
-                {
-                    "output_html_file_path": _(
-                        "File could not be found (branch %(branch)s)"
-                    )
-                    % {"branch": self.branch}
-                }
-            )
+            try:
+                github_output.get_parent_contents()
+            except GithubException as error:
+                # This happens if either the branch or the output file's parent path is invalid
+                raise ValidationError(
+                    _("Error fetching output file: %(error_message)s"),
+                    params={"error_message": error.data["message"]},
+                )
+
+            if not any(github_output.matching_output_file_from_parent_contents()):
+                raise ValidationError(
+                    {
+                        "output_html_file_path": _(
+                            "File could not be found (branch %(branch)s)"
+                        )
+                        % {"branch": self.branch}
+                    }
+                )
         super().clean()
 
     def get_absolute_url(self):
