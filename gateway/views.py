@@ -1,6 +1,9 @@
+from datetime import datetime
+
 import requests_cache
 import structlog
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import F, Value
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
@@ -8,6 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 from social_django.utils import load_backend, load_strategy
 from social_django.views import complete
+
+from outputs.models import Output
 
 from .models import Organisation
 
@@ -17,7 +22,32 @@ logger = structlog.getLogger()
 
 @never_cache
 def landing(request):
-    return render(request, "gateway/landing.html")
+    """Landing page for main site and post-login.  Displays recent Output activity"""
+    # Find the latest 10 publication dates in reverse order; this is the maximum number of
+    # Outputs with publication date that we'll show
+    published = Output.objects.order_by("-publication_date")[:10].annotate(
+        activity=Value("published"), activity_date=F("publication_date")
+    )
+    # Find the latest 10 last_updated dates in reverse order that are greater than
+    # publication date; if published and output date are the same, we don't want to
+    # show both; last updated should always be after published
+    last_10_updated = Output.objects.filter(
+        last_updated__isnull=False, last_updated__gt=F("publication_date")
+    ).order_by("-last_updated")[:10]
+    updated = last_10_updated.annotate(
+        activity=Value("updated"), activity_date=F("last_updated")
+    )
+    # sort Outputs by activity date and select the 10 most recent; this may return
+    # duplicate Outputs if their published and last_updated dates are both recent, but
+    # that's OK
+    recent_activity = sorted(
+        [*published, *updated], key=lambda x: x.activity_date, reverse=True
+    )[:10]
+    context = {
+        "recent_activity": recent_activity,
+        "today": datetime.utcnow().date(),
+    }
+    return render(request, "gateway/landing.html", context)
 
 
 @never_cache

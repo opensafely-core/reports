@@ -1,5 +1,4 @@
 import re
-from datetime import datetime
 from uuid import uuid4
 
 import structlog
@@ -84,9 +83,7 @@ class Output(models.Model):
         blank=True,
         help_text="Optional description to display before rendered output",
     )
-    publication_date = models.DateField(
-        default=datetime.today, help_text="Date published; defaults to today"
-    )
+    publication_date = models.DateField(help_text="Date published")
     last_updated = models.DateField(
         null=True,
         blank=True,
