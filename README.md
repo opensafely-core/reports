@@ -42,7 +42,11 @@ dokku$ dokku config:set output-explorer GITHUB_TOKEN='xxx'
 dokku$ dokku config:set output-explorer SHOW_LOGIN=False
 ```
 
-### Deploy by manually pushing
+### Manually pushing
+
+Merges to the `main` branch will trigger an auto-deploy via GitHub actions.
+
+If you need to manually deploy:
 ```
 local$ git clone git@github.com:opensafely-core/output-explorer.git
 local$ cd output-explorer
