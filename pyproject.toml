@@ -47,5 +47,6 @@ env = [
   "REQUESTS_CACHE_NAME=test_cache"
 ]
 filterwarnings = [
-    "ignore:Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working:DeprecationWarning:social_core",
+    "ignore::django.utils.deprecation.RemovedInDjango40Warning:social_django",
+    "ignore::django.utils.deprecation.RemovedInDjango41Warning:social_django",
 ]
