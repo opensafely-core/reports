@@ -87,4 +87,4 @@ class GitHubOutput:
                 for content in body.contents
             ]
         )
-        return {"body": mark_safe(contents)}
+        return {"body": mark_safe(contents.strip())}

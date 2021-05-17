@@ -80,5 +80,5 @@ def test_integration():
     github_output = GitHubOutput(output)
     extracted_html = github_output.get_html()
     assert extracted_html == {
-        "body": "\n<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>",
+        "body": "<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>",
     }
