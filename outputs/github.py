@@ -85,10 +85,13 @@ class GitHubOutput:
         html = soup.find("html") or soup  # in case we get an <html> tag but no <body>
         body = html.find("body") or html
 
-        contents = "".join(
-            [
-                content.decode() if isinstance(content, Tag) else content
-                for content in body.contents
-            ]
-        )
-        return {"body": mark_safe(contents.strip())}
+        contents = []
+        for content in body.contents:
+            if isinstance(content, Tag):
+                if content.name in ["script", "style"]:
+                    continue
+                contents.append(content.decode())
+            else:
+                contents.append(content)
+
+        return {"body": mark_safe("".join(contents).strip())}

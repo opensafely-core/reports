@@ -73,6 +73,44 @@ def test_get_html_without_body_tags_from_github(mock_repo):
 
 
 @pytest.mark.django_db
+def test_strip_out_all_script_tags(mock_repo):
+    repo = mock_repo(
+        contents=b"""
+        <body>
+            <script>Some Javascript nonsense</script>
+            <p>foo</p>
+            <script>Some more Javascript nonsense</script>
+        </body>
+        """
+    )
+    output = baker.make(Output, output_html_file_path="foo.html")
+    github_output = GitHubOutput(output, repo=repo)
+    extracted_html = github_output.get_html()
+    assert extracted_html == {
+        "body": "<p>foo</p>",
+    }
+
+
+@pytest.mark.django_db
+def test_strip_out_all_style_tags(mock_repo):
+    repo = mock_repo(
+        contents=b"""
+        <body>
+            <style>Mmmm, lovely styles...</style>
+            <p>foo</p>
+            <style>MOAR STYLZ</style>
+        </body>
+        """
+    )
+    output = baker.make(Output, output_html_file_path="foo.html")
+    github_output = GitHubOutput(output, repo=repo)
+    extracted_html = github_output.get_html()
+    assert extracted_html == {
+        "body": "<p>foo</p>",
+    }
+
+
+@pytest.mark.django_db
 def test_get_large_html_from_github(mock_repo):
     """
     Test that a GithubException for a too-large file is caught and the content fetched
