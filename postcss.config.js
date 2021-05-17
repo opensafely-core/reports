@@ -5,7 +5,11 @@ const cssnano = require("cssnano");
 module.exports = {
   plugins: [
     purgecss({
-      content: ["./templates/*.html", "./outputs/templates/**/*.html"],
+      content: [
+        "./templates/*.html",
+        "./gateway/templates/**/*.html",
+        "./outputs/templates/**/*.html",
+      ],
       safelist: ["show", "hide"],
     }),
     autoprefixer(),
