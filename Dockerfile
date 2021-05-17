@@ -1,3 +1,13 @@
+FROM node:16-buster AS nodeassets
+WORKDIR /usr/src/app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY .browserslistrc postcss.config.js vite.config.js ./
+COPY ./assets ./assets
+RUN npm run build
+
 FROM python:3.9-buster
 
 # Don't cache PyPI downloads or wheels.
@@ -20,5 +30,7 @@ RUN pip install --no-cache-dir --requirement requirements.txt
 
 WORKDIR /app
 COPY . /app
+
+COPY --from=nodeassets /usr/src/app/static/dist ./static/dist
 
 ENTRYPOINT ["/app/entrypoint.sh"]
