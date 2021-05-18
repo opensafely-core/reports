@@ -70,9 +70,7 @@ dokku plugin:install sentry-webhook
 
 - **Python v3.9.x**
 - **Pip**
-- **Node.js v16.x.x**
-  - macOS / Linux / WSL: [fnm](https://github.com/Schniz/fnm)
-  - Windows: [NVM for Windows](https://github.com/coreybutler/nvm-windows)
+- **[fnm](#install-fnm)**
 - **[Just](#install-just)**
 
 ### Install just
@@ -91,23 +89,11 @@ source <(just --completions bash)
 just #  shortcut for just --list
 ```
 
+### Install fnm
+
+See https://github.com/Schniz/fnm#installation.
+
 ### Run local development server
-
-#### Install Node.js dependencies and build assets
-
-Make sure you are in the `output-explorer` project root, then run:
-
-```sh
-# Set your Node.js version
-fnm use # using fnm
-nvm use # using nvm
-
-# Install dependencies
-npm ci
-
-# Build assets
-npm run build
-```
 
 #### Set up local dev env
 

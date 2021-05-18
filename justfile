@@ -13,13 +13,26 @@ dev-config:
 	./scripts/dev-env.sh .env
 
 # set up/update the local dev env
-setup: pip-install migrate ensure-superuser ensure-outputs collectstatic
+setup: pip-install npm-install migrate ensure-superuser ensure-outputs collectstatic
 
 # install correct versions of all Python dependencies
 pip-install:
     pip install pip-tools
     pip-sync requirements.txt requirements.dev.txt
     pre-commit install
+
+# install all JS dependencies
+npm-install: check-fnm
+    fnm use
+    npm ci
+    npm run build
+
+check-fnm:
+    #!/usr/bin/env bash
+    if ! which fnm >/dev/null; then
+        echo >&2 "You must install fnm. See https://github.com/Schniz/fnm."
+        exit 1
+    fi
 
 # compile requirements
 compile:
