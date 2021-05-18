@@ -10,12 +10,10 @@ from outputs.models import Output
 
 
 @pytest.mark.django_db
-def test_get_html_from_github(mock_repo):
-    """
-    Test that html content retrieved from github is appropriately parsed
-    """
-    repo = mock_repo(
-        contents=b"""
+@pytest.mark.parametrize(
+    "retrieved_html",
+    [
+        b"""
         <html>
             <head>
                 <style type="text/css">body {margin: 0;}</style>
@@ -24,84 +22,43 @@ def test_get_html_from_github(mock_repo):
             </head>
             <body><p>foo</p></body>
         </html>
-        """
-    )
-    output = baker.make(Output, output_html_file_path="foo.html")
-    github_output = GitHubOutput(output, repo=repo)
-    extracted_html = github_output.get_html()
-    assert extracted_html == {
-        "body": "<p>foo</p>",
-    }
-
-
-@pytest.mark.django_db
-def test_get_html_without_head_from_github(mock_repo):
-    """
-    Test that html content retrieved from github is appropriately parsed when it has no head element
-    """
-    repo = mock_repo(
-        contents=b"""
+        """,
+        b"""
         <html>
             <body><p>foo</p></body>
         </html>
-        """
-    )
-    output = baker.make(Output, output_html_file_path="foo.html")
-    github_output = GitHubOutput(output, repo=repo)
-    extracted_html = github_output.get_html()
-    assert extracted_html == {
-        "body": "<p>foo</p>",
-    }
-
-
-@pytest.mark.django_db
-def test_get_html_without_body_tags_from_github(mock_repo):
-    """
-    Some reports are formatted as partial HTML without <html> or <body> tags
-    """
-    repo = mock_repo(
-        contents=b"""
+        """,
+        b"""
         <p>foo</p>
-        """
-    )
-    output = baker.make(Output, output_html_file_path="foo.html")
-    github_output = GitHubOutput(output, repo=repo)
-    extracted_html = github_output.get_html()
-    assert extracted_html == {
-        "body": "<p>foo</p>",
-    }
-
-
-@pytest.mark.django_db
-def test_strip_out_all_script_tags(mock_repo):
-    repo = mock_repo(
-        contents=b"""
+        """,
+        b"""
         <body>
             <script>Some Javascript nonsense</script>
             <p>foo</p>
             <script>Some more Javascript nonsense</script>
         </body>
-        """
-    )
-    output = baker.make(Output, output_html_file_path="foo.html")
-    github_output = GitHubOutput(output, repo=repo)
-    extracted_html = github_output.get_html()
-    assert extracted_html == {
-        "body": "<p>foo</p>",
-    }
-
-
-@pytest.mark.django_db
-def test_strip_out_all_style_tags(mock_repo):
-    repo = mock_repo(
-        contents=b"""
+        """,
+        b"""
         <body>
             <style>Mmmm, lovely styles...</style>
             <p>foo</p>
             <style>MOAR STYLZ</style>
         </body>
-        """
-    )
+        """,
+    ],
+    ids=[
+        "Extracts body from HTML full document",
+        "Extracts body from HTML document without head",
+        "Returns HTML without body tags unchanged",
+        "Strips out all script tags",
+        "Strips out all style tags",
+    ],
+)
+def test_get_output_from_github(mock_repo, retrieved_html):
+    """
+    Test that html content retrieved from github is appropriately parsed
+    """
+    repo = mock_repo(contents=retrieved_html)
     output = baker.make(Output, output_html_file_path="foo.html")
     github_output = GitHubOutput(output, repo=repo)
     extracted_html = github_output.get_html()
