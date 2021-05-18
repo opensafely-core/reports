@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load django_vite %}
 
 {% block extra_head %}
+  {% vite_asset 'assets/scripts/notebook.js' %}
 {% endblock %}
 
 
@@ -24,7 +26,11 @@
       <p><strong>Last updated:</strong> {{ output.last_updated|date:"d M Y"}}</p>
   </div>
 
-  {{ notebook_contents }}
+  <div id="notebook-output">
+    <div id="notebook-container" class="container">
+      {{ notebook_contents }}
+    </div>
+  </div>
 {% endblock %}
 
 

@@ -6,7 +6,10 @@ const config = {
   build: {
     manifest: true,
     rollupOptions: {
-      input: ["./assets/scripts/main.js"],
+      input: {
+        main: "./assets/scripts/main.js",
+        notebook: "./assets/scripts/notebook.js",
+      },
     },
     outDir: "static/dist",
     emptyOutDir: true,
