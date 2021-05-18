@@ -103,7 +103,7 @@ def test_output_view(client):
     response = client.get(output.get_absolute_url())
     assert (
         response.context["notebook_contents"]
-        == "\n<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>"
+        == "<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>"
     )
 
 
