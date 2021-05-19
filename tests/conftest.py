@@ -1,4 +1,7 @@
 import json
+import logging
+from os import environ
+from pathlib import Path
 
 import httpretty as _httpretty
 import pytest
@@ -9,9 +12,32 @@ from social_django.utils import load_strategy
 from structlog.testing import LogCapture
 
 from gateway.backends import NHSIDConnectAuth
-from outputs.github import GithubContentFile
 
 from .gateway.mocks import OPENID_CONFIG
+
+
+def _remove_cache_file_if_exists():
+    test_cache_path = Path(__file__).parent.parent / "test_cache.sqlite"
+    if test_cache_path.exists():  # pragma: no cover
+        test_cache_path.unlink()
+
+
+def pytest_sessionstart(session):
+    """
+    Modify logging and clean up old test cache files before session starts
+
+    requests_cache emits an annoying and unnecessary warning about unrecognised kwargs
+    because we're using a custom cache name.  Set its log level to ERROR just for the tests
+    """
+    logger = logging.getLogger("requests_cache")
+    logger.setLevel("ERROR")
+
+    _remove_cache_file_if_exists()
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """clean up test cache files after session starts"""
+    _remove_cache_file_if_exists()  # pragma: no cover
 
 
 @pytest.fixture(name="log_output", scope="module")
@@ -51,52 +77,8 @@ def mock_backend_and_strategy(httpretty):
 
 
 @pytest.fixture
-def mock_repo(mocker):
-    """Mock a PyGitHub Repo and its methods"""
-
-    def create_repo(**kwargs):
-        repo = mocker.Mock()
-        exception = kwargs.get("get_contents_exception", [])
-
-        def _content_file(name):
-            return GithubContentFile(
-                name=name,
-                sha="foo",
-                last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
-                content=None,
-            )
-
-        content_files = [
-            _content_file(content_file_name)
-            for content_file_name in kwargs.get("content_files", [])
-        ]
-        if content_files:
-            contents = [exception, *([content_files] * 2)]
-            repo.get_contents = mocker.MagicMock(
-                side_effect=contents, __iter__=content_files
-            )
-
-        else:
-            repo.get_contents = mocker.Mock(
-                return_value=GithubContentFile(
-                    name="foo",
-                    sha="foo",
-                    last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
-                    content=kwargs.get("contents"),
-                )
-            )
-
-        repo.get_git_blob = mocker.Mock(
-            side_effect=[
-                GithubContentFile(
-                    name="foo",
-                    sha="foo",
-                    last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
-                    content=kwargs.get("blob"),
-                )
-            ]
-            * 2
-        )
-        return repo
-
-    return create_repo
+def reset_environment_after_test():
+    old_environ = dict(environ)
+    yield
+    environ.clear()
+    environ.update(old_environ)
