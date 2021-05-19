@@ -11,6 +11,23 @@ from outputs.github import GithubAPIException, GithubClient, GitHubOutput, Githu
 from outputs.models import Output
 
 
+def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
+    commit_dates = (
+        [commit_dates] if not isinstance(commit_dates, list) else commit_dates
+    )
+    httpretty.register_uri(
+        httpretty.GET,
+        f"https://api.github.com/repos/{owner}/{repo}/commits?sha={sha}&path={path}",
+        status=200,
+        body=json.dumps(
+            [
+                {"commit": {"committer": {"date": commit_date}}}
+                for commit_date in commit_dates
+            ]
+        ),
+    )
+
+
 def test_github_client_get_repo(httpretty):
     # Mock the github request
     httpretty.register_uri(
@@ -107,10 +124,41 @@ def test_github_repo_get_contents_single_file(httpretty):
             }
         ),
     )
+    # commits uri is also called, to get the last_updated date
+    register_commits_uri(
+        httpretty,
+        owner="test",
+        repo="foo",
+        path="test-folder%2Ftest-file.html",
+        sha="master",
+        commit_dates="2021-03-01T10:00:00Z",
+    )
+
     content_file = repo.get_contents("test-folder/test-file.html", ref="master")
     assert content_file.name == "test-file.html"
     # decoded content retrieves the original str contents
     assert content_file.decoded_content == str_content
+
+
+def test_github_repo_get_last_updated(httpretty):
+    repo = GithubRepo(client=GithubClient(use_cache=False), owner="test", name="foo")
+    register_commits_uri(
+        httpretty,
+        owner="test",
+        repo="foo",
+        path="test-folder%2Ftest-file.html",
+        sha="master",
+        commit_dates=[
+            "2021-03-01T10:00:00Z",
+            "2021-02-14T10:00:00Z",
+            "2021-02-01T10:00:00Z",
+        ],
+    )
+
+    last_updated = repo.get_last_updated(
+        path="test-folder/test-file.html", ref="master"
+    )
+    assert last_updated == date(2021, 3, 1)
 
 
 @pytest.mark.parametrize(
@@ -218,6 +266,14 @@ def test_github_repo_get_git_blob(httpretty):
             }
         ),
     )
+    register_commits_uri(
+        httpretty,
+        owner="test",
+        repo="foo",
+        path="test-folder%2Ftest-file.html",
+        sha="master",
+        commit_dates="2021-03-01T10:00:00Z",
+    )
     content_file = repo.get_git_blob("abcd1234", None)
     assert content_file.name == "test-file.html"
     # decoded content retrieves the original str contents
@@ -299,6 +355,15 @@ def test_get_output_from_github(httpretty, retrieved_html):
             )
         ],
     )
+    register_commits_uri(
+        httpretty,
+        owner="test",
+        repo="test",
+        path="foo.html",
+        sha="main",
+        commit_dates="2021-04-25T10:00:00Z",
+    )
+
     github_output = GitHubOutput(output, repo=repo)
     extracted_html = github_output.get_html()
     assert extracted_html == {
@@ -349,6 +414,14 @@ def test_get_large_html_from_github(httpretty):
             }
         ),
     )
+    register_commits_uri(
+        httpretty,
+        owner="test",
+        repo="test",
+        path="foo.html",
+        sha="main",
+        commit_dates="2021-04-25T10:00:00Z",
+    )
 
     repo = GithubRepo(client=GithubClient(use_cache=False), owner="test", name="test")
     output = baker.make(Output, output_html_file_path="foo.html")
@@ -358,11 +431,12 @@ def test_get_large_html_from_github(httpretty):
     extracted_html = github_output.get_html()
     output.refresh_from_db()
     assert extracted_html == {"body": "<p>blob</p>"}
-    assert output.last_updated == date(2021, 4, 27)
+    # last updated date is retrieved from the last commmit
+    assert output.last_updated == date(2021, 4, 25)
 
-    # 3 calls were made, to /contents for the single file, then to /contents for the
-    # parent folder, and /git/blob for the file contents
-    assert len(httpretty.latest_requests()) == 3
+    # 4 calls were made, to /contents and /commits for the single file and its updated date,
+    # then to /contents for the parent folder, and /git/blob for the file contents
+    assert len(httpretty.latest_requests()) == 4
 
     # After the first get_html call, use_git_blob is set to avoid re-attempting to call
     # get_contents on the single file, which will fail
@@ -372,12 +446,17 @@ def test_get_large_html_from_github(httpretty):
     # # re-fetch; get_contents is not called again on the single file, only on the parent folder
     extracted_html = github_output.get_html()
     assert extracted_html == {"body": "<p>blob</p>"}
-    # Only 2 more calls, to /contents for the parent folder, and /git/blob for the file contents
+    # Only 3 more calls, to /contents for the parent folder, /commits for the update date
+    # and /git/blob for the file contents
     latest_requests = httpretty.latest_requests()
-    assert len(latest_requests) == 5
+    assert len(latest_requests) == 7
+    assert (
+        latest_requests[-3].url
+        == "https://api.github.com/repos/test/test/contents/?ref=main"
+    )
     assert (
         latest_requests[-2].url
-        == "https://api.github.com/repos/test/test/contents/?ref=main"
+        == "https://api.github.com/repos/test/test/commits?sha=main&path=foo.html"
     )
     assert (
         latest_requests[-1].url

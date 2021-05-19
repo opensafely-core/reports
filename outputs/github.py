@@ -40,15 +40,15 @@ class GithubClient:
         else:
             self.session = requests.Session()
 
-    def _get_json(self, path_segments, ref=None):
+    def _get_json(self, path_segments, **add_args):
         """
         Builds and calls a url from the base and path segments
-        Returns the Last-Modified header and json response
+        Returns the response as json
         """
         f = furl(self.base_url)
         f.path.segments += path_segments
-        if ref is not None:
-            f.add({"ref": ref})
+        if add_args:
+            f.add(add_args)
         response = self.session.get(f.url, headers=self.headers)
 
         # Report some expected errors
@@ -62,8 +62,7 @@ class GithubClient:
         # raise any other unexpected status
         response.raise_for_status()
         response_json = response.json()
-        last_modified = response.headers.get("Last-Modified")
-        return response_json, last_modified
+        return response_json
 
     def get_repo(self, owner_and_repo):
         """
@@ -93,29 +92,37 @@ class GithubRepo:
         of GithubContentFiles if the path is a folder
         """
         path_segments = [*self.repo_path_segments, "contents", path]
-        contents, last_modified = self.client._get_json(path_segments, ref)
+        contents = self.client._get_json(path_segments, ref=ref)
         if isinstance(contents, list):
-            return [
-                GithubContentFile.from_json({**content, "last_modified": last_modified})
-                for content in contents
-            ]
-        contents["last_modified"] = last_modified
+            return [GithubContentFile.from_json({**content}) for content in contents]
+
+        contents["last_updated"] = self.get_last_updated(path, ref)
         return GithubContentFile.from_json(contents)
 
-    def get_git_blob(self, sha, last_modified):
+    def get_git_blob(self, sha, last_updated):
         """Fetch a git blob by sha"""
         path_segments = [*self.repo_path_segments, "git", "blobs", sha]
-        response, _ = self.client._get_json(path_segments)
-        response["last_modified"] = last_modified
+        response = self.client._get_json(path_segments)
+        response["last_updated"] = last_updated
         return GithubContentFile.from_json(response)
+
+    def get_commits_for_file(self, path, ref):
+        path_segments = [*self.repo_path_segments, "commits"]
+        response = self.client._get_json(path_segments, sha=ref, path=path)
+        return response
+
+    def get_last_updated(self, path, ref):
+        commits = self.get_commits_for_file(path, ref)
+        last_commit_date = commits[0]["commit"]["committer"]["date"]
+        return datetime.strptime(last_commit_date, "%Y-%m-%dT%H:%M:%SZ").date()
 
 
 class GithubContentFile:
     """Holds information about a single file in a repo"""
 
-    def __init__(self, name, last_modified, content, sha):
+    def __init__(self, name, last_updated, content, sha):
         self.name = name
-        self.last_modified = last_modified
+        self.last_updated = last_updated
         self.content = content
         self.sha = sha
 
@@ -124,7 +131,7 @@ class GithubContentFile:
         return cls(
             name=json_input.get("name"),
             content=json_input.get("content"),
-            last_modified=json_input.get("last_modified"),
+            last_updated=json_input.get("last_updated"),
             sha=json_input["sha"],
         )
 
@@ -172,7 +179,9 @@ class GitHubOutput:
         """
         # Find the file in the parent folder whose name matches the output file we want
         matching_content_file = next(self.matching_output_file_from_parent_contents())
-        last_updated = matching_content_file.last_modified
+        last_updated = self.repo.get_last_updated(
+            self.output.output_html_file_path, self.output.branch
+        )
         blob = self.repo.get_git_blob(matching_content_file.sha, last_updated)
         return blob
 
@@ -198,28 +207,23 @@ class GitHubOutput:
                 self.output.use_git_blob = True
                 self.output.save()
 
-        last_updated = contents.last_modified
-        contents = contents.decoded_content
-        last_updated_date = datetime.strptime(
-            last_updated, "%a, %d %b %Y %H:%M:%S %Z"
-        ).date()
-        if self.output.last_updated != last_updated_date:
-            self.output.last_updated = last_updated_date
+        if self.output.last_updated != contents.last_updated:
+            self.output.last_updated = contents.last_updated
             self.output.save()
 
         # Reports may be formatted as proper HTML documents, or just as fragments of HTML. In the former case we want
         # just the body, in the latter we want the whole thing.
-        soup = BeautifulSoup(contents, "html.parser")
+        soup = BeautifulSoup(contents.decoded_content, "html.parser")
         html = soup.find("html") or soup  # in case we get an <html> tag but no <body>
         body = html.find("body") or html
 
-        contents = []
+        html_content = []
         for content in body.contents:
             if isinstance(content, Tag):
                 if content.name in ["script", "style"]:
                     continue
-                contents.append(content.decode())
+                html_content.append(content.decode())
             else:
-                contents.append(content)
+                html_content.append(content)
 
-        return {"body": mark_safe("".join(contents).strip())}
+        return {"body": mark_safe("".join(html_content).strip())}
