@@ -2,10 +2,9 @@ from base64 import b64encode
 from datetime import date
 
 import pytest
-from github import GithubException
 from model_bakery import baker
 
-from outputs.github import GitHubOutput
+from outputs.github import GithubAPIException, GitHubOutput
 from outputs.models import Output
 
 
@@ -13,7 +12,8 @@ from outputs.models import Output
 @pytest.mark.parametrize(
     "retrieved_html",
     [
-        b"""
+        b64encode(
+            b"""
         <html>
             <head>
                 <style type="text/css">body {margin: 0;}</style>
@@ -22,29 +22,38 @@ from outputs.models import Output
             </head>
             <body><p>foo</p></body>
         </html>
-        """,
-        b"""
+        """
+        ),
+        b64encode(
+            b"""
         <html>
             <body><p>foo</p></body>
         </html>
-        """,
-        b"""
+        """
+        ),
+        b64encode(
+            b"""
         <p>foo</p>
-        """,
-        b"""
+        """
+        ),
+        b64encode(
+            b"""
         <body>
             <script>Some Javascript nonsense</script>
             <p>foo</p>
             <script>Some more Javascript nonsense</script>
         </body>
-        """,
-        b"""
+        """
+        ),
+        b64encode(
+            b"""
         <body>
             <style>Mmmm, lovely styles...</style>
             <p>foo</p>
             <style>MOAR STYLZ</style>
         </body>
-        """,
+        """
+        ),
     ],
     ids=[
         "Extracts body from HTML full document",
@@ -76,7 +85,7 @@ def test_get_large_html_from_github(mock_repo):
     repo = mock_repo(
         content_files=["bar.html", "foo.html"],
         blob=b64encode(b"<html><body><p>blob</p></body></html>"),
-        get_contents_exception=GithubException(status=400, data={}, headers={}),
+        get_contents_exception=GithubAPIException("Error: File too large"),
     )
     output = baker.make(Output, output_html_file_path="foo.html")
     assert output.use_git_blob is False

@@ -9,6 +9,7 @@ from social_django.utils import load_strategy
 from structlog.testing import LogCapture
 
 from gateway.backends import NHSIDConnectAuth
+from outputs.github import GithubContentFile
 
 from .gateway.mocks import OPENID_CONFIG
 
@@ -57,16 +58,17 @@ def mock_repo(mocker):
         repo = mocker.Mock()
         exception = kwargs.get("get_contents_exception", [])
 
-        def mock_content_file(name):
-            mock_file = mocker.Mock()
-            mock_file.name = name
-            mock_file.sha = "foo"
-            mock_file.last_modified = "Tue, 27 Apr 2021 10:00:00 GMT"
-            return mock_file
+        def _content_file(name):
+            return GithubContentFile(
+                name=name,
+                sha="foo",
+                last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
+                content=None,
+            )
 
         content_files = [
-            mock_content_file(content_file)
-            for content_file in kwargs.get("content_files", [])
+            _content_file(content_file_name)
+            for content_file_name in kwargs.get("content_files", [])
         ]
         if content_files:
             contents = [exception, *([content_files] * 2)]
@@ -76,14 +78,24 @@ def mock_repo(mocker):
 
         else:
             repo.get_contents = mocker.Mock(
-                return_value=mocker.Mock(
-                    decoded_content=kwargs.get("contents"),
+                return_value=GithubContentFile(
+                    name="foo",
+                    sha="foo",
                     last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
+                    content=kwargs.get("contents"),
                 )
             )
 
         repo.get_git_blob = mocker.Mock(
-            side_effect=[mocker.Mock(content=kwargs.get("blob"))] * 2
+            side_effect=[
+                GithubContentFile(
+                    name="foo",
+                    sha="foo",
+                    last_modified="Tue, 27 Apr 2021 10:00:00 GMT",
+                    content=kwargs.get("blob"),
+                )
+            ]
+            * 2
         )
         return repo
 
