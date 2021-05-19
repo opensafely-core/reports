@@ -51,10 +51,10 @@ jobs:
       - name: Install node_modules
         run: npm install
 
-      - name: Build project
+      - name: Build assets
         run: npm run build
 
-      - name: Archive production artifacts
+      - name: Store assets
         uses: actions/upload-artifact@v2
         with:
           name: node-assets
@@ -145,15 +145,11 @@ jobs:
           path: ${{ github.workspace }}/venv
           key: venv-${{ github.ref }}-${{ hashFiles('requirements.txt', 'requirements.dev.txt') }}
 
-      - name: Use assets artifact
+      - name: Retrieve assets
         uses: actions/download-artifact@v2
         with:
           name: node-assets
           path: static/dist
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: static/dist
 
       - name: Check requirements
         run: |
