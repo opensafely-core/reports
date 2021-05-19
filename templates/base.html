@@ -2,7 +2,7 @@
 {% load django_vite %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,92 +33,29 @@
   <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
   <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
 </head>
+<body class="h-full">
 
-<body id="mainbody">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3 fixed-top" id="mainnav">
-      <a class="navbar-brand" href="/">OpenSAFELY Output Explorer</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav d-sm-block d-md-none">
-                <!-- This menu is hidden in bigger devices.-->
-                {% for category in categories %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="smallerscreenmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      {{ category.name }}
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="smallerscreenmenu">
-                        {% for output in category.outputs.all %}
-                        <a class="dropdown-item" href="{{ output.get_absolute_url }}">{{ output.menu_name }}</a>
-                        {% endfor %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
+  <div x-data="{ open: false }" @keydown.window.escape="open = false" class="h-screen flex overflow-hidden bg-white">
+    {% include "partials/sidebar.html" %}
 
-            {% if show_login %}
-                <ul class="navbar-nav pull-right ml-auto">
-                    {% if user.is_authenticated %}
-                      <li class="text-secondary" id="login-name">
-                        <em>Logged in as <strong>{{ request.user.display_name }} ({{ request.user.username }})</strong></em>
-                      </li>
-                      <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'gateway:logout' %}">Logout</a>
-                      </li>
-                    {% else %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{% url 'gateway:login' %}">Login</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            {% endif %}
+    <div class="flex flex-col w-0 flex-1 overflow-hidden">
+      {% include "partials/header.html" %}
+
+      <div class="flex flex-col flex-1 relative overflow-y-auto focus:outline-none">
+        <main class="flex-auto flex-shrink-0 pb-16 bg-blue-50 bg-opacity-30">
+          {% include "partials/alert.html" %}
+          {% block content %}{% endblock content %}
+        </main>
+
+        {% include 'partials/footer.html' %}
 
       </div>
-    </nav>
 
-    <div class="row" id="body-row">
-        <!-- Sidebar -->
-        <!-- hidden on smaller devices-->
-        <div id="sidebar-container" class="d-none d-md-block col-2 bg-light">
-            <ul class="list-group sticky-top sticky-offset">
-                <!-- Separator with title -->
-                <li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
-                    OUTPUTS
-                </li>
-                <!-- /END Separator -->
-                {% for category in categories %}
-                    <li class="list-group-item sidebar-separator-title text-dark d-flex align-items-center menu-collapsed">
-                        {{ category.name }}
-                    </li>
-                    {% for output in category.outputs.all %}
-                        <a href="{{ output.get_absolute_url }}" class="bg-light list-group-item list-group-item-action">
-                            <div class="d-flex justify-content-start align-items-center">
-                                {{ output.menu_name }}
-                            </div>
-                        </a>
-                    {% endfor %}
-                {% endfor %}
-            </ul>
-            <!-- List Group END-->
-        </div>
-        <!-- sidebar-container END -->
+    </div>
 
-        <div class="col-10 container-fluid pt-2" id="content">
-                {% for message in messages %}
-                  <div class="alert {{ message.tags }} alert-dismissible mb-3" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                    {{ message|safe }}
-                  </div>
-              {% endfor %}
+  </div>
 
-                {% block content %}You need to define a content block!{% endblock %}
-        </div>
-         <!-- Body row END-->
-      </div>
+  {% block extra_js %}{% endblock %}
 
-    {% block extra_js %}{% endblock %}
-  </body>
+</body>
 </html>

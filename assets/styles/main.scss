@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*! purgecss start ignore */
+[x-cloak] {
+  display: none !important;
+}
+/*! purgecss end ignore */
