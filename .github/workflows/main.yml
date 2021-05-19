@@ -51,14 +51,14 @@ jobs:
       - name: Install node_modules
         run: npm install
 
-      - name: Build project
+      - name: Build assets
         run: npm run build
 
-      - name: Cache the assets
-        uses: actions/cache@v2
+      - name: Store assets
+        uses: actions/upload-artifact@v2
         with:
-          path: ${{ github.workspace }}/static/dist
-          key: assets-${{ github.ref }}-${{ hashFiles('static/dist/manifest.json') }}
+          name: node-assets
+          path: static/dist
 
 
   format:
@@ -145,11 +145,11 @@ jobs:
           path: ${{ github.workspace }}/venv
           key: venv-${{ github.ref }}-${{ hashFiles('requirements.txt', 'requirements.dev.txt') }}
 
-      - name: Use the cached assets
-        uses: actions/cache@v2
+      - name: Retrieve assets
+        uses: actions/download-artifact@v2
         with:
-          path: ${{ github.workspace }}/static/dist
-          key: assets-${{ github.ref }}-${{ hashFiles('static/dist/manifest.json') }}
+          name: node-assets
+          path: static/dist
 
       - name: Check requirements
         run: |
