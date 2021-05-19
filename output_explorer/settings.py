@@ -147,7 +147,7 @@ STATICFILES_DIRS = [BASE_DIR / "static", BASE_DIR / "static" / "dist"]
 STATIC_ROOT = BASE_DIR / "collected-static"
 
 DJANGO_VITE_ASSETS_PATH = "/static/dist/"
-DJANGO_VITE_DEV_MODE = env.bool("DJANGO_VITE_DEV_MODE", False)
+DJANGO_VITE_DEV_MODE = env.bool("DJANGO_VITE_DEV_MODE", default=False)
 DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "collected-static" / "dist" / "manifest.json"
 
 # Insert Whitenoise Middleware.
