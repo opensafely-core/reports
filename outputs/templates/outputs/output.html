@@ -7,30 +7,74 @@
   {% vite_asset 'assets/scripts/notebook.js' %}
 {% endblock %}
 
+{% block meta_title %}
+  OpenSAFELY Output Explorer: {{ output.title }}
+{% endblock meta_title %}
+
+{% block meta_description %}
+  {{ output.description }}
+{% endblock meta_description %}
 
 {% block content %}
-  <div id="output-front-matter" class="container">
+<div class="container mx-auto px-4 md:px-8">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg max-w-screen-lg mx-auto my-6">
+    <div class="px-4 py-5 sm:px-6">
       {% if output.title %}
-        <h1>{{ output.title }}</h1>
+        <h3 class="text-2xl leading-6 font-medium text-gray-900">
+          {{ output.title }}
+        </h3>
       {% endif %}
-
-      {% if output.authors %}
-      <h2><em>{{ output.authors }}</em></h2>
-      {% endif %}
-
-      {% if output.description %}
-        <p>{{ output.description }}</p>
-      {% endif %}
-
-      <p><strong>Published:</strong> {{ output.publication_date|date:"d M Y"}}</p>
-      <p><strong>Last updated:</strong> {{ output.last_updated|date:"d M Y"}}</p>
-  </div>
-
-  <div id="notebook-output">
-    <div id="notebook-container" class="container">
-      {{ notebook_contents }}
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+        {% if output.description %}
+          <div class="sm:col-span-2">
+            <dt class="text-sm font-medium text-gray-500">
+              Description
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              {{ output.description }}
+            </dd>
+          </div>
+        {% endif %}
+        <div class="sm:col-span-1">
+          <dt class="text-sm font-medium text-gray-500">
+            Published
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            {{ output.publication_date|date:"d M Y"}}
+          </dd>
+        </div>
+        <div class="sm:col-span-1">
+          <dt class="text-sm font-medium text-gray-500">
+            Last updated
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            {{ output.last_updated|date:"d M Y"}}
+          </dd>
+        </div>
+        {% if output.authors %}
+          <div class="sm:col-span-1">
+            <dt class="text-sm font-medium text-gray-500">
+              Authors
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              {{ output.authors }}
+            </dd>
+          </div>
+        {% endif %}
+      </dl>
     </div>
   </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg max-w-screen-lg mx-auto my-6">
+    <div class="max-w-4xl mx-auto">
+      <div class="prose prose-sm sm:prose prose-blue sm:prose-blue px-8 sm:max-w-none mx-auto py-16">
+        {{ notebook_contents }}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 
