@@ -41,7 +41,7 @@
     <div class="flex flex-col w-0 flex-1 overflow-hidden">
       {% include "partials/header.html" %}
 
-      <div class="flex flex-col flex-1 relative overflow-y-auto focus:outline-none">
+      <div class="flex flex-col flex-1 relative overflow-y-auto overflow-x-hidden">
         <main class="flex-auto flex-shrink-0 pb-16 bg-blue-50 bg-opacity-30">
           {% include "partials/alert.html" %}
           {% block content %}{% endblock content %}

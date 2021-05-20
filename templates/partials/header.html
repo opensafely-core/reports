@@ -31,7 +31,6 @@
               aria-orientation="vertical"
               class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
               role="menu"
-              tabindex="-1"
               x-cloak
               x-show.transition="open"
               x-show="open"
@@ -42,23 +41,23 @@
               x-transition:leave-start="transform opacity-100 scale-100"
               x-transition:leave="transition ease-in duration-75"
             >
-              <div class="px-4 py-3" role="none">
-                <p class="text-sm" role="none">
+              <div class="px-4 py-3">
+                <p class="text-sm">
                   Signed in as
                 </p>
-                <p class="text-sm font-medium text-gray-900 truncate" role="none">
+                <p class="text-sm font-medium text-gray-900 truncate">
                   {{ request.user.username }}
                 </p>
               </div>
-              <div class="py-1" role="none">
-                <a href="{% url 'gateway:logout' %}" class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900" role="menuitem" id="menu-item-3" >
+              <div class="py-1">
+                <a href="{% url 'gateway:logout' %}" class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700" role="menuitem" >
                   Sign out
                 </a>
               </div>
             </div>
           </div>
         {% else %}
-          <a href="{% url 'gateway:login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
+          <a href="{% url 'gateway:login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
             Login
           </a>
         {% endif %}
