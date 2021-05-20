@@ -2,6 +2,7 @@
 black
 flake8
 httpretty
+ipdb
 isort
 model-bakery
 pre-commit
