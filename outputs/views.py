@@ -1,6 +1,8 @@
 import structlog
+from bs4 import BeautifulSoup, Tag
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_control
 
 from .github import GitHubOutput
@@ -44,12 +46,28 @@ def output_view(request, slug, cache_token):
 
 def output_fetch_view(request, github_output):
     # Fetch the uncached output view
-    extracted = github_output.get_html()
     return TemplateResponse(
         request,
         "outputs/output.html",
         {
-            "notebook_contents": extracted["body"],
+            "notebook_contents": process_html(github_output.get_html()),
             "output": github_output.output,
         },
     )
+
+
+def process_html(content):
+    # Reports may be formatted as proper HTML documents, or just as fragments of HTML. In the former case we want
+    # just the body, in the latter we want the whole thing. We always strip out all style and script tags.
+    soup = BeautifulSoup(content, "html.parser")
+    html = soup.find("html") or soup  # in case we get an <html> tag but no <body>
+    body = html.find("body") or html
+    html_content = []
+    for content in body.contents:
+        if isinstance(content, Tag):
+            if content.name in ["script", "style"]:
+                continue
+            html_content.append(content.decode())
+        else:
+            html_content.append(content)
+    return mark_safe("".join(html_content).strip())

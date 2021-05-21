@@ -6,6 +6,7 @@ from django.urls import reverse
 from model_bakery import baker
 
 from outputs.models import Category, Output
+from outputs.views import process_html
 
 
 @pytest.mark.django_db
@@ -171,3 +172,51 @@ def test_output_view_cache(client, log_output):
     )
     assert response.status_code == 302
     assert response.url == output.get_absolute_url()
+
+
+@pytest.mark.parametrize(
+    "html",
+    [
+        b"""
+            <html>
+                <head>
+                    <style type="text/css">body {margin: 0;}</style>
+                    <style type="text/css">a {background-color: red;}</style>
+                    <script src="https://a-js-package.js"></script>
+                </head>
+                <body><p>foo</p></body>
+            </html>
+        """,
+        b"""
+            <html>
+                <body><p>foo</p></body>
+            </html>
+        """,
+        b"""
+            <p>foo</p>
+        """,
+        b"""
+            <body>
+                <script>Some Javascript nonsense</script>
+                <p>foo</p>
+                <script>Some more Javascript nonsense</script>
+            </body>
+        """,
+        b"""
+            <body>
+                <style>Mmmm, lovely styles...</style>
+                <p>foo</p>
+                <style>MOAR STYLZ</style>
+            </body>
+        """,
+    ],
+    ids=[
+        "Extracts body from HTML full document",
+        "Extracts body from HTML document without head",
+        "Returns HTML without body tags unchanged",
+        "Strips out all script tags",
+        "Strips out all style tags",
+    ],
+)
+def test_html_processing(html):
+    assert process_html(html) == "<p>foo</p>"
