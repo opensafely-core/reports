@@ -1,5 +1,5 @@
 import structlog
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
@@ -56,18 +56,33 @@ def output_fetch_view(request, github_output):
     )
 
 
-def process_html(content):
+def process_html(html):
+    soup = BeautifulSoup(html, "html.parser")
+
     # Reports may be formatted as proper HTML documents, or just as fragments of HTML. In the former case we want
-    # just the body, in the latter we want the whole thing. We always strip out all style and script tags.
-    soup = BeautifulSoup(content, "html.parser")
-    html = soup.find("html") or soup  # in case we get an <html> tag but no <body>
-    body = html.find("body") or html
-    html_content = []
-    for content in body.contents:
-        if isinstance(content, Tag):
-            if content.name in ["script", "style"]:
-                continue
-            html_content.append(content.decode())
+    # just the body, in the latter we want the whole thing.
+    if soup.html:
+        if soup.html.body:
+            content = _contents_of_tag(soup.html.body)
         else:
-            html_content.append(content)
-    return mark_safe("".join(html_content).strip())
+            raise ValueError("HTML document has an <html>, but no <body>.")
+    else:
+        content = soup
+
+    # As well as removing any <head>, we defensively remove <script> or <style> elements that may have been inserted
+    # elsewhere in the document.
+    for tag in ["script", "style"]:
+        for element in content.find_all(tag):
+            element.decompose()
+
+    return mark_safe(str(content))
+
+
+def _contents_of_tag(tag):
+    # There isn't any way through the BeautifulSoup API to address the entire contents of a tag as a single
+    # document-without-a-single-root-node. But the internals of the library can cope with such documents -- as long
+    # as they are handed to the BeautifulSoup constructor. So we rip out the contents of this tag as a list of
+    # strings and re-parse it.
+    return BeautifulSoup(
+        "".join([str(element) for element in tag.contents]), "html.parser"
+    )
