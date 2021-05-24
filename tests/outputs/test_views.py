@@ -2,10 +2,12 @@ from datetime import date, timedelta
 from uuid import uuid4
 
 import pytest
+from bs4 import BeautifulSoup
 from django.urls import reverse
 from model_bakery import baker
 
 from outputs.models import Category, Output
+from outputs.views import process_html
 
 
 @pytest.mark.django_db
@@ -101,9 +103,12 @@ def test_output_view(client):
     # output for a real file
     output = baker.make_recipe("outputs.real_output")
     response = client.get(output.get_absolute_url())
-    assert (
-        response.context["notebook_contents"]
-        == "<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>"
+    assert_html_equal(
+        response.context["notebook_contents"],
+        """
+            <h1>A Test Output HTML file</h1>
+            <p>The test content</p>
+        """,
     )
 
 
@@ -171,3 +176,154 @@ def test_output_view_cache(client, log_output):
     )
     assert response.status_code == 302
     assert response.url == output.get_absolute_url()
+
+
+@pytest.mark.parametrize(
+    "html",
+    [
+        b"""
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <style type="text/css">body {margin: 0;}</style>
+                    <style type="text/css">a {background-color: red;}</style>
+                    <script src="https://a-js-package.js"></script>
+                </head>
+                <body>
+                    <p>foo</p>
+                    <div>Stuff</div>
+                </body>
+            </html>
+        """,
+        b"""
+            <html>
+                <body>
+                    <p>foo</p>
+                    <div>Stuff</div>
+                </body>
+            </html>
+        """,
+        b"""
+            <p>foo</p>
+            <div>Stuff</div>
+        """,
+        b"""
+            <script>Some Javascript nonsense</script>
+            <p>foo</p>
+            <div>
+                Stuff
+                <script>Some more Javascript nonsense</script>
+            </div>
+        """,
+        b"""
+            <style>Mmmm, lovely styles...</style>
+            <p>foo</p>
+            <div>
+                Stuff
+                <style>MOAR STYLZ</style>
+            </div>
+        """,
+    ],
+    ids=[
+        "Extracts body from HTML full document",
+        "Extracts body from HTML document without head",
+        "Returns HTML without body tags unchanged",
+        "Strips out all script tags",
+        "Strips out all style tags",
+    ],
+)
+def test_html_processing_extracts_body(html):
+    assert_html_equal(
+        process_html(html),
+        """
+            <p>foo</p>
+            <div>Stuff</div>
+        """,
+    )
+
+
+@pytest.mark.parametrize(
+    ("input", "output"),
+    [
+        (
+            b"""
+                <table>
+                    <tr><td>something</td></tr>
+                </table>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something</td></tr>
+                    </table>
+                </div>
+            """,
+        ),
+        (
+            b"""
+                <html>
+                    <body>
+                        <table>
+                            <tr><td>something</td></tr>
+                        </table>
+                    </body>
+                </html>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something</td></tr>
+                    </table>
+                </div>
+            """,
+        ),
+        (
+            b"""
+                <table>
+                    <tr><td>something</td></tr>
+                </table>
+                <table>
+                    <tr><td>something else</td></tr>
+                </table>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something</td></tr>
+                    </table>
+                </div>
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something else</td></tr>
+                    </table>
+                </div>
+            """,
+        ),
+        (
+            b"""
+                <pre>Some code or something here</pre>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <pre>Some code or something here</pre>
+                </div>
+            """,
+        ),
+    ],
+    ids=[
+        "Wraps single table in overflow wrappers",
+        "Wraps table in full document in overflow wrappers",
+        "Wraps multiple tables in overflow wrappers",
+        "Wraps <pre> elements in overflow wrappers",
+    ],
+)
+def test_html_processing_wraps_scrollables(input, output):
+    assert_html_equal(process_html(input), output)
+
+
+def assert_html_equal(actual, expected):
+    assert normalize(actual) == normalize(expected)
+
+
+def normalize(html):
+    return BeautifulSoup(html.strip(), "html.parser").prettify()

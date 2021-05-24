@@ -4,8 +4,6 @@ from pathlib import Path
 
 import requests
 import requests_cache
-from bs4 import BeautifulSoup, Tag
-from django.utils.safestring import mark_safe
 from environs import Env
 from furl import furl
 
@@ -189,41 +187,24 @@ class GitHubOutput:
         """
         Fetches an output html file (an exported jupyter notebook) from a github repo based
         on `output`, an Output model instance.
-        The notebook html consists of style, body and script tags.  Ignores any script tags.
-        Return the style tags and html body content for display in template.
         """
         if self.output.use_git_blob:
-            contents = self.get_contents_from_git_blob()
+            file = self.get_contents_from_git_blob()
         else:
             try:
-                contents = self.repo.get_contents(
+                file = self.repo.get_contents(
                     self.output.output_html_file_path, ref=self.output.branch
                 )
 
             except GithubAPIException:
                 # If the single file was too big (>1Mb), we get an exception.  Get the git blob
                 # and retrieve the contents from there instead
-                contents = self.get_contents_from_git_blob()
+                file = self.get_contents_from_git_blob()
                 self.output.use_git_blob = True
                 self.output.save()
 
-        if self.output.last_updated != contents.last_updated:
-            self.output.last_updated = contents.last_updated
+        if self.output.last_updated != file.last_updated:
+            self.output.last_updated = file.last_updated
             self.output.save()
 
-        # Reports may be formatted as proper HTML documents, or just as fragments of HTML. In the former case we want
-        # just the body, in the latter we want the whole thing.
-        soup = BeautifulSoup(contents.decoded_content, "html.parser")
-        html = soup.find("html") or soup  # in case we get an <html> tag but no <body>
-        body = html.find("body") or html
-
-        html_content = []
-        for content in body.contents:
-            if isinstance(content, Tag):
-                if content.name in ["script", "style"]:
-                    continue
-                html_content.append(content.decode())
-            else:
-                html_content.append(content)
-
-        return {"body": mark_safe("".join(html_content).strip())}
+        return file.decoded_content

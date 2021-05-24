@@ -281,64 +281,13 @@ def test_github_repo_get_git_blob(httpretty):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    "retrieved_html",
-    [
-        b64encode(
-            b"""
-        <html>
-            <head>
-                <style type="text/css">body {margin: 0;}</style>
-                <style type="text/css">a {background-color: red;}</style>
-                <script src="https://a-js-package.js"></script>
-            </head>
-            <body><p>foo</p></body>
-        </html>
-        """
-        ).decode(),
-        b64encode(
-            b"""
+def test_get_normal_html_from_github(httpretty):
+    html = """
         <html>
             <body><p>foo</p></body>
         </html>
-        """
-        ).decode(),
-        b64encode(
-            b"""
-        <p>foo</p>
-        """
-        ).decode(),
-        b64encode(
-            b"""
-        <body>
-            <script>Some Javascript nonsense</script>
-            <p>foo</p>
-            <script>Some more Javascript nonsense</script>
-        </body>
-        """
-        ).decode(),
-        b64encode(
-            b"""
-        <body>
-            <style>Mmmm, lovely styles...</style>
-            <p>foo</p>
-            <style>MOAR STYLZ</style>
-        </body>
-        """
-        ).decode(),
-    ],
-    ids=[
-        "Extracts body from HTML full document",
-        "Extracts body from HTML document without head",
-        "Returns HTML without body tags unchanged",
-        "Strips out all script tags",
-        "Strips out all style tags",
-    ],
-)
-def test_get_output_from_github(httpretty, retrieved_html):
     """
-    Test that html content retrieved from github is appropriately parsed
-    """
+
     repo = GithubRepo(GithubClient(use_cache=False), name="test", owner="test")
     output = baker.make(Output, output_html_file_path="foo.html")
     # Mock the github request
@@ -349,7 +298,11 @@ def test_get_output_from_github(httpretty, retrieved_html):
             httpretty.Response(
                 status=200,
                 body=json.dumps(
-                    {"name": "foo.html", "sha": "abcd1234", "content": retrieved_html}
+                    {
+                        "name": "foo.html",
+                        "sha": "abcd1234",
+                        "content": b64encode(html.encode()).decode(),
+                    }
                 ),
                 adding_headers={"Last-Modified": "Tue, 27 Apr 2021 10:00:00 GMT"},
             )
@@ -365,10 +318,7 @@ def test_get_output_from_github(httpretty, retrieved_html):
     )
 
     github_output = GitHubOutput(output, repo=repo)
-    extracted_html = github_output.get_html()
-    assert extracted_html == {
-        "body": "<p>foo</p>",
-    }
+    assert github_output.get_html() == html
 
 
 @pytest.mark.django_db
@@ -377,6 +327,12 @@ def test_get_large_html_from_github(httpretty):
     Test that a GithubException for a too-large file is caught and the content fetched
     from the git_blob by sha instead
     """
+    html = """
+        <html>
+            <body><p>foo</p></body>
+        </html>
+    """
+
     # Mock the github requests
     # /contents on the too-large file returns a 403
     httpretty.register_uri(
@@ -410,7 +366,7 @@ def test_get_large_html_from_github(httpretty):
                 "sha": "abcd1234",
                 "size": 1234,
                 "encoding": "base64",
-                "content": b64encode(b"<html><body><p>blob</p></body></html>").decode(),
+                "content": b64encode(html.encode()).decode(),
             }
         ),
     )
@@ -428,9 +384,8 @@ def test_get_large_html_from_github(httpretty):
     assert output.use_git_blob is False
 
     github_output = GitHubOutput(output, repo=repo)
-    extracted_html = github_output.get_html()
     output.refresh_from_db()
-    assert extracted_html == {"body": "<p>blob</p>"}
+    assert github_output.get_html() == html
     # last updated date is retrieved from the last commmit
     assert output.last_updated == date(2021, 4, 25)
 
@@ -444,8 +399,7 @@ def test_get_large_html_from_github(httpretty):
     assert output.use_git_blob is True
 
     # # re-fetch; get_contents is not called again on the single file, only on the parent folder
-    extracted_html = github_output.get_html()
-    assert extracted_html == {"body": "<p>blob</p>"}
+    assert github_output.get_html() == html
     # Only 3 more calls, to /contents for the parent folder, /commits for the update date
     # and /git/blob for the file contents
     latest_requests = httpretty.latest_requests()
@@ -495,6 +449,27 @@ def test_integration():
     output.clean()
     github_output = GitHubOutput(output)
     extracted_html = github_output.get_html()
-    assert extracted_html == {
-        "body": "<h1>A Test Output HTML file</h1>\n<p>The test content\t\n</p>",
-    }
+    assert (
+        extracted_html
+        == """<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" />
+
+<title>Test output</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<style type="text/css">body {margin: 0;}</style>
+<style type="text/css">a {background-color: blue;}</style>
+
+</head>
+
+<body>
+    <h1>A Test Output HTML file</h1>
+    <p>The test content</>\t
+</body>
+
+</html>
+"""
+    )
