@@ -232,7 +232,7 @@ def test_output_view_cache(client, log_output):
         "Strips out all style tags",
     ],
 )
-def test_html_processing(html):
+def test_html_processing_extracts_body(html):
     assert_html_equal(
         process_html(html),
         """
@@ -240,6 +240,74 @@ def test_html_processing(html):
             <div>Stuff</div>
         """,
     )
+
+
+@pytest.mark.parametrize(
+    ("input", "output"),
+    [
+        (
+            b"""
+                <table>
+                    <tr><td>something</td></tr>
+                </table>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something</td></tr>
+                    </table>
+                </div>
+            """,
+        ),
+        (
+            b"""
+                <html>
+                    <body>
+                        <table>
+                            <tr><td>something</td></tr>
+                        </table>
+                    </body>
+                </html>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something</td></tr>
+                    </table>
+                </div>
+            """,
+        ),
+        (
+            b"""
+                <table>
+                    <tr><td>something</td></tr>
+                </table>
+                <table>
+                    <tr><td>something else</td></tr>
+                </table>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something</td></tr>
+                    </table>
+                </div>
+                <div class="overflow-wrapper">
+                    <table>
+                        <tr><td>something else</td></tr>
+                    </table>
+                </div>
+            """,
+        ),
+    ],
+    ids=[
+        "Wraps single table in overflow wrappers",
+        "Wraps table in full document in overflow wrappers",
+        "Wraps multiple tables in overflow wrappers",
+    ],
+)
+def test_html_processing_wraps_scrollables(input, output):
+    assert_html_equal(process_html(input), output)
 
 
 def assert_html_equal(actual, expected):
