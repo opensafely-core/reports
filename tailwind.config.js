@@ -1,5 +1,3 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
-
 module.exports = {
   mode: "jit",
   purge: {
@@ -17,9 +15,35 @@ module.exports = {
   darkMode: false,
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
-      },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            color: theme('colors.gray.800'),
+            'h1, h2, h3, h4, h5, h6': {
+              color: theme('colors.gray.800'),
+            },
+            'ul > li::before': {
+              'background-color': theme('colors.gray.800')
+            },
+            'pre': {
+              'background-color': theme('colors.gray.50'),
+              'color': theme('colors.gray.700')
+            },
+            'thead th': {
+              'text-align': 'left'
+            },
+            'tbody tr:nth-child(even), tbody tr:nth-child(even) th:not([rowspan])': {
+              'background-color': theme('colors.gray.50'),
+            },
+            'tbody th[rowspan], tbody tr:hover th[rowspan]': {
+              'background-color': theme('colors.white'),
+            },
+            'tbody tr:hover, tbody tr:hover th:not([rowspan])': {
+              'background-color': theme('colors.blue.50'),
+            }
+          },
+        },
+      }),
     },
   },
   variants: {
