@@ -299,11 +299,22 @@ def test_html_processing_extracts_body(html):
                 </div>
             """,
         ),
+        (
+            b"""
+                <pre>Some code or something here</pre>
+            """,
+            b"""
+                <div class="overflow-wrapper">
+                    <pre>Some code or something here</pre>
+                </div>
+            """,
+        ),
     ],
     ids=[
         "Wraps single table in overflow wrappers",
         "Wraps table in full document in overflow wrappers",
         "Wraps multiple tables in overflow wrappers",
+        "Wraps <pre> elements in overflow wrappers",
     ],
 )
 def test_html_processing_wraps_scrollables(input, output):

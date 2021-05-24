@@ -77,8 +77,9 @@ def process_html(html):
 
     # For small screens we want to allow side-scrolling for just a small number of elements. To enable this each one needs to be
     # wrapped in a div that we can target for styling.
-    for table in content.find_all("table"):
-        table.wrap(soup.new_tag("div", attrs={"class": "overflow-wrapper"}))
+    for tag in ["table", "pre"]:
+        for element in content.find_all(tag):
+            element.wrap(soup.new_tag("div", attrs={"class": "overflow-wrapper"}))
 
     return mark_safe(str(content))
 
