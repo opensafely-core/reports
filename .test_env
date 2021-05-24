@@ -1,0 +1,5 @@
+SECRET_KEY=12345
+REQUESTS_CACHE_NAME=test_cache
+SOCIAL_AUTH_NHSID_KEY=dummy-client-id
+SOCIAL_AUTH_NHSID_SECRET=dummy-secret
+SOCIAL_AUTH_NHSID_API_URL=https://dummy-nhs.net/oidc

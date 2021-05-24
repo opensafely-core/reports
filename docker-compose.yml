@@ -1,0 +1,31 @@
+# docker configuration for running a development server
+version: "3.6"
+
+volumes:
+  collected_static:
+  static_dist:
+
+services:
+  dev:
+    build:
+      context: .
+      target: dev
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - collected_static:/app/collected-static
+      - static_dist:/app/static/dist
+
+  test:
+    build:
+      context: .
+      target: test
+    env_file:
+      - .test_env
+    volumes:
+      - .:/app
+      - collected_static:/app/collected-static
+      - static_dist:/app/static/dist
