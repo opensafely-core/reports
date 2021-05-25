@@ -24,14 +24,14 @@ def validate_html_filename(value):
 
 class PopulatedCategoryManager(models.Manager):
     """
-    Manager that returns only Categories that have at least one associated Output
+    Manager that returns only Categories that have at least one associated Report
     """
 
     def get_queryset(self):
         return (
             super()
             .get_queryset()
-            .annotate(count=models.Count("outputs"))
+            .annotate(count=models.Count("reports"))
             .filter(count__gt=0)
         )
 
@@ -51,14 +51,14 @@ class Category(models.Model):
 class Report(models.Model):
     """
     A report retrieved from an OpenSAFELY github repo
-    Currently allows for single HTML output files only
+    Currently allows for single HTML report files only
     """
 
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
-        help_text="Output category; used for navigation",
-        related_name="outputs",
+        help_text="Report category; used for navigation",
+        related_name="reports",
     )
     menu_name = models.CharField(
         max_length=255, help_text="A short name to display in the side nav"
@@ -67,9 +67,9 @@ class Report(models.Model):
         max_length=255, help_text="Name of the OpenSAFELY repo (case insensitive)"
     )
     branch = models.CharField(max_length=255, default="main")
-    output_html_file_path = models.CharField(
+    report_html_file_path = models.CharField(
         max_length=255,
-        help_text="Path to the output html file within the repo",
+        help_text="Path to the report html file within the repo",
         validators=[validate_html_filename],
     )
     slug = AutoSlugField(max_length=100, populate_from=["menu_name"], unique=True)
@@ -80,7 +80,7 @@ class Report(models.Model):
     description = models.TextField(
         null=True,
         blank=True,
-        help_text="Optional description to display before rendered output",
+        help_text="Optional description to display before rendered report   ",
     )
     publication_date = models.DateField(help_text="Date published")
     last_updated = models.DateField(
@@ -89,7 +89,7 @@ class Report(models.Model):
         help_text="File last modified date; autopopulated from GitHub",
     )
     cache_token = models.UUIDField(default=uuid4)
-    # Flag to remember if this output needed to use the git blob method (see github.py),
+    # Flag to remember if this report needed to use the git blob method (see github.py),
     # to avoid re-calling the contents endpoint if we know it will fail
     use_git_blob = models.BooleanField(default=False)
 
@@ -101,8 +101,8 @@ class Report(models.Model):
         self.save()
 
     def clean(self):
-        """Validate the repo, branch and output file path on save"""
-        # Disable caching to fetch the repo and contents.  If this is a new output file in
+        """Validate the repo, branch and report file path on save"""
+        # Disable caching to fetch the repo and contents.  If this is a new report file in
         # an existing folder, we don't want to use a previously cached request
         github_output = GitHubOutput(self, use_cache=False)
         try:
@@ -115,7 +115,7 @@ class Report(models.Model):
         try:
             github_output.get_parent_contents()
         except GithubAPIException as error:
-            # This happens if either the branch or the output file's parent path is invalid
+            # This happens if either the branch or the report file's parent path is invalid
             raise ValidationError(
                 _("Error fetching report file: %(error_message)s"),
                 params={"error_message": str(error)},
@@ -124,7 +124,7 @@ class Report(models.Model):
         if not any(github_output.matching_output_file_from_parent_contents()):
             raise ValidationError(
                 {
-                    "output_html_file_path": _(
+                    "report_html_file_path": _(
                         "File could not be found (branch %(branch)s)"
                     )
                     % {"branch": self.branch}

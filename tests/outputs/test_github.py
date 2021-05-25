@@ -289,7 +289,7 @@ def test_get_normal_html_from_github(httpretty):
     """
 
     repo = GithubRepo(GithubClient(use_cache=False), name="test", owner="test")
-    report = baker.make(Report, output_html_file_path="foo.html")
+    report = baker.make(Report, report_html_file_path="foo.html")
     # Mock the github request
     httpretty.register_uri(
         httpretty.GET,
@@ -380,7 +380,7 @@ def test_get_large_html_from_github(httpretty):
     )
 
     repo = GithubRepo(client=GithubClient(use_cache=False), owner="test", name="test")
-    report = baker.make(Report, output_html_file_path="foo.html")
+    report = baker.make(Report, report_html_file_path="foo.html")
     assert report.use_git_blob is False
 
     github_output = GitHubOutput(report, repo=repo)
@@ -423,7 +423,7 @@ def test_github_output_get_parent_contents_invalid_folder(httpretty):
     repo = GithubRepo(
         client=GithubClient(use_cache=False), owner="test", name="test-folder"
     )
-    report = baker.make(Report, output_html_file_path="test-folder/foo.html")
+    report = baker.make(Report, report_html_file_path="test-folder/foo.html")
 
     # Mock the github request
     httpretty.register_uri(
@@ -444,7 +444,7 @@ def test_integration():
         Report,
         repo="output-explorer-test-repo",
         branch="master",
-        output_html_file_path="test-outputs/output.html",
+        report_html_file_path="test-outputs/output.html",
     )
     report.clean()
     github_output = GitHubOutput(report)

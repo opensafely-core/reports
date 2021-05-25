@@ -15,8 +15,8 @@ class ReportAdmin(admin.ModelAdmin):
     fieldsets = (
         ("Navigation", {"fields": ["menu_name", "category"]}),
         (
-            "Output file details",
-            {"fields": ["repo", "branch", "output_html_file_path"]},
+            "Report file details",
+            {"fields": ["repo", "branch", "report_html_file_path"]},
         ),
         ("Caching", {"fields": ["cache_token"]}),
         (

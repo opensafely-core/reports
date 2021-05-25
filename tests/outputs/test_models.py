@@ -16,12 +16,12 @@ from outputs.models import Category, Report
             "'non-existent-repo' could not be found",
         ),
         (
-            {"output_html_file_path": "test-outputs/bad-report.html"},
+            {"report_html_file_path": "test-outputs/bad-report.html"},
             False,
             "['File could not be found (branch master)']",
         ),
         (
-            {"output_html_file_path": "dummy-reports/report.html"},
+            {"report_html_file_path": "dummy-reports/report.html"},
             False,
             "Error fetching report file: Not Found",
         ),
@@ -31,7 +31,7 @@ from outputs.models import Category, Report
             "Error fetching report file: No commit found for the ref non-existent-branch",
         ),
         (
-            {"output_html_file_path": "project.yaml"},
+            {"report_html_file_path": "project.yaml"},
             False,
             "project.yaml must be an html file",
         ),
@@ -50,7 +50,7 @@ def test_report_model_validation(fields, expected_valid, expected_errors):
     defaults = {
         "repo": "output-explorer-test-repo",
         "branch": "master",
-        "output_html_file_path": "test-outputs/output.html",
+        "report_html_file_path": "test-outputs/output.html",
     }
     report_fields = {**defaults, **fields}
     report = baker.make(Report, **report_fields)

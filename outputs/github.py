@@ -158,11 +158,11 @@ class GitHubOutput:
         return self._repo
 
     def get_parent_contents(self):
-        parent_folder = str(Path(self.output.output_html_file_path).parent)
+        parent_folder = str(Path(self.output.report_html_file_path).parent)
         return self.repo.get_contents(parent_folder, ref=self.output.branch)
 
     def matching_output_file_from_parent_contents(self):
-        output_html_file_name = Path(self.output.output_html_file_path).name
+        output_html_file_name = Path(self.output.report_html_file_path).name
         return (
             content_file
             for content_file in self.get_parent_contents()
@@ -178,7 +178,7 @@ class GitHubOutput:
         # Find the file in the parent folder whose name matches the output file we want
         matching_content_file = next(self.matching_output_file_from_parent_contents())
         last_updated = self.repo.get_last_updated(
-            self.output.output_html_file_path, self.output.branch
+            self.output.report_html_file_path, self.output.branch
         )
         blob = self.repo.get_git_blob(matching_content_file.sha, last_updated)
         return blob
@@ -193,7 +193,7 @@ class GitHubOutput:
         else:
             try:
                 file = self.repo.get_contents(
-                    self.output.output_html_file_path, ref=self.output.branch
+                    self.output.report_html_file_path, ref=self.output.branch
                 )
 
             except GithubAPIException:
