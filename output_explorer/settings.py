@@ -88,7 +88,7 @@ TEMPLATES = [
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
                 "gateway.context_processors.show_login",
-                "outputs.context_processors.outputs",
+                "outputs.context_processors.reports",
             ],
         },
     },

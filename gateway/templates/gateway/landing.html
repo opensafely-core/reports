@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block meta_title %}
-  OpenSAFELY Output Explorer: Home
+  OpenSAFELY Reports: Home
 {% endblock meta_title %}
 
 {% block meta_description %}
@@ -18,7 +18,7 @@
             OpenSAFELY
           </span>
           <span class="block text-4xl font-extrabold text-gray-900 pb-4 lg:pb-8 sm:text-5xl sm:tracking-tight lg:text-6xl">
-            Output Explorer
+            Reports
           </span>
         </h1>
         <p class="max-w-2xl mx-auto text-base md:text-lg text-gray-600 pb-5">
@@ -35,7 +35,7 @@
     <div class="pb-5">
       <h2 class="text-lg leading-6 font-medium text-gray-900">Recent activity</h3>
       <p class="mt-2 max-w-4xl text-sm text-gray-500">
-        Output reports published or updated recently.
+        Reports published or updated recently.
       </p>
     </div>
   </div>
@@ -49,7 +49,7 @@
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Output
+                    Report
                   </th>
                   <th class="px-6 py-3 md:px-12 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider md:block">
                     Status
@@ -60,29 +60,29 @@
                 </tr>
               </thead>
               <tbody>
-                {% for output in recent_activity %}
+                {% for report in recent_activity %}
                   <tr class="{% if forloop.counter0|divisibleby:'2' %}bg-white{% else %}bg-gray-50{% endif %}">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 md:max-w-0 md:w-full">
-                      <a href="{{ output.get_absolute_url }}" class="group flex space-x-2 text-sm truncate">
+                      <a href="{{ report.get_absolute_url }}" class="group flex space-x-2 text-sm truncate">
                         {% include "icons/outline/document-report.svg" with htmlClass="flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500" %}
                         <p class="text-gray-600 group-hover:text-gray-900 truncate max-w-sm md:max-w-none">
-                          {{ output.menu_name }}
+                          {{ report.menu_name }}
                         </p>
                       </a>
                     </td>
                     <td class="px-6 py-4 md:px-12 whitespace-nowrap text-sm text-gray-500">
                       <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
-                        {% if output.activity == 'published' %}
+                        {% if report.activity == 'published' %}
                           bg-green-100 text-green-800
                         {% else %}
                           bg-blue-100
                           text-blue-800
                         {% endif %}">
-                        {{ output.activity }}
+                        {{ report.activity }}
                       </span>
                     </td>
                     <td class="px-6 py-4 md:px-12 whitespace-nowrap text-sm text-gray-500">
-                      {{ output.activity_date | date:"d M Y" }}
+                      {{ report.activity_date | date:"d M Y" }}
                     </td>
                   </tr>
                 {% endfor %}
