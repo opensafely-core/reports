@@ -29,6 +29,43 @@ def test_landing_view(client):
 
 
 @pytest.mark.django_db
+def test_landing_view_ordering(client):
+    """Test categories and reports in context are alphabetically ordered"""
+    # By default we have one Category, set up in the migration
+    assert Category.objects.count() == 1
+    reports_category = Category.objects.first()
+    assert reports_category.name == "Reports"
+
+    # make another category and add some reports
+    test_category = baker.make(Category, name="Test")
+
+    report1 = baker.make_recipe("reports.dummy_report", menu_name="xyz")
+    report2 = baker.make_recipe("reports.dummy_report", menu_name="abc")
+    report3 = baker.make_recipe("reports.dummy_report", menu_name="def")
+    report4 = baker.make_recipe("reports.dummy_report", menu_name="jkl")
+    report5 = baker.make_recipe("reports.dummy_report", menu_name="bcd")
+    test_category.reports.add(report1, report2, report3)
+    reports_category.reports.add(report4, report5)
+
+    response = client.get(reverse("gateway:landing"))
+    # Categories are in alphabetical order by name
+    assert list(response.context["categories"].values_list("name", flat=True)) == [
+        "Reports",
+        "Test",
+    ]
+    # Within each category, reports are in alphabetical order by menu_name
+    reports_category_context, test_category_context = response.context["categories"]
+    assert list(
+        reports_category_context.reports.values_list("menu_name", flat=True)
+    ) == ["bcd", "jkl"]
+    assert list(test_category_context.reports.values_list("menu_name", flat=True)) == [
+        "abc",
+        "def",
+        "xyz",
+    ]
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "reports,expected",
     [

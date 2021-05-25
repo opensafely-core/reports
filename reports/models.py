@@ -33,7 +33,7 @@ class PopulatedCategoryManager(models.Manager):
             .get_queryset()
             .annotate(count=models.Count("reports"))
             .filter(count__gt=0)
-        )
+        ).order_by("name")
 
 
 class Category(models.Model):
@@ -43,6 +43,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "categories"
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
@@ -92,6 +93,9 @@ class Report(models.Model):
     # Flag to remember if this report needed to use the git blob method (see github.py),
     # to avoid re-calling the contents endpoint if we know it will fail
     use_git_blob = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ("menu_name",)
 
     def __str__(self):
         return self.slug
