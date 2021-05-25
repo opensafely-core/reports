@@ -100,7 +100,7 @@ class Report(models.Model):
         related_name="reports",
     )
     menu_name = AutoPopulatingCharField(
-        max_length=255,
+        max_length=60,
         populate_from="title",
         help_text="A short name to display in the side nav",
     )

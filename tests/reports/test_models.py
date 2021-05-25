@@ -113,3 +113,16 @@ def test_report_menu_name_autopopulates():
     )
     report.full_clean()
     assert report.menu_name == "Fungible watermelon"
+
+
+@pytest.mark.django_db
+def test_report_menu_name_is_limited_to_sixty_characters():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="012345678901234567890123456789012345678901234567890123456789X",
+        category=category,
+        publication_date=datetime.date.today(),
+        **REAL_REPO_DETAILS
+    )
+    with pytest.raises(ValidationError, match="at most 60 characters"):
+        report.full_clean()
