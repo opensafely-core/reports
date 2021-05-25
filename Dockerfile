@@ -2,6 +2,9 @@ FROM node:16-buster AS nodeassets
 WORKDIR /usr/src/app
 
 COPY assets ./assets
+COPY templates ./templates
+COPY gateway/templates ./gateway/templates
+COPY outputs/templates ./outputs/templates
 COPY *.js ./
 COPY .browserslistrc package-lock.json package.json ./
 RUN npm ci && npm run build

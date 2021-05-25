@@ -69,16 +69,16 @@ dokku$ dokku http-auth:on output-explorer <user> <password>
 dokku$ dokku http-auth:off output-explorer
 ```
 
-## Local development
+# Local development
 
-### Prerequisites:
+## Prerequisites:
 
 - **Python v3.9.x**
 - **Pip**
 - **[fnm](#install-fnm)**
 - **[Just](#install-just)**
 
-### Install just
+## Install just
 
 ```sh
 # macOS
@@ -94,11 +94,39 @@ source <(just --completions bash)
 just #  shortcut for just --list
 ```
 
-### Install fnm
+### Local development via docker
+
+#### Set up local dev env
+```sh
+just dev-config
+```
+
+#### Run local django server
+```sh
+docker-compose -f docker-compose.yml up --build dev
+```
+
+Access at http://localhost:8000
+
+Login with one of the test user accounts (see Bitwarden entry "Output Explorer NHS Identity Open ID Connect" for password):
+
+- 555036632103
+- 555036633104
+- 555036634105
+
+
+#### Run tests
+```sh
+docker-compose -f docker-compose.yml up --build test
+```
+
+
+### Bare metal local development
+
+#### Install fnm
 
 See https://github.com/Schniz/fnm#installation.
 
-### Run local development server
 
 #### Set up local dev env
 
@@ -112,14 +140,6 @@ just setup
 ```sh
 just run
 ```
-
-Access at http://localhost:8000
-
-Login with one of the test user accounts (see Bitwarden entry "Output Explorer NHS Identity Open ID Connect" for password):
-
-- 555036632103
-- 555036633104
-- 555036634105
 
 #### Run tests
 
