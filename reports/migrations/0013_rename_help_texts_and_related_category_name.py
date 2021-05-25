@@ -3,13 +3,13 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import outputs.models
+import reports.models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0012_remove_report_output_html_file_path"),
+        ("reports", "0012_remove_report_output_html_file_path"),
     ]
 
     operations = [
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 help_text="Report category; used for navigation",
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name="reports",
-                to="outputs.category",
+                to="reports.category",
             ),
         ),
         migrations.AlterField(
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 help_text="Path to the report html file within the repo",
                 max_length=255,
-                validators=[outputs.models.validate_html_filename],
+                validators=[reports.models.validate_html_filename],
             ),
         ),
     ]

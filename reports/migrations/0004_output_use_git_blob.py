@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0003_output_cache_token"),
+        ("reports", "0003_output_cache_token"),
     ]
 
     operations = [

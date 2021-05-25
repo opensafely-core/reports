@@ -18,7 +18,7 @@ omit = [
   "output_explorer/wsgi.py",
   "services/sentry.py",
   "gateway/migrations/*",
-  "outputs/migrations/*",
+  "reports/migrations/*",
   "manage.py",
 ]
 

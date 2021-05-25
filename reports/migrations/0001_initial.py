@@ -3,7 +3,7 @@
 import django_extensions.db.fields
 from django.db import migrations, models
 
-import outputs.models
+import reports.models
 
 
 class Migration(migrations.Migration):
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         help_text="Path to the output html file within the repo",
                         max_length=255,
-                        validators=[outputs.models.validate_html_filename],
+                        validators=[reports.models.validate_html_filename],
                     ),
                 ),
                 (

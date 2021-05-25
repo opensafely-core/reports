@@ -80,7 +80,7 @@ class Report(models.Model):
     description = models.TextField(
         null=True,
         blank=True,
-        help_text="Optional description to display before rendered report   ",
+        help_text="Optional description to display before rendered report",
     )
     publication_date = models.DateField(help_text="Date published")
     last_updated = models.DateField(
@@ -133,4 +133,4 @@ class Report(models.Model):
         super().clean()
 
     def get_absolute_url(self):
-        return reverse("outputs:report_view", args=(self.slug, self.cache_token))
+        return reverse("reports:report_view", args=(self.slug, self.cache_token))

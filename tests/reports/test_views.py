@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup
 from django.urls import reverse
 from model_bakery import baker
 
-from outputs.models import Category, Report
-from outputs.views import process_html
+from reports.models import Category, Report
+from reports.views import process_html
 
 
 @pytest.mark.django_db
@@ -22,8 +22,8 @@ def test_landing_view(client):
     assert list(response.context["categories"]) == []
 
     # when Reports exist, their categories are included in the context
-    baker.make_recipe("outputs.dummy_report")
-    baker.make_recipe("outputs.dummy_report", menu_name="test1")
+    baker.make_recipe("reports.dummy_report")
+    baker.make_recipe("reports.dummy_report", menu_name="test1")
     response = client.get(reverse("gateway:landing"))
     assert list(response.context["categories"]) == list(Category.objects.all())
 
@@ -84,7 +84,7 @@ def test_landing_view(client):
 )
 def test_landing_view_recent_activity(client, reports, expected):
     for menu_name, report_fields in reports.items():
-        baker.make_recipe("outputs.dummy_report", menu_name=menu_name, **report_fields)
+        baker.make_recipe("reports.dummy_report", menu_name=menu_name, **report_fields)
 
     response = client.get(reverse("gateway:landing"))
     # only reports with dates are shown in recent_activity
@@ -101,7 +101,7 @@ def test_landing_view_recent_activity(client, reports, expected):
 def test_report_view(client):
     """Test a single report page"""
     # report for a real file
-    report = baker.make_recipe("outputs.real_report")
+    report = baker.make_recipe("reports.real_report")
     response = client.get(report.get_absolute_url())
     assert_html_equal(
         response.context["notebook_contents"],
@@ -116,10 +116,10 @@ def test_report_view(client):
 def test_report_view_with_invalid_token(client):
     """Test a single report page"""
     # report for a real file
-    report = baker.make_recipe("outputs.real_report")
+    report = baker.make_recipe("reports.real_report")
     invalid_uuid = uuid4()
     response = client.get(
-        reverse("outputs:report_view", args=(report.slug, invalid_uuid))
+        reverse("reports:report_view", args=(report.slug, invalid_uuid))
     )
     assert response.status_code == 302
     assert response.url == report.get_absolute_url()
@@ -147,7 +147,7 @@ def test_report_view_cache(client, log_output):
     """
     Test caching a single report page.
     """
-    report = baker.make_recipe("outputs.real_report")
+    report = baker.make_recipe("reports.real_report")
 
     # nothing cached yet
     response = client.get(report.get_absolute_url())

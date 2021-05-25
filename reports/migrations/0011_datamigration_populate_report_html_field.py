@@ -5,7 +5,7 @@ from django.db import migrations
 
 def populate_report_html_file_path(apps, schema_editor):
     """Forwards migration replaces report_html_file_path with the contents of the old output_html_file_path field"""
-    Report = apps.get_model("outputs", "Report")
+    Report = apps.get_model("reports", "Report")
     for report in Report.objects.all():
         report.report_html_file_path = report.output_html_file_path
         report.save()
@@ -13,7 +13,7 @@ def populate_report_html_file_path(apps, schema_editor):
 
 def populate_output_html_file_path(apps, schema_editor):
     """Backwards migration replaces output_html_file_path with the contents of the report_html_file_path field"""
-    Report = apps.get_model("outputs", "Report")
+    Report = apps.get_model("reports", "Report")
     for report in Report.objects.all():
         report.output_html_file_path = report.report_html_file_path
         report.save()
@@ -22,7 +22,7 @@ def populate_output_html_file_path(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0010_report_report_html_file_path"),
+        ("reports", "0010_report_report_html_file_path"),
     ]
 
     operations = [

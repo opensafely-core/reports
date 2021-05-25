@@ -2,7 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from model_bakery import baker
 
-from outputs.models import Category, Report
+from reports.models import Category, Report
 
 
 @pytest.mark.django_db

@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.core import management
 
-from outputs.models import Report
+from reports.models import Report
 
 
 User = get_user_model()

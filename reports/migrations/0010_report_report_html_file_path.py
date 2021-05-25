@@ -2,13 +2,13 @@
 
 from django.db import migrations, models
 
-import outputs.models
+import reports.models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0009_rename_output_report"),
+        ("reports", "0009_rename_output_report"),
     ]
 
     operations = [
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 default="dummy",
                 help_text="Path to the output html file within the repo",
                 max_length=255,
-                validators=[outputs.models.validate_html_filename],
+                validators=[reports.models.validate_html_filename],
             ),
             preserve_default=False,
         ),

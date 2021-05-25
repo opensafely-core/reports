@@ -48,7 +48,7 @@ def report_fetch_view(request, github_report):
     # Fetch the uncached report view
     return TemplateResponse(
         request,
-        "outputs/report.html",
+        "reports/report.html",
         {
             "notebook_contents": process_html(github_report.get_html()),
             "report": github_report.report,

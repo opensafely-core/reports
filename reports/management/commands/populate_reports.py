@@ -2,7 +2,7 @@ import datetime
 
 from django.core.management.base import BaseCommand
 
-from outputs.models import Category, Report
+from reports.models import Category, Report
 
 
 class Command(BaseCommand):
@@ -15,7 +15,7 @@ class Command(BaseCommand):
             menu_name="Vaccine Coverage",
             repo="nhs-covid-vaccination-coverage",
             branch="master",
-            report_html_file_path="released-outputs/opensafely_vaccine_report_overall.html",
+            report_html_file_path="released-reports/opensafely_vaccine_report_overall.html",
             title="Vaccine Coverage",
             publication_date=datetime.datetime(year=2021, month=5, day=10),
         )

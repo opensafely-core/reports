@@ -7,8 +7,8 @@ import pytest
 from model_bakery import baker
 from requests.exceptions import HTTPError
 
-from outputs.github import GithubAPIException, GithubClient, GithubRepo, GithubReport
-from outputs.models import Report
+from reports.github import GithubAPIException, GithubClient, GithubRepo, GithubReport
+from reports.models import Report
 
 
 def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):

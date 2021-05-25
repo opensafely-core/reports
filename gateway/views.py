@@ -11,7 +11,7 @@ from django.views.generic import DetailView
 from social_django.utils import load_backend, load_strategy
 from social_django.views import complete
 
-from outputs.models import Report
+from reports.models import Report
 
 from .models import Organisation
 

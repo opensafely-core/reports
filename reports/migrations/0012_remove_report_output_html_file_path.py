@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0011_datamigration_populate_report_html_field"),
+        ("reports", "0011_datamigration_populate_report_html_field"),
     ]
 
     operations = [

@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0008_output_ondelete_protection_help_text_and_plural_names"),
+        ("reports", "0008_output_ondelete_protection_help_text_and_plural_names"),
     ]
 
     operations = [
