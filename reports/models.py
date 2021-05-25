@@ -140,6 +140,7 @@ class Report(models.Model):
         # an existing folder, we don't want to use a previously cached request
         github_report = GithubReport(self, use_cache=False)
         try:
+            # noinspection PyStatementEffect
             github_report.repo
         except GithubAPIException:
             raise ValidationError(
