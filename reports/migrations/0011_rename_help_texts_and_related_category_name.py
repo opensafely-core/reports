@@ -9,7 +9,7 @@ import reports.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("reports", "0012_remove_report_output_html_file_path"),
+        ("reports", "0010_rename_ouput_html_file_path_report_html_file_path"),
     ]
 
     operations = [
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
             name="description",
             field=models.TextField(
                 blank=True,
-                help_text="Optional description to display before rendered report   ",
+                help_text="Optional description to display before rendered report",
                 null=True,
             ),
         ),
