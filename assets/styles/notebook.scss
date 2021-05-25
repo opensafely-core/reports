@@ -35,14 +35,14 @@ h6:hover .anchor-link {
   background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
   overflow-x: auto;
 
-  @media (min-width: 640px) {
+  @media (min-width: 768px) {
     background: none;
   }
 
-  .table {
+  table {
     min-width: 640px;
 
-    @media (min-width: 640px) {
+    @media (min-width: 768px) {
       background: none;
     }
   }
@@ -52,5 +52,4 @@ h6:hover .anchor-link {
     overflow-x: unset;
   }
 }
-
 /*! purgecss end ignore */
