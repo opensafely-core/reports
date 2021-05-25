@@ -5,53 +5,53 @@ from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_control
 
-from .github import GitHubOutput
-from .models import Output
+from .github import GithubReport
+from .models import Report
 
 
 logger = structlog.getLogger()
 
 
 @cache_control(cache_timeout=86400)
-def output_view(request, slug, cache_token):
+def report_view(request, slug, cache_token):
     """
-    Fetches an html output file from github, and renders the style and body tags within
-    the output template page.  Caches for 24 hours, can be forced to refetch and update
+    Fetches an html report file from github, and renders the style and body tags within
+    the report template page.  Caches for 24 hours, can be forced to refetch and update
     the cache with the `force-update` query parameter.
     """
-    output = get_object_or_404(Output, slug=slug)
+    report = get_object_or_404(Report, slug=slug)
     if "force-update" in request.GET:
         # Force an update by refreshing the cache_token and redirecting
-        output.refresh_cache_token()
+        report.refresh_cache_token()
         logger.info(
             "Cache token refreshed, redirecting...",
-            output_id=output.pk,
-            slug=output.slug,
+            report_id=report.pk,
+            slug=report.slug,
         )
-        return redirect(output.get_absolute_url())
-    elif output.cache_token != cache_token:
+        return redirect(report.get_absolute_url())
+    elif report.cache_token != cache_token:
         # If an invalid cache_token is encountered, redirect to the latest one
         logger.warn(
             "Cache token not found, redirecting...",
-            output_id=output.pk,
-            slug=output.slug,
+            report_id=report.pk,
+            slug=report.slug,
         )
-        return redirect(output.get_absolute_url())
+        return redirect(report.get_absolute_url())
 
-    logger.info("Cache missed", output_id=output.pk, slug=output.slug)
-    github_output = GitHubOutput(output)
-    response = output_fetch_view(request, github_output)
+    logger.info("Cache missed", report_id=report.pk, slug=report.slug)
+    github_report = GithubReport(report)
+    response = report_fetch_view(request, github_report)
     return response
 
 
-def output_fetch_view(request, github_output):
-    # Fetch the uncached output view
+def report_fetch_view(request, github_report):
+    # Fetch the uncached report view
     return TemplateResponse(
         request,
-        "outputs/output.html",
+        "reports/report.html",
         {
-            "notebook_contents": process_html(github_output.get_html()),
-            "output": github_output.output,
+            "notebook_contents": process_html(github_report.get_html()),
+            "report": github_report.report,
         },
     )
 

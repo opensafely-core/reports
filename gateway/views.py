@@ -11,7 +11,7 @@ from django.views.generic import DetailView
 from social_django.utils import load_backend, load_strategy
 from social_django.views import complete
 
-from outputs.models import Output
+from reports.models import Report
 
 from .models import Organisation
 
@@ -21,16 +21,16 @@ logger = structlog.getLogger()
 
 @never_cache
 def landing(request):
-    """Landing page for main site and post-login.  Displays recent Output activity"""
+    """Landing page for main site and post-login.  Displays recent Report activity"""
     # Find the latest 10 publication dates in reverse order; this is the maximum number of
     # Outputs with publication date that we'll show
-    published = Output.objects.order_by("-publication_date")[:10].annotate(
+    published = Report.objects.order_by("-publication_date")[:10].annotate(
         activity=Value("published"), activity_date=F("publication_date")
     )
     # Find the latest 10 last_updated dates in reverse order that are greater than
     # publication date; if published and output date are the same, we don't want to
     # show both; last updated should always be after published
-    last_10_updated = Output.objects.filter(
+    last_10_updated = Report.objects.filter(
         last_updated__isnull=False, last_updated__gt=F("publication_date")
     ).order_by("-last_updated")[:10]
     updated = last_10_updated.annotate(

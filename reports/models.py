@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 
-from .github import GithubAPIException, GitHubOutput
+from .github import GithubAPIException, GithubReport
 
 
 logger = structlog.getLogger()
@@ -24,14 +24,14 @@ def validate_html_filename(value):
 
 class PopulatedCategoryManager(models.Manager):
     """
-    Manager that returns only Categories that have at least one associated Output
+    Manager that returns only Categories that have at least one associated Report
     """
 
     def get_queryset(self):
         return (
             super()
             .get_queryset()
-            .annotate(count=models.Count("outputs"))
+            .annotate(count=models.Count("reports"))
             .filter(count__gt=0)
         )
 
@@ -48,17 +48,17 @@ class Category(models.Model):
         return self.name
 
 
-class Output(models.Model):
+class Report(models.Model):
     """
-    An Output retrieved from an OpenSAFELY github repo
-    Currently allows for single HTML output files only
+    A report retrieved from an OpenSAFELY github repo
+    Currently allows for single HTML report files only
     """
 
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
-        help_text="Output category; used for navigation",
-        related_name="outputs",
+        help_text="Report category; used for navigation",
+        related_name="reports",
     )
     menu_name = models.CharField(
         max_length=255, help_text="A short name to display in the side nav"
@@ -67,9 +67,9 @@ class Output(models.Model):
         max_length=255, help_text="Name of the OpenSAFELY repo (case insensitive)"
     )
     branch = models.CharField(max_length=255, default="main")
-    output_html_file_path = models.CharField(
+    report_html_file_path = models.CharField(
         max_length=255,
-        help_text="Path to the output html file within the repo",
+        help_text="Path to the report html file within the repo",
         validators=[validate_html_filename],
     )
     slug = AutoSlugField(max_length=100, populate_from=["menu_name"], unique=True)
@@ -80,7 +80,7 @@ class Output(models.Model):
     description = models.TextField(
         null=True,
         blank=True,
-        help_text="Optional description to display before rendered output",
+        help_text="Optional description to display before rendered report",
     )
     publication_date = models.DateField(help_text="Date published")
     last_updated = models.DateField(
@@ -89,7 +89,7 @@ class Output(models.Model):
         help_text="File last modified date; autopopulated from GitHub",
     )
     cache_token = models.UUIDField(default=uuid4)
-    # Flag to remember if this output needed to use the git blob method (see github.py),
+    # Flag to remember if this report needed to use the git blob method (see github.py),
     # to avoid re-calling the contents endpoint if we know it will fail
     use_git_blob = models.BooleanField(default=False)
 
@@ -101,30 +101,30 @@ class Output(models.Model):
         self.save()
 
     def clean(self):
-        """Validate the repo, branch and output file path on save"""
-        # Disable caching to fetch the repo and contents.  If this is a new output file in
+        """Validate the repo, branch and report file path on save"""
+        # Disable caching to fetch the repo and contents.  If this is a new report file in
         # an existing folder, we don't want to use a previously cached request
-        github_output = GitHubOutput(self, use_cache=False)
+        github_report = GithubReport(self, use_cache=False)
         try:
-            github_output.repo
+            github_report.repo
         except GithubAPIException:
             raise ValidationError(
                 {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
             )
 
         try:
-            github_output.get_parent_contents()
+            github_report.get_parent_contents()
         except GithubAPIException as error:
-            # This happens if either the branch or the output file's parent path is invalid
+            # This happens if either the branch or the report file's parent path is invalid
             raise ValidationError(
-                _("Error fetching output file: %(error_message)s"),
+                _("Error fetching report file: %(error_message)s"),
                 params={"error_message": str(error)},
             )
 
-        if not any(github_output.matching_output_file_from_parent_contents()):
+        if not any(github_report.matching_report_file_from_parent_contents()):
             raise ValidationError(
                 {
-                    "output_html_file_path": _(
+                    "report_html_file_path": _(
                         "File could not be found (branch %(branch)s)"
                     )
                     % {"branch": self.branch}
@@ -133,4 +133,4 @@ class Output(models.Model):
         super().clean()
 
     def get_absolute_url(self):
-        return reverse("outputs:output_view", args=(self.slug, self.cache_token))
+        return reverse("reports:report_view", args=(self.slug, self.cache_token))

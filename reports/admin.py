@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.utils.translation import ngettext
 
-from .models import Category, Output
+from .models import Category, Report
 
 
 @admin.register(Category)
@@ -9,14 +9,14 @@ class CategoryAdmin(admin.ModelAdmin):
     fields = ("name",)
 
 
-@admin.register(Output)
-class OutputAdmin(admin.ModelAdmin):
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
     actions = ["update_cache"]
     fieldsets = (
         ("Navigation", {"fields": ["menu_name", "category"]}),
         (
-            "Output file details",
-            {"fields": ["repo", "branch", "output_html_file_path"]},
+            "Report file details",
+            {"fields": ["repo", "branch", "report_html_file_path"]},
         ),
         ("Caching", {"fields": ["cache_token"]}),
         (
@@ -42,8 +42,8 @@ class OutputAdmin(admin.ModelAdmin):
         self.message_user(
             request,
             ngettext(
-                "Cache token refreshed for %d output.",
-                "Cache token refreshed for %d outputs.",
+                "Cache token refreshed for %d report.",
+                "Cache token refreshed for %d reports.",
                 updated,
             )
             % updated,

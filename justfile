@@ -2,7 +2,6 @@
 default:
     @just --list
 
-
 # deploy the project
 deploy:
 	git push dokku main
@@ -13,7 +12,7 @@ dev-config:
 	./scripts/dev-env.sh .env
 
 # set up/update the local dev env
-setup: pip-install npm-install migrate ensure-superuser ensure-outputs collectstatic
+setup: pip-install npm-install migrate ensure-superuser ensure-reports collectstatic
 
 # install correct versions of all Python dependencies
 pip-install:
@@ -50,9 +49,9 @@ migrate:
 ensure-superuser:
     ./manage.py ensure_superuser
 
-# ensure the local app is populated with example outputs
-ensure-outputs:
-    ./manage.py populate_outputs
+# ensure the local app is populated with example reports
+ensure-reports:
+    ./manage.py populate_reports
 
 # blow away the local database and repopulate it
 dev-reset:
@@ -66,7 +65,7 @@ run:
 # run the test suite and coverage
 test:
 	python manage.py collectstatic --no-input && \
-	pytest --cov=output_explorer --cov=gateway --cov=outputs --cov=tests
+	pytest --cov=output_explorer --cov=gateway --cov=reports --cov=tests
 
 # run specific test(s)
 test-only TESTPATH:

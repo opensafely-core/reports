@@ -1,23 +1,23 @@
 from model_bakery.recipe import Recipe
 
-from .models import Category, Output
+from .models import Category, Report
 
 
 category, _ = Category.objects.get_or_create(name="Reports")
 
-real_output = Recipe(
-    Output,
+real_report = Recipe(
+    Report,
     category=category,
     menu_name="test",
     repo="output-explorer-test-repo",
     branch="master",
-    output_html_file_path="test-outputs/output.html",
+    report_html_file_path="test-outputs/output.html",
 )
 
-dummy_output = Recipe(
-    Output,
+dummy_report = Recipe(
+    Report,
     category=category,
     menu_name="test",
     repo="test-repo",
-    output_html_file_path="output.html",
+    report_html_file_path="report.html",
 )

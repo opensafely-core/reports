@@ -55,7 +55,7 @@
           </div>
           <div class="mt-10">
             <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Outputs
+              Reports
             </p>
             <div class="mt-2 space-y-1">
               <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
@@ -77,10 +77,10 @@
                         id="mobile-sidebar-{{ forloop.counter }}"
                         x-cloak
                         x-show="open">
-                        {% for output in category.outputs.all %}
+                        {% for report in category.reports.all %}
                           <li>
-                            <a href="{{ output.get_absolute_url }}" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md ">
-                              {{ output.menu_name }}
+                            <a href="{{ report.get_absolute_url }}" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md ">
+                              {{ report.menu_name }}
                             </a>
                           </li>
                         {% endfor %}
@@ -115,7 +115,7 @@
           </div>
           <div class="mt-10">
             <h2 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Outputs
+              Reports
             </h2>
             <div class="mt-2 space-y-1">
               <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
@@ -137,12 +137,12 @@
                           id="desktop-sidebar-{{ forloop.counter }}"
                           x-show="open"
                           x-cloak>
-                            {% for output in category.outputs.all %}
+                            {% for report in category.reports.all %}
                               <li>
                                 <a
-                                  href="{{ output.get_absolute_url }}"
+                                  href="{{ report.get_absolute_url }}"
                                   class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md ">
-                                  {{ output.menu_name }}
+                                  {{ report.menu_name }}
                                 </a>
                               </li>
                             {% endfor %}

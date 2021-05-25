@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0004_output_use_git_blob"),
+        ("reports", "0004_output_use_git_blob"),
     ]
 
     operations = [
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 help_text="Output category; used for navigation",
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                to="outputs.category",
+                to="reports.category",
             ),
         ),
     ]

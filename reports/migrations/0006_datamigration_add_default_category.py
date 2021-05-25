@@ -6,8 +6,8 @@ from django.db import migrations
 def add_default_category(apps, schema_editor):
     # We can't import the Category/Output models directly as they may be a newer
     # version than this migration expects. We use the historical version.
-    Category = apps.get_model("outputs", "Category")
-    Output = apps.get_model("outputs", "Output")
+    Category = apps.get_model("reports", "Category")
+    Output = apps.get_model("reports", "Output")
     category, _ = Category.objects.get_or_create(name="Reports")
     for output in Output.objects.all():
         output.category = category
@@ -17,7 +17,7 @@ def add_default_category(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0005_category"),
+        ("reports", "0005_category"),
     ]
 
     operations = [migrations.RunPython(add_default_category, migrations.RunPython.noop)]

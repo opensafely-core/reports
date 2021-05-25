@@ -90,6 +90,6 @@ logging_config_dict = {
             "propagate": False,
         },
         "gateway": {"handlers": ["console"], "level": "INFO", "propagate": False},
-        "outputs": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "reports": {"handlers": ["console"], "level": "INFO", "propagate": False},
     },
 }

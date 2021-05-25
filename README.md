@@ -1,6 +1,6 @@
-# OpenSAFELY Output Explorer
+# OpenSAFELY Reports
 
-This is a Django app providing a location for viewing and exploring OpenSAFELY outputs, both publicly available and content that limits access based on a user's NHS organisation membership.
+This is a Django app providing a location for viewing and exploring OpenSAFELY reports, both publicly available and content that limits access based on a user's NHS organisation membership.
 
 Some content is publicly accessible; private content is accessed via authentication with NHS Identity via Open ID Connect. Authorisation is based on the NHS associated organisation information retrieved from NHS Identity.
 
@@ -15,7 +15,7 @@ It is deployed to our `dokku2` instance.
 
 ```sh
 dokku$ dokku apps:create output-explorer
-dokku$ dokku domains:add output-explorer output-explorer.opensafely.org
+dokku$ dokku domains:add output-explorer reports.opensafely.org
 dokku$ dokku git:set output-explorer deploy-branch main
 ```
 
@@ -30,7 +30,7 @@ dokku$ dokku storage:mount output-explorer /var/lib/dokku/data/storage/output-ex
 ### Configure app
 
 ```sh
-dokku$ dokku config:set output-explorer BASE_URL='https://output-explorer.opensafely.org'
+dokku$ dokku config:set output-explorer BASE_URL='https://reports.opensafely.org'
 dokku$ dokku config:set output-explorer DATABASE_URL='sqlite:////storage/db.sqlite3'
 dokku$ dokku config:set output-explorer SECRET_KEY='xxx'
 dokku$ dokku config:set output-explorer SENTRY_DSN='https://xxx@xxx.ingest.sentry.io/xxx'

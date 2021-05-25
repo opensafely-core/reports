@@ -1,7 +1,7 @@
 from .models import Category
 
 
-def outputs(request):
+def reports(request):
     return {
         "categories": Category.populated.all(),
     }

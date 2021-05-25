@@ -6,7 +6,7 @@ module.exports = {
     content: [
       "./templates/**/*.html",
       "./gateway/templates/**/*.html",
-      "./outputs/templates/**/*.html",
+      "./reports/templates/**/*.html",
     ],
     options: {
       safelist: [],

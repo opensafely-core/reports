@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("outputs", "0007_make_output_category_non_nullable"),
+        ("reports", "0007_make_output_category_non_nullable"),
     ]
 
     operations = [
@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Output category; used for navigation",
                 on_delete=django.db.models.deletion.PROTECT,
-                related_name="outputs",
-                to="outputs.category",
+                related_name="reports",
+                to="reports.category",
             ),
         ),
         migrations.AlterField(

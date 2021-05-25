@@ -5,6 +5,6 @@ from environs import Env
 env = Env()
 
 
-class OutputsConfig(AppConfig):
+class ReportsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "outputs"
+    name = "reports"

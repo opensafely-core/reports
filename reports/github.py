@@ -20,7 +20,7 @@ class GithubClient:
     A connection to the Github API, using cached requests by default
     """
 
-    user_agent = "OpenSAFELY Output Explorer"
+    user_agent = "OpenSAFELY Reports"
     base_url = "https://api.github.com"
 
     def __init__(self, use_cache=True):
@@ -140,33 +140,33 @@ class GithubContentFile:
             return b64decode(self.content).decode("utf-8")
 
 
-class GitHubOutput:
+class GithubReport:
     """
     A class for interacting with a Github repo and html file associated with a single
-    Output instance
+    Report instance
     """
 
-    def __init__(self, output, repo=None, use_cache=True):
+    def __init__(self, report, repo=None, use_cache=True):
         self.client = GithubClient(use_cache=use_cache)
-        self.output = output
+        self.report = report
         self._repo = repo
 
     @property
     def repo(self):
         if self._repo is None:
-            self._repo = self.client.get_repo(f"opensafely/{self.output.repo}")
+            self._repo = self.client.get_repo(f"opensafely/{self.report.repo}")
         return self._repo
 
     def get_parent_contents(self):
-        parent_folder = str(Path(self.output.output_html_file_path).parent)
-        return self.repo.get_contents(parent_folder, ref=self.output.branch)
+        parent_folder = str(Path(self.report.report_html_file_path).parent)
+        return self.repo.get_contents(parent_folder, ref=self.report.branch)
 
-    def matching_output_file_from_parent_contents(self):
-        output_html_file_name = Path(self.output.output_html_file_path).name
+    def matching_report_file_from_parent_contents(self):
+        report_html_file_name = Path(self.report.report_html_file_path).name
         return (
             content_file
             for content_file in self.get_parent_contents()
-            if content_file.name == output_html_file_name
+            if content_file.name == report_html_file_name
         )
 
     def get_contents_from_git_blob(self):
@@ -175,36 +175,36 @@ class GitHubOutput:
         itself, but returns a list of GithubContentFile objects, from which we can obtain sha for
         the relevant file), retrieve the git blob and return it as a GithubContentFile
         """
-        # Find the file in the parent folder whose name matches the output file we want
-        matching_content_file = next(self.matching_output_file_from_parent_contents())
+        # Find the file in the parent folder whose name matches the report file we want
+        matching_content_file = next(self.matching_report_file_from_parent_contents())
         last_updated = self.repo.get_last_updated(
-            self.output.output_html_file_path, self.output.branch
+            self.report.report_html_file_path, self.report.branch
         )
         blob = self.repo.get_git_blob(matching_content_file.sha, last_updated)
         return blob
 
     def get_html(self):
         """
-        Fetches an output html file (an exported jupyter notebook) from a github repo based
-        on `output`, an Output model instance.
+        Fetches a report html file (an exported jupyter notebook) from a github repo based
+        on `report`, a Report model instance.
         """
-        if self.output.use_git_blob:
+        if self.report.use_git_blob:
             file = self.get_contents_from_git_blob()
         else:
             try:
                 file = self.repo.get_contents(
-                    self.output.output_html_file_path, ref=self.output.branch
+                    self.report.report_html_file_path, ref=self.report.branch
                 )
 
             except GithubAPIException:
                 # If the single file was too big (>1Mb), we get an exception.  Get the git blob
                 # and retrieve the contents from there instead
                 file = self.get_contents_from_git_blob()
-                self.output.use_git_blob = True
-                self.output.save()
+                self.report.use_git_blob = True
+                self.report.save()
 
-        if self.output.last_updated != file.last_updated:
-            self.output.last_updated = file.last_updated
-            self.output.save()
+        if self.report.last_updated != file.last_updated:
+            self.report.last_updated = file.last_updated
+            self.report.save()
 
         return file.decoded_content
