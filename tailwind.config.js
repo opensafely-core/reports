@@ -32,15 +32,6 @@ module.exports = {
             'thead th': {
               'text-align': 'left'
             },
-            'tbody tr:nth-child(even), tbody tr:nth-child(even) th:not([rowspan])': {
-              'background-color': theme('colors.gray.50'),
-            },
-            'tbody th[rowspan], tbody tr:hover th[rowspan]': {
-              'background-color': theme('colors.white'),
-            },
-            'tbody tr:hover, tbody tr:hover th:not([rowspan])': {
-              'background-color': theme('colors.blue.50'),
-            }
           },
         },
       }),
