@@ -12,6 +12,7 @@
 
   {% vite_hmr_client %}
   {% vite_asset 'assets/scripts/main.js' %}
+  <script defer data-domain="reports.opensafely.org" data-api="/pa/api/event" src="/pa/js/script.js"></script>
   {% block extra_head %}{% endblock %}
 
   {# TODO: SEO tags #}
