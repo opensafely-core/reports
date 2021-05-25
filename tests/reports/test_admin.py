@@ -10,8 +10,8 @@ from reports.models import Report
 def test_admin_update_cache_action(client):
     """Test the update_cache admin action refreshes the cache_token for selected reports"""
     get_user_model().objects.create_superuser("admin", "admin@test.com", "test")
-    report1 = baker.make(Report, menu_name="test")
-    report2 = baker.make(Report, menu_name="test")
+    report1 = baker.make(Report, title="test")
+    report2 = baker.make(Report, title="test")
 
     report1_cache_token = report1.cache_token
     report2_cache_token = report2.cache_token

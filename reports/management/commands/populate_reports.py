@@ -12,11 +12,10 @@ class Command(BaseCommand):
         category, _ = Category.objects.get_or_create(name="Reports")
         report, created = Report.objects.get_or_create(
             category=category,
-            menu_name="Vaccine Coverage",
+            title="Vaccine Coverage",
             repo="nhs-covid-vaccination-coverage",
             branch="master",
             report_html_file_path="released-reports/opensafely_vaccine_report_overall.html",
-            title="Vaccine Coverage",
             publication_date=datetime.datetime(year=2021, month=5, day=10),
         )
 

@@ -1,9 +1,18 @@
+import datetime
+
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from model_bakery import baker
 
 from reports.models import Category, Report
+
+
+REAL_REPO_DETAILS = {
+    "repo": "output-explorer-test-repo",
+    "branch": "master",
+    "report_html_file_path": "test-outputs/output.html",
+}
 
 
 @pytest.mark.django_db
@@ -48,12 +57,7 @@ from reports.models import Category, Report
 )
 def test_report_model_validation(fields, expected_valid, expected_errors):
     """Fetch and extract html from a real repo"""
-    defaults = {
-        "repo": "output-explorer-test-repo",
-        "branch": "master",
-        "report_html_file_path": "test-outputs/output.html",
-    }
-    report_fields = {**defaults, **fields}
+    report_fields = {**REAL_REPO_DETAILS, **fields}
     report = baker.make(Report, **report_fields)
     if not expected_valid:
         with pytest.raises(ValidationError, match=expected_errors):
@@ -96,3 +100,16 @@ def test_category_for_user(user_no_permission, user_with_permission):
     assert list(Category.populated.for_user(user_with_permission)) == list(
         Category.populated.all()
     )
+
+
+@pytest.mark.django_db
+def test_report_menu_name_autopopulates():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        **REAL_REPO_DETAILS
+    )
+    report.full_clean()
+    assert report.menu_name == "Fungible watermelon"
