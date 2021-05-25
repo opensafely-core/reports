@@ -113,14 +113,17 @@ def test_report_view(client):
 
 
 @pytest.mark.django_db
-def test_report_view_with_invalid_token(client):
+@pytest.mark.parametrize(
+    "cache_token",
+    [uuid4(), "a-non-token-string", None],
+    ids=["Test invalid uuid", "Test invalid string", "Test no token"],
+)
+def test_report_view_with_invalid_token(client, cache_token):
     """Test a single report page"""
     # report for a real file
     report = baker.make_recipe("reports.real_report")
-    invalid_uuid = uuid4()
-    response = client.get(
-        reverse("reports:report_view", args=(report.slug, invalid_uuid))
-    )
+    args = (report.slug, cache_token) if cache_token is not None else (report.slug,)
+    response = client.get(reverse("reports:report_view", args=args))
     assert response.status_code == 302
     assert response.url == report.get_absolute_url()
 
