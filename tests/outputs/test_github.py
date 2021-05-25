@@ -7,7 +7,7 @@ import pytest
 from model_bakery import baker
 from requests.exceptions import HTTPError
 
-from outputs.github import GithubAPIException, GithubClient, GitHubOutput, GithubRepo
+from outputs.github import GithubAPIException, GithubClient, GithubRepo, GithubReport
 from outputs.models import Report
 
 
@@ -317,8 +317,8 @@ def test_get_normal_html_from_github(httpretty):
         commit_dates="2021-04-25T10:00:00Z",
     )
 
-    github_output = GitHubOutput(report, repo=repo)
-    assert github_output.get_html() == html
+    github_report = GithubReport(report, repo=repo)
+    assert github_report.get_html() == html
 
 
 @pytest.mark.django_db
@@ -383,9 +383,9 @@ def test_get_large_html_from_github(httpretty):
     report = baker.make(Report, report_html_file_path="foo.html")
     assert report.use_git_blob is False
 
-    github_output = GitHubOutput(report, repo=repo)
+    github_report = GithubReport(report, repo=repo)
     report.refresh_from_db()
-    assert github_output.get_html() == html
+    assert github_report.get_html() == html
     # last updated date is retrieved from the last commmit
     assert report.last_updated == date(2021, 4, 25)
 
@@ -399,7 +399,7 @@ def test_get_large_html_from_github(httpretty):
     assert report.use_git_blob is True
 
     # # re-fetch; get_contents is not called again on the single file, only on the parent folder
-    assert github_output.get_html() == html
+    assert github_report.get_html() == html
     # Only 3 more calls, to /contents for the parent folder, /commits for the update date
     # and /git/blob for the file contents
     latest_requests = httpretty.latest_requests()
@@ -419,7 +419,7 @@ def test_get_large_html_from_github(httpretty):
 
 
 @pytest.mark.django_db
-def test_github_output_get_parent_contents_invalid_folder(httpretty):
+def test_github_report_get_parent_contents_invalid_folder(httpretty):
     repo = GithubRepo(
         client=GithubClient(use_cache=False), owner="test", name="test-folder"
     )
@@ -432,9 +432,9 @@ def test_github_output_get_parent_contents_invalid_folder(httpretty):
         status=404,
         body=json.dumps({"message": "Not found"}),
     )
-    github_output = GitHubOutput(report, repo=repo)
+    github_report = GithubReport(report, repo=repo)
     with pytest.raises(GithubAPIException, match="Not found"):
-        github_output.get_parent_contents()
+        github_report.get_parent_contents()
 
 
 @pytest.mark.django_db
@@ -447,8 +447,8 @@ def test_integration():
         report_html_file_path="test-outputs/output.html",
     )
     report.clean()
-    github_output = GitHubOutput(report)
-    extracted_html = github_output.get_html()
+    github_report = GithubReport(report)
+    extracted_html = github_report.get_html()
     assert (
         extracted_html
         == """<!DOCTYPE html>

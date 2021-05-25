@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 
-from .github import GithubAPIException, GitHubOutput
+from .github import GithubAPIException, GithubReport
 
 
 logger = structlog.getLogger()
@@ -104,16 +104,16 @@ class Report(models.Model):
         """Validate the repo, branch and report file path on save"""
         # Disable caching to fetch the repo and contents.  If this is a new report file in
         # an existing folder, we don't want to use a previously cached request
-        github_output = GitHubOutput(self, use_cache=False)
+        github_report = GithubReport(self, use_cache=False)
         try:
-            github_output.repo
+            github_report.repo
         except GithubAPIException:
             raise ValidationError(
                 {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
             )
 
         try:
-            github_output.get_parent_contents()
+            github_report.get_parent_contents()
         except GithubAPIException as error:
             # This happens if either the branch or the report file's parent path is invalid
             raise ValidationError(
@@ -121,7 +121,7 @@ class Report(models.Model):
                 params={"error_message": str(error)},
             )
 
-        if not any(github_output.matching_output_file_from_parent_contents()):
+        if not any(github_report.matching_report_file_from_parent_contents()):
             raise ValidationError(
                 {
                     "report_html_file_path": _(

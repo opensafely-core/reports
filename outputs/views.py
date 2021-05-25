@@ -5,7 +5,7 @@ from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_control
 
-from .github import GitHubOutput
+from .github import GithubReport
 from .models import Report
 
 
@@ -39,19 +39,19 @@ def report_view(request, slug, cache_token):
         return redirect(report.get_absolute_url())
 
     logger.info("Cache missed", report_id=report.pk, slug=report.slug)
-    github_output = GitHubOutput(report)
-    response = report_fetch_view(request, github_output)
+    github_report = GithubReport(report)
+    response = report_fetch_view(request, github_report)
     return response
 
 
-def report_fetch_view(request, github_output):
+def report_fetch_view(request, github_report):
     # Fetch the uncached report view
     return TemplateResponse(
         request,
         "outputs/report.html",
         {
-            "notebook_contents": process_html(github_output.get_html()),
-            "output": github_output.output,
+            "notebook_contents": process_html(github_report.get_html()),
+            "output": github_report.report,
         },
     )
 

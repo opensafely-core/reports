@@ -42,8 +42,8 @@ class ReportAdmin(admin.ModelAdmin):
         self.message_user(
             request,
             ngettext(
-                "Cache token refreshed for %d output.",
-                "Cache token refreshed for %d outputs.",
+                "Cache token refreshed for %d report.",
+                "Cache token refreshed for %d reports.",
                 updated,
             )
             % updated,
