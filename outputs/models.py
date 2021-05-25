@@ -48,9 +48,9 @@ class Category(models.Model):
         return self.name
 
 
-class Output(models.Model):
+class Report(models.Model):
     """
-    An Output retrieved from an OpenSAFELY github repo
+    A report retrieved from an OpenSAFELY github repo
     Currently allows for single HTML output files only
     """
 
@@ -117,7 +117,7 @@ class Output(models.Model):
         except GithubAPIException as error:
             # This happens if either the branch or the output file's parent path is invalid
             raise ValidationError(
-                _("Error fetching output file: %(error_message)s"),
+                _("Error fetching report file: %(error_message)s"),
                 params={"error_message": str(error)},
             )
 
@@ -133,4 +133,4 @@ class Output(models.Model):
         super().clean()
 
     def get_absolute_url(self):
-        return reverse("outputs:output_view", args=(self.slug, self.cache_token))
+        return reverse("outputs:report_view", args=(self.slug, self.cache_token))

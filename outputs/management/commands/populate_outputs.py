@@ -2,15 +2,15 @@ import datetime
 
 from django.core.management.base import BaseCommand
 
-from outputs.models import Category, Output
+from outputs.models import Category, Report
 
 
 class Command(BaseCommand):
-    help = "Populate the database with sample outputs if they are not already there. For development use only."
+    help = "Populate the database with sample reports if they are not already there. For development use only."
 
     def handle(self, *args, **options):
         category, _ = Category.objects.get_or_create(name="Reports")
-        output, created = Output.objects.get_or_create(
+        output, created = Report.objects.get_or_create(
             category=category,
             menu_name="Vaccine Coverage",
             repo="nhs-covid-vaccination-coverage",
@@ -21,4 +21,4 @@ class Command(BaseCommand):
         )
 
         if created:
-            self.stderr.write(f"Created output '{output.title}'")
+            self.stderr.write(f"Created report '{output.title}'")

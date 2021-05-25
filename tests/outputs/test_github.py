@@ -8,7 +8,7 @@ from model_bakery import baker
 from requests.exceptions import HTTPError
 
 from outputs.github import GithubAPIException, GithubClient, GitHubOutput, GithubRepo
-from outputs.models import Output
+from outputs.models import Report
 
 
 def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
@@ -289,7 +289,7 @@ def test_get_normal_html_from_github(httpretty):
     """
 
     repo = GithubRepo(GithubClient(use_cache=False), name="test", owner="test")
-    output = baker.make(Output, output_html_file_path="foo.html")
+    report = baker.make(Report, output_html_file_path="foo.html")
     # Mock the github request
     httpretty.register_uri(
         httpretty.GET,
@@ -317,7 +317,7 @@ def test_get_normal_html_from_github(httpretty):
         commit_dates="2021-04-25T10:00:00Z",
     )
 
-    github_output = GitHubOutput(output, repo=repo)
+    github_output = GitHubOutput(report, repo=repo)
     assert github_output.get_html() == html
 
 
@@ -380,14 +380,14 @@ def test_get_large_html_from_github(httpretty):
     )
 
     repo = GithubRepo(client=GithubClient(use_cache=False), owner="test", name="test")
-    output = baker.make(Output, output_html_file_path="foo.html")
-    assert output.use_git_blob is False
+    report = baker.make(Report, output_html_file_path="foo.html")
+    assert report.use_git_blob is False
 
-    github_output = GitHubOutput(output, repo=repo)
-    output.refresh_from_db()
+    github_output = GitHubOutput(report, repo=repo)
+    report.refresh_from_db()
     assert github_output.get_html() == html
     # last updated date is retrieved from the last commmit
-    assert output.last_updated == date(2021, 4, 25)
+    assert report.last_updated == date(2021, 4, 25)
 
     # 4 calls were made, to /contents and /commits for the single file and its updated date,
     # then to /contents for the parent folder, and /git/blob for the file contents
@@ -396,7 +396,7 @@ def test_get_large_html_from_github(httpretty):
     # After the first get_html call, use_git_blob is set to avoid re-attempting to call
     # get_contents on the single file, which will fail
     # get_contents is called twice, once on the single file, once for the parent folder contents
-    assert output.use_git_blob is True
+    assert report.use_git_blob is True
 
     # # re-fetch; get_contents is not called again on the single file, only on the parent folder
     assert github_output.get_html() == html
@@ -423,7 +423,7 @@ def test_github_output_get_parent_contents_invalid_folder(httpretty):
     repo = GithubRepo(
         client=GithubClient(use_cache=False), owner="test", name="test-folder"
     )
-    output = baker.make(Output, output_html_file_path="test-folder/foo.html")
+    report = baker.make(Report, output_html_file_path="test-folder/foo.html")
 
     # Mock the github request
     httpretty.register_uri(
@@ -432,7 +432,7 @@ def test_github_output_get_parent_contents_invalid_folder(httpretty):
         status=404,
         body=json.dumps({"message": "Not found"}),
     )
-    github_output = GitHubOutput(output, repo=repo)
+    github_output = GitHubOutput(report, repo=repo)
     with pytest.raises(GithubAPIException, match="Not found"):
         github_output.get_parent_contents()
 
@@ -440,14 +440,14 @@ def test_github_output_get_parent_contents_invalid_folder(httpretty):
 @pytest.mark.django_db
 def test_integration():
     """Fetch and extract html from a real repo"""
-    output = baker.make(
-        Output,
+    report = baker.make(
+        Report,
         repo="output-explorer-test-repo",
         branch="master",
         output_html_file_path="test-outputs/output.html",
     )
-    output.clean()
-    github_output = GitHubOutput(output)
+    report.clean()
+    github_output = GitHubOutput(report)
     extracted_html = github_output.get_html()
     assert (
         extracted_html
