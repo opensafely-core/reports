@@ -52,7 +52,7 @@ ensure-superuser:
 
 # ensure the local app is populated with example outputs
 ensure-outputs:
-    ./manage.py populate_outputs
+    ./manage.py populate_reports
 
 # blow away the local database and repopulate it
 dev-reset:

@@ -33,13 +33,13 @@ def test_ensure_superuser_with_existing_superuser():
 
 
 @pytest.mark.django_db
-def test_populate_outputs():
+def test_populate_reports():
     assert Report.objects.exists() is False
-    management.call_command("populate_outputs")
+    management.call_command("populate_reports")
 
     assert Report.objects.count() == 1
     assert Report.objects.first().title == "Vaccine Coverage"
 
     # calling it again does nothing
-    management.call_command("populate_outputs")
+    management.call_command("populate_reports")
     assert Report.objects.count() == 1

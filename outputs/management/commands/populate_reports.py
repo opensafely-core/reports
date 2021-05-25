@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         category, _ = Category.objects.get_or_create(name="Reports")
-        output, created = Report.objects.get_or_create(
+        report, created = Report.objects.get_or_create(
             category=category,
             menu_name="Vaccine Coverage",
             repo="nhs-covid-vaccination-coverage",
@@ -21,4 +21,4 @@ class Command(BaseCommand):
         )
 
         if created:
-            self.stderr.write(f"Created report '{output.title}'")
+            self.stderr.write(f"Created report '{report.title}'")
