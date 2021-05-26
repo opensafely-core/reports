@@ -51,7 +51,7 @@ ensure-superuser:
 
 # ensure the local app is populated with example reports
 ensure-reports:
-    ./manage.py populate_reports
+    INCLUDE_PRIVATE=t ./manage.py populate_reports
 
 # blow away the local database and repopulate it
 dev-reset:

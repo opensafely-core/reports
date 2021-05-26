@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from django.core.management.base import BaseCommand
 
@@ -18,6 +19,23 @@ class Command(BaseCommand):
             "master",
             "test-outputs/vaccine-coverage-new.html",
         )
+
+        if "INCLUDE_PRIVATE" in os.environ:
+            self.ensure_report(
+                category,
+                "SRO Measures",
+                "SRO-Measures",
+                "master",
+                "released_outputs/output/sentinel_measures.html",
+            )
+
+            self.ensure_report(
+                category,
+                "SRO Measures - Health Inequalities",
+                "SRO-Measures",
+                "master",
+                "released_outputs/output/sentinel_measures_demographics.html",
+            )
 
     def ensure_report(self, category, title, repo, branch, file_path):
         report, created = get_or_create_with_validation(
