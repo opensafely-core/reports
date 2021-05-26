@@ -20,6 +20,12 @@ pip-install:
     pip-sync requirements.txt requirements.dev.txt
     pre-commit install
 
+pip-update:
+    pip install --upgrade pip
+    pip-compile --upgrade --generate-hashes
+    pip-compile --upgrade --generate-hashes requirements.dev.in
+    just pip-install
+
 # install all JS dependencies
 npm-install: check-fnm
     fnm use
