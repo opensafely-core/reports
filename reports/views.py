@@ -13,7 +13,7 @@ logger = structlog.getLogger()
 
 
 @cache_control(cache_timeout=86400)
-def report_view(request, slug, cache_token):
+def report_view(request, slug, cache_token=None):
     """
     Fetches an html report file from github, and renders the style and body tags within
     the report template page.  Caches for 24 hours, can be forced to refetch and update
