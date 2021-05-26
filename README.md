@@ -42,6 +42,9 @@ dokku$ dokku config:set output-explorer GITHUB_TOKEN='xxx'
 dokku$ dokku config:set output-explorer SHOW_LOGIN=False
 ```
 
+### HTTP auth
+``````
+
 ### Manually pushing
 
 Merges to the `main` branch will trigger an auto-deploy via GitHub actions.

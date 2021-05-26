@@ -35,6 +35,18 @@ class PopulatedCategoryManager(models.Manager):
             .filter(count__gt=0)
         ).order_by("name")
 
+    def allowed_for_user(self, user):
+        if user.has_perm("reports.view_draft"):
+            return self.get_queryset()
+        return (
+            super()
+            .get_queryset()
+            .annotate(
+                count=models.Count("reports", filter=models.Q(reports__is_draft=False))
+            )
+            .filter(count__gt=0)
+        ).order_by("name")
+
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -93,9 +105,16 @@ class Report(models.Model):
     # Flag to remember if this report needed to use the git blob method (see github.py),
     # to avoid re-calling the contents endpoint if we know it will fail
     use_git_blob = models.BooleanField(default=False)
+    is_draft = models.BooleanField(
+        default=False,
+        help_text="Draft reports are only visible by a logged in user with relevant permissions",
+    )
 
     class Meta:
         ordering = ("menu_name",)
+        permissions = [
+            ("view_draft", "Can view draft reports"),
+        ]
 
     def __str__(self):
         return self.slug

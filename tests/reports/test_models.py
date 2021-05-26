@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from model_bakery import baker
 
@@ -76,3 +77,22 @@ def test_category_manager():
     assert Category.objects.count() == 2
     assert Category.populated.count() == 1
     assert Category.populated.first() == category
+
+
+@pytest.mark.django_db
+def test_category_allowed_for_user(user_no_permission, user_with_permission):
+    category = Category.objects.first()
+    draft_category = baker.make(Category, name="test")
+    baker.make(Report, category=category)
+    baker.make(Report, category=draft_category, is_draft=True)
+
+    user = AnonymousUser()
+    assert list(Category.populated.allowed_for_user(user)) == list(
+        Category.objects.filter(id=category.id)
+    )
+    assert list(Category.populated.allowed_for_user(user_no_permission)) == list(
+        Category.objects.filter(id=category.id)
+    )
+    assert list(Category.populated.allowed_for_user(user_with_permission)) == list(
+        Category.populated.all()
+    )

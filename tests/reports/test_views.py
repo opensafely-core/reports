@@ -65,6 +65,78 @@ def test_landing_view_ordering(client):
     ]
 
 
+@pytest.mark.parametrize(
+    "user_attributes,expected_category_names,expected_report_names",
+    [
+        (None, ["Reports"], {"report-abc", "report-def"}),
+        ("no_permission", ["Reports"], {"report-abc", "report-def"}),
+        (
+            "has_permission",
+            ["Reports", "Test"],
+            {"report-abc", "report-def", "report-ghi", "report-jkl", "report-mno"},
+        ),
+    ],
+)
+@pytest.mark.django_db
+def test_landing_view_draft_reports_permissions(
+    client,
+    user_with_permission,
+    user_no_permission,
+    user_attributes,
+    expected_category_names,
+    expected_report_names,
+):
+
+    user_selection = {
+        "no_permission": user_no_permission,
+        "has_permission": user_with_permission,
+    }
+    user = user_selection.get(user_attributes)
+    if user is not None:
+        client.login(username=user.username, password="testpass")
+
+    # By default we have one Category, set up in the migration
+    assert Category.objects.count() == 1
+    reports_category = Category.objects.first()
+    assert reports_category.name == "Reports"
+    # add some draft and published reports
+    report1 = baker.make_recipe("reports.dummy_report", menu_name="report-abc")
+    report2 = baker.make_recipe("reports.dummy_report", menu_name="report-def")
+    report3 = baker.make_recipe(
+        "reports.dummy_report", menu_name="report-ghi", is_draft=True
+    )
+    reports_category.reports.add(report1, report2, report3)
+
+    # make another category and add draft reports ONLY.
+    # This entire category should be hidden from an anonymous user and a user with no permission
+    draft_category = baker.make(Category, name="Test")
+    report4 = baker.make_recipe(
+        "reports.dummy_report", menu_name="report-jkl", is_draft=True
+    )
+    report5 = baker.make_recipe(
+        "reports.dummy_report", menu_name="report-mno", is_draft=True
+    )
+    draft_category.reports.add(report4, report5)
+
+    response = client.get(reverse("gateway:landing"))
+    assert response.context["categories"].count() == len(expected_category_names)
+    categories = response.context["categories"]
+    assert [category.name for category in categories] == expected_category_names
+
+    all_report_names = {
+        "report-abc",
+        "report-def",
+        "report-ghi",
+        "report-jkl",
+        "report-mno",
+    }
+    content = response.content.decode("utf-8")
+    for report_name in expected_report_names:
+        assert report_name in content
+    for report_name in all_report_names - expected_report_names:
+        assert report_name not in content
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "reports,expected",

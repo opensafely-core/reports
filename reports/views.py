@@ -20,6 +20,7 @@ def report_view(request, slug, cache_token=None):
     the cache with the `force-update` query parameter.
     """
     report = get_object_or_404(Report, slug=slug)
+    # todo if draft, check use is logged in and has permission
     if "force-update" in request.GET:
         # Force an update by refreshing the cache_token and redirecting
         report.refresh_cache_token()
