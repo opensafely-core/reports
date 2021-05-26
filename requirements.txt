@@ -162,9 +162,9 @@ django-vite==1.1.0 \
     --hash=sha256:9e2b6443e752848430fc82318572d1faac7a0942b657d259d1e94f544f4fdf5e \
     --hash=sha256:b01fdff3bfe797de00cf32ac1daeb8fe3b18b9a3a69095f2c9c7436ab115f18b
     # via -r requirements.in
-django==3.2.2 \
-    --hash=sha256:0a1d195ad65c52bf275b8277b3d49680bd1137a5f55039a806f25f6b9752ce3d \
-    --hash=sha256:18dd3145ddbd04bf189ff79b9954d08fda5171ea7b57bf705789fea766a07d50
+django==3.2.3 \
+    --hash=sha256:13ac78dbfd189532cad8f383a27e58e18b3d33f80009ceb476d7fcbfc5dcebd8 \
+    --hash=sha256:7e0a1393d18c16b503663752a8b6790880c5084412618990ce8a81cc908b4962
     # via
     #   django-extensions
     #   django-redis
@@ -190,13 +190,13 @@ idna==2.10 \
     --hash=sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6 \
     --hash=sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0
     # via requests
-itsdangerous==2.0.0 \
-    --hash=sha256:99b1053ccce68066dfc0b4465ef8779027e6d577377c8270e21a3d6289cac111 \
-    --hash=sha256:e2cb4ae918f07ab2a2f9a91dec2695bd1f25a19d31861a70015ad537ccb5e807
+itsdangerous==2.0.1 \
+    --hash=sha256:5174094b9637652bdb841a3029700391451bd092ba3db90600dea710ba28e97c \
+    --hash=sha256:9e724d68fc22902a1435351f84c3fb8623f303fffcc566a4cb952df8c572cff0
     # via requests-cache
-marshmallow==3.12.0 \
-    --hash=sha256:77ce3097c06d93de37394e0e0bf217dacbb4eabe0b88129e315e10d8790b1354 \
-    --hash=sha256:822dfacdf6ac5c2f514182bcddde0cc60d943ca46e4006c1e14761a0605bfc0f
+marshmallow==3.12.1 \
+    --hash=sha256:8050475b70470cc58f4441ee92375db611792ba39ca1ad41d39cad193ea9e040 \
+    --hash=sha256:b45cde981d1835145257b4a3c5cb7b80786dcf5f50dd2990749a50c16cb48e01
     # via environs
 oauthlib==3.1.0 \
     --hash=sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889 \
