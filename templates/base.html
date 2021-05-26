@@ -8,23 +8,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-  <title>{% block meta_title %}OpenSAFELY Reports{% endblock meta_title %}</title>
+  {% include "partials/seo.html" %}
 
   {% vite_hmr_client %}
   {% vite_asset 'assets/scripts/main.js' %}
   <script defer data-domain="reports.opensafely.org" data-api="/pa/api/event" src="/pa/js/script.js"></script>
-  {% block extra_head %}{% endblock %}
 
-  {# TODO: SEO tags #}
-  <meta name="description" content="{% block meta_description %}OpenSAFELY Reports{% endblock meta_description %}">
-  {# <meta property="og:title" content="Unique page title - My Site"> #}
-  {# <meta property="og:description" content="Page description"> #}
-  {# <meta property="og:image" content="https://www.mywebsite.com/image.jpg"> #}
-  {# <meta property="og:image:alt" content="Image description"> #}
-  {# <meta property="og:locale" content="en_GB"> #}
-  {# <meta property="og:type" content="website"> #}
-  {# <meta name="twitter:card" content="summary_large_image"> #}
-  {# <meta property="og:url" content="{{ request.build_absolute_uri }}"> #}
+  {% block extra_head %}{% endblock %}
 
   <link rel="icon" href="{% static 'favicon.ico' %}">
   <link rel="icon" href="{% static 'icon.svg' %}" type="image/svg+xml">

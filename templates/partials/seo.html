@@ -1,0 +1,22 @@
+{% load static %}
+
+{# Primary Meta Tags #}
+<title>{% block meta_title %}OpenSAFELY: Reports{% endblock meta_title %}</title>
+<meta name="title" content="{{ meta_title }}">
+<meta name="description" content="{% block meta_description %}Reports related to the COVID-19 pandemic, curated by the DataLab at the University of Oxford, working on behalf of NHS England.{% endblock %}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+{# Open Graph / Facebook #}
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{{ meta_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+<meta property="og:image" content="{% static 'open-graph.png' %}">
+
+{# Twitter #}
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+<meta property="twitter:title" content="{{ meta_title }}">
+<meta property="twitter:description" content="{{ meta_description }}">
+<meta property="twitter:image" content="{% static 'open-graph.png' %}">
