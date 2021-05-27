@@ -117,6 +117,8 @@ class Report(models.Model):
         help_text="Draft reports are only visible by a logged in user with relevant permissions",
     )
 
+    contact_email = models.EmailField(default="team@opensafely.org")
+
     class Meta:
         ordering = ("menu_name",)
         permissions = [
