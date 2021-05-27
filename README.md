@@ -42,8 +42,6 @@ dokku$ dokku config:set output-explorer GITHUB_TOKEN='xxx'
 dokku$ dokku config:set output-explorer SHOW_LOGIN=False
 ```
 
-### HTTP auth
-``````
 
 ### Manually pushing
 
@@ -63,8 +61,12 @@ You may need to add your ssh key to dokku's authorised keys; use the method desc
 ### extras
 
 ```sh
-dokku letsencrypt:enable output-explorer
-dokku plugin:install sentry-webhook
+dokku$ dokku letsencrypt:enable output-explorer
+dokku$ dokku plugin:install sentry-webhook
+
+# turn on/off HTTP auth (also requires restarting the app)
+dokku$ dokku http-auth:on output-explorer <user> <password>
+dokku$ dokku http-auth:off output-explorer
 ```
 
 ## Local development
