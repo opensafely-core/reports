@@ -4,6 +4,8 @@ name: CI
 on:
   push:
 
+concurrency: ci-${{ github.ref }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -179,8 +181,6 @@ jobs:
     runs-on: ubuntu-latest
 
     if: github.ref == 'refs/heads/main'
-
-    concurrency: deploy-production
 
     steps:
       - uses: actions/checkout@v2
