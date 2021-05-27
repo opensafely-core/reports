@@ -223,6 +223,41 @@ def test_report_view(client):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
+    "user_attributes,is_draft,expected_status",
+    [
+        (None, False, 200),
+        (None, True, 403),
+        ("no_permission", False, 200),
+        ("no_permission", True, 403),
+        ("has_permission", False, 200),
+        ("has_permission", True, 200),
+    ],
+)
+def test_draft_report_view_permissions(
+    client,
+    user_no_permission,
+    user_with_permission,
+    user_attributes,
+    is_draft,
+    expected_status,
+):
+    """Test a single report page"""
+    # report for a real file
+    report = baker.make_recipe("reports.real_report", is_draft=is_draft)
+    user_selection = {
+        "no_permission": user_no_permission,
+        "has_permission": user_with_permission,
+    }
+    user = user_selection.get(user_attributes)
+    if user is not None:
+        client.login(username=user.username, password="testpass")
+
+    response = client.get(report.get_absolute_url())
+    assert response.status_code == expected_status
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
     "cache_token",
     [uuid4(), "a-non-token-string", None],
     ids=["Test invalid uuid", "Test invalid string", "Test no token"],
