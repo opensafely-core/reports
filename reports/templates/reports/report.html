@@ -5,15 +5,15 @@
 
 {% block extra_head %}
   {% vite_asset 'assets/scripts/notebook.js' %}
+{% endblock %}}
+
+{% block meta %}
+  {% with meta_title=report.meta_title meta_description=report.description %}
+    <title>{{ meta_title }}</title>
+    <meta name="description" content="{{ meta_description }}">
+    {% include "partials/seo.html" %}
+  {% endwith %}
 {% endblock %}
-
-{% block meta_title %}
-  {{ report.title }} | OpenSAFELY: Reports
-{% endblock meta_title %}
-
-{% block meta_description %}
-  {{ report.description }}
-{% endblock meta_description %}
 
 {% block content %}
 <div class="container mx-auto px-4 md:px-8">
