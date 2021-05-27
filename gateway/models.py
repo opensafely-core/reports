@@ -17,7 +17,7 @@ class Organisation(models.Model):
 
 
 class User(AbstractUser):
-    organisations = models.ManyToManyField(Organisation)
+    organisations = models.ManyToManyField(Organisation, blank=True)
     title = models.CharField(max_length=50, null=True, blank=True)
     display_name = models.CharField(max_length=255)
 
