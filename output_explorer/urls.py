@@ -25,3 +25,5 @@ urlpatterns = [
     path("reports/", include("reports.urls", namespace="reports")),
     path("", include("gateway.urls", namespace="gateway")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+admin.site.site_header = "OpenSAFELY Reports Admin"
