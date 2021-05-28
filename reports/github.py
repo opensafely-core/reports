@@ -80,7 +80,13 @@ class GithubRepo:
 
     def __init__(self, client, owner, name):
         self.client = client
+        self._owner = owner
+        self._name = name
         self.repo_path_segments = ["repos", owner, name]
+
+    @property
+    def url(self):
+        return f"https://github.com/{self._owner}/{self._name}"
 
     def get_contents(self, path, ref):
         """

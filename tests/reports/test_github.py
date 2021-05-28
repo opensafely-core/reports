@@ -280,6 +280,11 @@ def test_github_repo_get_git_blob(httpretty):
     assert content_file.decoded_content == str_content
 
 
+def test_github_repo_get_url(httpretty):
+    repo = GithubRepo(client=GithubClient(use_cache=False), owner="test", name="foo")
+    assert repo.url == "https://github.com/test/foo"
+
+
 @pytest.mark.django_db
 def test_get_normal_html_from_github(httpretty):
     html = """

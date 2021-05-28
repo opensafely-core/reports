@@ -212,12 +212,17 @@ def test_report_view(client):
     # report for a real file
     report = baker.make_recipe("reports.real_report")
     response = client.get(report.get_absolute_url())
+
     assert_html_equal(
         response.context["notebook_contents"],
         """
             <h1>A Test Output HTML file</h1>
             <p>The test content</p>
         """,
+    )
+    assert (
+        response.context["repo_url"]
+        == "https://github.com/opensafely/output-explorer-test-repo"
     )
 
 
