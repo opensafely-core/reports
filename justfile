@@ -39,7 +39,7 @@ compile:
     pip-compile --generate-hashes requirements.dev.in
 
 collectstatic:
-    ./manage.py collectstatic --no-input --clear
+    ./manage.py collectstatic --no-input --clear | grep -v '^Deleting '
 
 # run django migrations locally
 migrate:
