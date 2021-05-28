@@ -57,6 +57,7 @@ def report_fetch_view(request, github_report):
         {
             "notebook_contents": process_html(github_report.get_html()),
             "report": github_report.report,
+            "repo_url": github_report.repo.url,
         },
     )
 
