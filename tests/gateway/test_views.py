@@ -32,3 +32,14 @@ def test_organisation_view_permissions(client):
         reverse("gateway:organisation_detail", args=(organisation2.code,))
     )
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_login_view_custom_form(client):
+    url = reverse("gateway:login")
+    response = client.get(url)
+    # custom classes that apply just to the username/password fields are present in the context
+    assert (
+        'class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400'
+        in response.rendered_content
+    )
