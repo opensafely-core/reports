@@ -4,6 +4,7 @@
 {% block content %}
     <h1>Login</h1>
     {% if request.user.is_anonymous %}
+        {# if the main site login is hidden, this page will be accessed only by internal users, so show username/password options only #}
         {% if show_login %}
           <p>
             <a href="{% url "social:begin" "nhsid"  %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
