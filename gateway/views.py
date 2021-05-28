@@ -24,14 +24,16 @@ def landing(request):
     """Landing page for main site and post-login.  Displays recent Report activity"""
     # Find the latest 10 publication dates in reverse order; this is the maximum number of
     # Outputs with publication date that we'll show
-    published = Report.objects.order_by("-publication_date")[:10].annotate(
+    all_reports = Report.objects.for_user(request.user)
+    published = all_reports.order_by("-publication_date")[:10].annotate(
         activity=Value("published"), activity_date=F("publication_date")
     )
     # Find the latest 10 last_updated dates in reverse order that are greater than
     # publication date; if published and output date are the same, we don't want to
     # show both; last updated should always be after published
-    last_10_updated = Report.objects.filter(
-        last_updated__isnull=False, last_updated__gt=F("publication_date")
+    last_10_updated = all_reports.filter(
+        last_updated__isnull=False,
+        last_updated__gt=F("publication_date"),
     ).order_by("-last_updated")[:10]
     updated = last_10_updated.annotate(
         activity=Value("updated"), activity_date=F("last_updated")

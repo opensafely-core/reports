@@ -4,7 +4,21 @@
 {% block content %}
     <h1>Login</h1>
     {% if request.user.is_anonymous %}
-        <p><a class="btn btn-primary" href="{% url "social:begin" "nhsid" %}">NHS Identity Login</a></p>
+        {# if the main site login is hidden, this page will be accessed only by internal users, so show username/password options only #}
+        {% if show_login %}
+          <p>
+            <a href="{% url "social:begin" "nhsid"  %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
+            NHS Identity Login</a>
+          </p>
+        {% endif %}
+
+        <form action="" method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
+          Login</button>
+        </form>
+
     {% else %}
         <p>You are loggged in as {{ request.user.display_name }}</p>
     {% endif %}
