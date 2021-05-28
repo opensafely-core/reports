@@ -14,7 +14,6 @@
     </div>
 
     <div class="ml-4 flex items-center lg:ml-6">
-      {% if show_login %}
         {% if user.is_authenticated %}
           <div class="relative inline-block text-left" x-data="{ open: false }">
             <div>
@@ -49,6 +48,13 @@
                   {{ request.user.username }}
                 </p>
               </div>
+              {% if request.user.is_staff %}
+                <div class="py-1">
+                  <a href="{% url 'admin:index' %}" class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700" role="menuitem" >
+                    Admin
+                  </a>
+                </div>
+              {% endif %}
               <div class="py-1">
                 <a href="{% url 'gateway:logout' %}" class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700" role="menuitem" >
                   Sign out
@@ -57,11 +63,12 @@
             </div>
           </div>
         {% else %}
-          <a href="{% url 'gateway:login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
-            Login
-          </a>
+          {% if show_login %}
+            <a href="{% url 'gateway:login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
+              Login
+            </a>
+          {% endif %}
         {% endif %}
-      {% endif %}
     </div>
   </div>
 </div>
