@@ -22,6 +22,28 @@
         <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form class="space-y-6" method="POST">
             {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    {% include "icons/solid/x-circle.svg" with htmlClass="h-5 w-5 text-red-400" %}
+                  </div>
+                  <div class="ml-3">
+                    <h2 class="text-sm font-medium text-red-800">
+                      An error occured
+                    </h2>
+                    <div class="mt-2 text-sm text-red-700">
+                      <ul class="space-y-1">
+                        {% for error in form.non_field_errors %}
+                          <li>{{ error|escape }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
             <div>
               <label for="id_username" class="block text-sm font-medium text-gray-700">
                 {{ form.username.label }}
@@ -29,6 +51,11 @@
               <div class="mt-1">
                 {{ form.username }}
               </div>
+              {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                  <p class="mt-2 text-sm font-semibold text-red-700">{{ error|escape }}</p>
+                {% endfor %}
+              {% endif %}
             </div>
 
             <div>
@@ -38,6 +65,11 @@
               <div class="mt-1">
                 {{ form.password }}
               </div>
+              {% if form.username.errors %}
+                {% for error in form.password.errors %}
+                  <p class="mt-2 text-sm font-semibold text-red-700">{{ error|escape }}</p>
+                {% endfor %}
+              {% endif %}
             </div>
 
             <div>
