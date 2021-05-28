@@ -28,6 +28,7 @@ class ReportAdmin(admin.ModelAdmin):
                     "description",
                     "publication_date",
                     "last_updated",
+                    "contact_email",
                 ]
             },
         ),
