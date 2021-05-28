@@ -8,7 +8,7 @@ category, _ = Category.objects.get_or_create(name="Reports")
 real_report = Recipe(
     Report,
     category=category,
-    menu_name="test",
+    title="test",
     repo="output-explorer-test-repo",
     branch="master",
     report_html_file_path="test-outputs/output.html",
@@ -17,7 +17,7 @@ real_report = Recipe(
 dummy_report = Recipe(
     Report,
     category=category,
-    menu_name="test",
+    title="test",
     repo="test-repo",
     report_html_file_path="report.html",
 )

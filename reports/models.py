@@ -22,6 +22,25 @@ def validate_html_filename(value):
         )
 
 
+class AutoPopulatingCharField(models.CharField):
+    def __init__(self, *args, populate_from=None, **kwargs):
+        if populate_from:
+            self._populate_from = populate_from
+        super().__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        if self._populate_from:
+            kwargs["populate_from"] = self._populate_from
+        return name, path, args, kwargs
+
+    def clean(self, value, model_instance):
+        if not value:
+            if self._populate_from:
+                value = getattr(model_instance, self._populate_from)
+        return super().clean(value, model_instance)
+
+
 class PopulatedCategoryManager(models.Manager):
     """
     Manager that returns only Categories that have at least one associated Report
@@ -80,8 +99,10 @@ class Report(models.Model):
         help_text="Report category; used for navigation",
         related_name="reports",
     )
-    menu_name = models.CharField(
-        max_length=255, help_text="A short name to display in the side nav"
+    menu_name = AutoPopulatingCharField(
+        max_length=60,
+        populate_from="title",
+        help_text="A short name to display in the side nav",
     )
     repo = models.CharField(
         max_length=255, help_text="Name of the OpenSAFELY repo (case insensitive)"
@@ -92,11 +113,11 @@ class Report(models.Model):
         help_text="Path to the report html file within the repo",
         validators=[validate_html_filename],
     )
-    slug = AutoSlugField(max_length=100, populate_from=["menu_name"], unique=True)
+    slug = AutoSlugField(max_length=100, populate_from=["title"], unique=True)
 
     # front matter fields
     authors = models.TextField(null=True, blank=True)
-    title = models.CharField(max_length=255, null=True, blank=True)
+    title = models.CharField(max_length=255)
     description = models.TextField(
         null=True,
         blank=True,
@@ -140,6 +161,7 @@ class Report(models.Model):
         # an existing folder, we don't want to use a previously cached request
         github_report = GithubReport(self, use_cache=False)
         try:
+            # noinspection PyStatementEffect
             github_report.repo
         except GithubAPIException:
             raise ValidationError(

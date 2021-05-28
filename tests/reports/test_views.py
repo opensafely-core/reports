@@ -23,7 +23,7 @@ def test_landing_view(client):
 
     # when Reports exist, their categories are included in the context
     baker.make_recipe("reports.dummy_report")
-    baker.make_recipe("reports.dummy_report", menu_name="test1")
+    baker.make_recipe("reports.dummy_report", title="test1")
     response = client.get(reverse("gateway:landing"))
     assert list(response.context["categories"]) == list(Category.objects.all())
 
@@ -299,7 +299,8 @@ def test_report_view_cache(client, log_output):
     # nothing cached yet
     response = client.get(report.get_absolute_url())
     assert_last_cache_log(
-        log_output, {"report_id": report.id, "slug": "test", "event": "Cache missed"}
+        log_output,
+        {"report_id": report.id, "slug": report.slug, "event": "Cache missed"},
     )
     assert response.status_code == 200
 
@@ -317,7 +318,7 @@ def test_report_view_cache(client, log_output):
         log_output,
         {
             "report_id": report.id,
-            "slug": "test",
+            "slug": report.slug,
             "event": "Cache token refreshed, redirecting...",
         },
     )

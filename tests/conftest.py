@@ -3,6 +3,7 @@ import logging
 from os import environ
 from pathlib import Path
 
+import django.db.models
 import httpretty as _httpretty
 import pytest
 import structlog
@@ -10,6 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory
+from model_bakery import baker
 from social_django.utils import load_strategy
 from structlog.testing import LogCapture
 
@@ -100,3 +102,9 @@ def reset_environment_after_test():
     yield
     environ.clear()
     environ.update(old_environ)
+
+
+baker.generators.add(
+    "reports.models.AutoPopulatingCharField",
+    baker.generators.default_mapping[django.db.models.CharField],
+)
