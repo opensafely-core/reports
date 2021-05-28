@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from django.core import management
 
 from reports.models import Report
@@ -43,3 +44,31 @@ def test_populate_reports():
     # calling it again does nothing
     management.call_command("populate_reports")
     assert Report.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_ensure_groups():
+    assert Group.objects.exists() is False
+    management.call_command("ensure_groups")
+    assert Group.objects.count() == 1
+    group = Group.objects.first()
+    assert group.name == "researchers"
+
+    # researchers group gets all model permissions for the reports app
+    permissions = Permission.objects.filter(content_type__app_label="reports")
+    for permission in permissions:
+        assert permission in group.permissions.all()
+
+
+@pytest.mark.django_db
+def test_ensure_groups_existing_group():
+    group = Group.objects.create(name="researchers")
+    assert group.permissions.exists() is False
+    management.call_command("ensure_groups")
+    assert Group.objects.count() == 1
+    group.refresh_from_db()
+
+    # missing permissions have been added
+    permissions = Permission.objects.filter(content_type__app_label="reports")
+    for permission in permissions:
+        assert permission in group.permissions.all()
