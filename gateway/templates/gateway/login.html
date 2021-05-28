@@ -1,25 +1,80 @@
 {% extends 'base.html' %}
-{% load static %}
+
+{% block meta %}
+  {% with meta_title="Login | OpenSAFELY: Reports" meta_description="Login" %}
+    <title>{{ meta_title }}</title>
+    <meta name="description" content="{{ meta_description }}">
+    {% include "partials/seo.html" %}
+  {% endwith %}
+{% endblock %}
 
 {% block content %}
-    <h1>Login</h1>
-    {% if request.user.is_anonymous %}
-        {# if the main site login is hidden, this page will be accessed only by internal users, so show username/password options only #}
-        {% if show_login %}
-          <p>
-            <a href="{% url "social:begin" "nhsid"  %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
-            NHS Identity Login</a>
-          </p>
-        {% endif %}
+  {% if request.user.is_anonymous %}
+    {# if the main site login is hidden, this page will be accessed only by internal users, so show username/password options only #}
+    <div class="bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Login
+        </h1>
+      </div>
 
-        <form action="" method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">
-          Login</button>
-        </form>
+      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form class="space-y-6" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
 
-    {% else %}
-        <p>You are loggged in as {{ request.user.display_name }}</p>
-    {% endif %}
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700">
+                Username
+              </label>
+              <div class="mt-1">
+                <input id="username" name="username" type="text" autocomplete="username" spellcheck="false" autocorrect="false" autocapitalize="none" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+            </div>
+
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div class="mt-1">
+                <input id="password" name="password" type="password" autocomplete="current-password" spellcheck="false" autocorrect="false" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+            </div>
+
+            <div>
+              <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Sign in
+              </button>
+            </div>
+          </form>
+
+          <div class="mt-6">
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">
+                  Or login with
+                </span>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <div>
+                {% if show_login %}
+                  <a href="{% url "social:begin" "nhsid"  %}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    NHS Identity Login
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <p>You are loggged in as {{ request.user.display_name }}</p>
+  {% endif %}
 {% endblock %}
