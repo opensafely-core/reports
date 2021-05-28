@@ -130,6 +130,10 @@ class Report(models.Model):
         self.cache_token = uuid4()
         self.save()
 
+    @property
+    def meta_title(self):
+        return f"{self.title} | OpenSAFELY: Reports"
+
     def clean(self):
         """Validate the repo, branch and report file path on save"""
         # Disable caching to fetch the repo and contents.  If this is a new report file in
