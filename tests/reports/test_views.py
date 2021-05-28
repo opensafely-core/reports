@@ -236,12 +236,15 @@ def test_report_view(client):
         ("no_permission", True, 404),
         ("has_permission", False, 200),
         ("has_permission", True, 200),
+        ("researcher", False, 200),
+        ("researcher", True, 200),
     ],
 )
 def test_draft_report_view_permissions(
     client,
     user_no_permission,
     user_with_permission,
+    researcher,
     user_attributes,
     is_draft,
     expected_status,
@@ -252,6 +255,7 @@ def test_draft_report_view_permissions(
     user_selection = {
         "no_permission": user_no_permission,
         "has_permission": user_with_permission,
+        "researcher": researcher,
     }
     user = user_selection.get(user_attributes)
     if user is not None:

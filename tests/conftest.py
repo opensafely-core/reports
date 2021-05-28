@@ -8,8 +8,9 @@ import httpretty as _httpretty
 import pytest
 import structlog
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core import management
 from django.test import RequestFactory
 from model_bakery import baker
 from social_django.utils import load_strategy
@@ -34,6 +35,15 @@ def user_with_permission():
 @pytest.fixture
 def user_no_permission():
     yield User.objects.create_user(username="user2", password="testpass")
+
+
+@pytest.fixture
+def researcher():
+    management.call_command("ensure_groups")
+    group = Group.objects.get(name="researchers")
+    user = User.objects.create_user(username="researcher", password="testpass")
+    user.groups.add(group)
+    yield user
 
 
 def _remove_cache_file_if_exists():
