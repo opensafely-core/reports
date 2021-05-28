@@ -67,8 +67,10 @@
           <dt class="text-sm font-medium text-gray-500">
             Contact
           </dt>
-          <dd class="mt-1 text-sm text-gray-900 hover:text-blue-800">
-            <a href="mailto:{{ report.contact_email }}">{{ report.contact_email }}</a>
+          <dd class="mt-1 text-sm text-gray-900">
+            <a href="mailto:{{ report.contact_email }}" class="text-blue-600 hover:text-blue-900 font-semibold hover:underline">
+              {{ report.contact_email }}
+            </a>
           </dd>
         </div>
       </dl>
