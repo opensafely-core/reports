@@ -14,38 +14,38 @@ class Command(BaseCommand):
 
         self.ensure_report(
             category,
-            "Vaccine Coverage",
-            "output-explorer-test-repo",
-            "master",
-            "test-outputs/vaccine-coverage-new.html",
+            title="Vaccine Coverage",
+            description="Weekly report on COVID-19 vaccination coverage in England",
+            repo="output-explorer-test-repo",
+            branch="master",
+            report_html_file_path="test-outputs/vaccine-coverage-new.html",
         )
 
         if "INCLUDE_PRIVATE" in os.environ:
             self.ensure_report(
                 category,
-                "SRO Measures",
-                "SRO-Measures",
-                "master",
-                "released_outputs/output/sentinel_measures.html",
+                title="SRO Measures",
+                description="Changes in key GP measures during the COVID-19 pandemic",
+                repo="SRO-Measures",
+                branch="master",
+                report_html_file_path="released_outputs/output/sentinel_measures.html",
             )
 
             self.ensure_report(
                 category,
-                "SRO Measures - Health Inequalities",
-                "SRO-Measures",
-                "master",
-                "released_outputs/output/sentinel_measures_demographics.html",
+                title="SRO Measures - Health Inequalities",
+                description="Changes in key GP measures during the pandemic - health inequalities",
+                repo="SRO-Measures",
+                branch="master",
+                report_html_file_path="released_outputs/output/sentinel_measures_demographics.html",
             )
 
-    def ensure_report(self, category, title, repo, branch, file_path):
+    def ensure_report(self, category, **kwargs):
         report, created = get_or_create_with_validation(
             Report,
             category=category,
-            title=title,
-            repo=repo,
-            branch=branch,
-            report_html_file_path=file_path,
             publication_date=datetime.datetime(year=2021, month=5, day=10),
+            **kwargs,
         )
         if created:
             self.stderr.write(f"Created report '{report.title}'")
