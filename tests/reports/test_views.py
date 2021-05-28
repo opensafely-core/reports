@@ -226,9 +226,9 @@ def test_report_view(client):
     "user_attributes,is_draft,expected_status",
     [
         (None, False, 200),
-        (None, True, 403),
+        (None, True, 404),
         ("no_permission", False, 200),
-        ("no_permission", True, 403),
+        ("no_permission", True, 404),
         ("has_permission", False, 200),
         ("has_permission", True, 200),
     ],

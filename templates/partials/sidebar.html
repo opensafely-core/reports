@@ -79,7 +79,7 @@
                         id="mobile-sidebar-{{ forloop.counter }}"
                         x-cloak
                         x-show="open">
-                        {% category_reports_allowed_for_user category as category_reports %}
+                        {% category_reports_for_user category as category_reports %}
                         {% for report in category_reports %}
                           <li>
                             <a href="{{ report.get_absolute_url }}" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md ">
@@ -140,7 +140,7 @@
                           id="desktop-sidebar-{{ forloop.counter }}"
                           x-show="open"
                           x-cloak>
-                            {% category_reports_allowed_for_user category as category_reports %}
+                            {% category_reports_for_user category as category_reports %}
                             {% for report in category_reports %}
                               <li>
                                 <a

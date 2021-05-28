@@ -1,7 +1,7 @@
 import structlog
 from bs4 import BeautifulSoup
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404, redirect
+from django.http import Http404
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_control
@@ -20,9 +20,10 @@ def report_view(request, slug, cache_token=None):
     the report template page.  Caches for 24 hours, can be forced to refetch and update
     the cache with the `force-update` query parameter.
     """
-    report = get_object_or_404(Report, slug=slug)
-    if report.is_draft and not request.user.has_perm("reports.view_draft"):
-        raise PermissionDenied
+    try:
+        report = Report.objects.for_user(request.user).get(slug=slug)
+    except Report.DoesNotExist:
+        raise Http404("Report matching query does not exist")
 
     if "force-update" in request.GET:
         # Force an update by refreshing the cache_token and redirecting

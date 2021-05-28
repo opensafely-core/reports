@@ -35,17 +35,11 @@ class PopulatedCategoryManager(models.Manager):
             .filter(count__gt=0)
         ).order_by("name")
 
-    def allowed_for_user(self, user):
-        if user.has_perm("reports.view_draft"):
-            return self.get_queryset()
-        return (
-            super()
-            .get_queryset()
-            .annotate(
-                count=models.Count("reports", filter=models.Q(reports__is_draft=False))
-            )
-            .filter(count__gt=0)
-        ).order_by("name")
+    def for_user(self, user):
+        report_category_ids = set(
+            Report.objects.for_user(user).values_list("category_id", flat=True)
+        )
+        return self.get_queryset().filter(id__in=report_category_ids).order_by("name")
 
 
 class Category(models.Model):
@@ -61,12 +55,25 @@ class Category(models.Model):
         return self.name
 
 
+class ReportManager(models.Manager):
+    """
+    Manager that can returns only Reports that a particular user has access to
+    """
+
+    def for_user(self, user):
+        queryset = self.get_queryset()
+        if user.has_perm("reports.view_draft"):
+            return queryset
+        return queryset.filter(is_draft=False)
+
+
 class Report(models.Model):
     """
     A report retrieved from an OpenSAFELY github repo
     Currently allows for single HTML report files only
     """
 
+    objects = ReportManager()
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
