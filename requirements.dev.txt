@@ -93,7 +93,9 @@ coverage[toml]==5.5 \
 decorator==5.0.9 \
     --hash=sha256:6e5c199c16f7a9f0e3a61a4a54b3d27e7dad0dbdde92b944426cb20914376323 \
     --hash=sha256:72ecfba4320a893c53f9706bebb2d55c270c1e51a28789361aa93e4a21319ed5
-    # via ipython
+    # via
+    #   ipdb
+    #   ipython
 distlib==0.3.1 \
     --hash=sha256:8c09de2c67b3e7deef7184574fc060ab8a793e7adbb183d942c389c8b13c52fb \
     --hash=sha256:edf6116872c863e1aa9d5bb7cb5e05a022c519a4594dc703843343a9ddd9bff1
@@ -123,8 +125,8 @@ iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
     --hash=sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32
     # via pytest
-ipdb==0.13.7 \
-    --hash=sha256:178c367a61c1039e44e17c56fcc4a6e7dc11b33561261382d419b6ddb4401810
+ipdb==0.13.8 \
+    --hash=sha256:8d368fa048a93ad6c1985d7f1d78d68580c879e4053fc15714bdcf2a1b042d06
     # via -r requirements.dev.in
 ipython-genutils==0.2.0 \
     --hash=sha256:72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8 \
