@@ -10,7 +10,6 @@
 
 {% block content %}
   {% if request.user.is_anonymous %}
-    {# if the main site login is hidden, this page will be accessed only by internal users, so show username/password options only #}
     <div class="bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
