@@ -4,5 +4,5 @@ from .models import Category
 def reports(request):
     return {
         "categories": Category.populated.for_user(request.user),
-        "script_attrs": {"nomodule", ""},
+        "scripts_attrs": {"nomodule": ""},
     }
