@@ -10,4 +10,16 @@
 html {
   scroll-padding-top: 70px;
 }
+
+.ie11 {
+  .gap-y-8 > div + div {
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 1024px) {
+    .ie-block {
+      display: block;
+    }
+  }
+}
 /*! purgecss end ignore */

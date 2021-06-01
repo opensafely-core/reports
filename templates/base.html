@@ -37,7 +37,7 @@
   <div x-data="{ open: false }" @keydown.window.escape="open = false" class="pt-12 lg:pt-0 lg:h-screen flex overflow-hidden bg-white">
     {% include "partials/sidebar.html" %}
 
-    <div class="flex flex-col w-0 flex-1 overflow-hidden">
+    <div class="ie-block flex flex-col w-0 flex-1 overflow-hidden">
       {% include "partials/header.html" %}
 
       <div class="flex flex-col flex-1 relative lg:overflow-y-auto overflow-x-hidden">
@@ -52,6 +52,10 @@
   </div>
 
   {# Legacy browsers #}
+  <script nomodule>
+    var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+    if (isIE11) { document.documentElement.classList.add('ie11'); }
+  </script>
   <script nomodule src="https://polyfill.io/v3/polyfill.min.js"></script>
   <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/6.8.3/system.min.js" integrity="sha512-dGQpe9Hb1dXjYT7TSrTS6qnRmzrhY9wsyRtN6BR2R+XgiXf5cpgvWVGPWptrarkfoldzpIkl7adWEddhoKsX6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.8.2/alpine-ie11.js" integrity="sha512-KA2IvqHkHQMVbJlMnypXkjiHFkYAVaYSd193ckoVZYZ7AH2qZqlv7odiJcjAF2lECSEHptHFrrKaIWCXqZCXHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
