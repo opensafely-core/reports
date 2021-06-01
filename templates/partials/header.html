@@ -42,7 +42,7 @@
             >
               <div class="px-4 py-3">
                 <p class="text-sm">
-                  Signed in as
+                  Logged in as
                 </p>
                 <p class="text-sm font-medium text-gray-900 truncate">
                   {{ request.user.username }}
@@ -57,7 +57,7 @@
               {% endif %}
               <div class="py-1">
                 <a href="{% url 'gateway:logout' %}" class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700" role="menuitem" >
-                  Sign out
+                  Log out
                 </a>
               </div>
             </div>
