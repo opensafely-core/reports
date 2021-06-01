@@ -119,9 +119,7 @@ class Report(models.Model):
     authors = models.TextField(null=True, blank=True)
     title = models.CharField(max_length=255)
     description = models.TextField(
-        null=True,
-        blank=True,
-        help_text="Optional description to display before rendered report",
+        help_text="Short description to display before rendered report and in meta tags",
     )
     publication_date = models.DateField(help_text="Date published")
     last_updated = models.DateField(

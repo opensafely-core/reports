@@ -109,6 +109,7 @@ def test_report_menu_name_autopopulates():
         title="Fungible watermelon",
         category=category,
         publication_date=datetime.date.today(),
+        description="A description",
         **REAL_REPO_DETAILS
     )
     report.full_clean()
@@ -122,6 +123,7 @@ def test_report_menu_name_is_limited_to_sixty_characters():
         title="012345678901234567890123456789012345678901234567890123456789X",
         category=category,
         publication_date=datetime.date.today(),
+        description="A description",
         **REAL_REPO_DETAILS
     )
     with pytest.raises(ValidationError, match="at most 60 characters"):
