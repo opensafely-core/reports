@@ -46,7 +46,7 @@ def researcher():
     yield user
 
 
-def _remove_cache_file_if_exists():
+def remove_cache_file_if_exists():
     test_cache_path = Path(__file__).parent.parent / "test_cache.sqlite"
     if test_cache_path.exists():  # pragma: no cover
         test_cache_path.unlink()
@@ -62,12 +62,12 @@ def pytest_sessionstart(session):
     logger = logging.getLogger("requests_cache")
     logger.setLevel("ERROR")
 
-    _remove_cache_file_if_exists()
+    remove_cache_file_if_exists()
 
 
 def pytest_sessionfinish(session, exitstatus):
     """clean up test cache files after session starts"""
-    _remove_cache_file_if_exists()  # pragma: no cover
+    remove_cache_file_if_exists()  # pragma: no cover
 
 
 @pytest.fixture(name="log_output", scope="module")

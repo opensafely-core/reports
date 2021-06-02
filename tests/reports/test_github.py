@@ -10,6 +10,8 @@ from requests.exceptions import HTTPError
 from reports.github import GithubAPIException, GithubClient, GithubRepo, GithubReport
 from reports.models import Report
 
+from ..conftest import remove_cache_file_if_exists
+
 
 def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
     commit_dates = (
@@ -478,3 +480,27 @@ def test_integration():
 </html>
 """
     )
+
+
+@pytest.mark.django_db
+def test_clear_cache():
+    # make sure we start with a fresh cache
+    remove_cache_file_if_exists()
+    report = baker.make(
+        Report,
+        repo="output-explorer-test-repo",
+        branch="master",
+        report_html_file_path="test-outputs/output.html",
+    )
+    github_report = GithubReport(report)
+    # no github requests have been made, so cache is currently clear
+    assert github_report.client.session.cache.urls == []
+    github_report.get_html()
+    # 3 calls made, to get repo, get contents and get commits
+    assert len(github_report.client.session.cache.urls) == 3
+    # make another request using this cache session
+    github_report.client.session.get("https://www.opensafely.org/")
+    assert len(github_report.client.session.cache.urls) == 4
+    # Clearing the cache only clears urls related to this report
+    github_report.clear_cache()
+    assert github_report.client.session.cache.urls == ["https://www.opensafely.org/"]
