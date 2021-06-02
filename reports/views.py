@@ -29,7 +29,7 @@ def report_view(request, slug, cache_token=None):
         # Force an update by refreshing the cache_token and redirecting
         report.refresh_cache_token()
         logger.info(
-            "Cache token refreshed, redirecting...",
+            "Cache token refreshed and requests cache cleared; redirecting...",
             report_id=report.pk,
             slug=report.slug,
         )

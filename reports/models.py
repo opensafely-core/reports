@@ -148,7 +148,9 @@ class Report(models.Model):
         return self.slug
 
     def refresh_cache_token(self):
+        """Refresh cache token to invalidate http cache and clear request cache for github requests related to this repo"""
         self.cache_token = uuid4()
+        GithubReport(self).clear_cache()
         self.save()
 
     @property

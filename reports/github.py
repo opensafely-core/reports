@@ -214,3 +214,11 @@ class GithubReport:
             self.report.save()
 
         return file.decoded_content
+
+    def clear_cache(self):
+        """Clear all request cache urls for this repo"""
+        cached_urls = self.client.session.cache.urls
+        repo_path = f"opensafely/{self.report.repo}".lower()
+        for cached_url in cached_urls:
+            if repo_path in cached_url.lower():
+                self.client.session.cache.delete_url(cached_url)
