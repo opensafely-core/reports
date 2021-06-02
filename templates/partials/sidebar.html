@@ -63,7 +63,7 @@
               <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
                 <ul>
                   {% for category in categories %}
-                    <li x-data="{ open: false }" class="space-y-1">
+                    <li x-data="{ open: {% if report.category|slugify == category.name|slugify %}true{% else %}false{% endif %} }" class="space-y-1">
                       <button
                         @click="open = !open"
                         aria-controls="mobile-sidebar-{{ forloop.counter }}"
@@ -80,10 +80,14 @@
                         x-cloak
                         x-show="open">
                         {% category_reports_for_user category as category_reports %}
-                        {% for report in category_reports %}
+                        {% for single_report in category_reports %}
                           <li>
-                            <a href="{{ report.get_absolute_url }}" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md ">
-                              {{ report.menu_name }} {% if report.is_draft %}(Draft){% endif %}
+                            <a href="{{ single_report.get_absolute_url }}" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md
+                              {% if single_report.menu_name|slugify == report.menu_name|slugify %}
+                                bg-gray-700
+                              {% endif %}
+                            ">
+                              {{ single_report.menu_name }} {% if single_report.is_draft %}(Draft){% endif %}
                             </a>
                           </li>
                         {% endfor %}
@@ -124,7 +128,7 @@
               <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
                   <ul>
                     {% for category in categories %}
-                      <li x-data="{ open: false }" class="space-y-1">
+                      <li x-data="{ open: {% if report.category|slugify == category.name|slugify %}true{% else %}false{% endif %} }" class="space-y-1">
                         <button
                           @click="open = !open"
                           aria-controls="desktop-sidebar-{{ forloop.counter }}"
@@ -141,12 +145,17 @@
                           x-show="open"
                           x-cloak>
                             {% category_reports_for_user category as category_reports %}
-                            {% for report in category_reports %}
+                            {% for single_report in category_reports %}
                               <li>
                                 <a
-                                  href="{{ report.get_absolute_url }}"
-                                  class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md ">
-                                  {{ report.menu_name }} {% if report.is_draft %}(Draft){% endif %}
+                                  href="{{ single_report.get_absolute_url }}"
+                                  class="
+                                    group w-full flex items-center pl-8 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md
+                                    {% if single_report.menu_name|slugify == report.menu_name|slugify %}
+                                      bg-gray-700
+                                    {% endif %}
+                                  ">
+                                  {{ single_report.menu_name }} {% if single_report.is_draft %}(Draft){% endif %}
                                 </a>
                               </li>
                             {% endfor %}
