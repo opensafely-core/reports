@@ -63,7 +63,7 @@
               <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
                 <ul>
                   {% for category in categories %}
-                    <li x-data="{ open: {% if report.category|slugify == category.name|slugify %}true{% else %}false{% endif %} }" class="space-y-1">
+                    <li x-data="{ open: {% if report.category.slug == category.slug %}true{% else %}false{% endif %} }" class="space-y-1">
                       <button
                         @click="open = !open"
                         aria-controls="mobile-sidebar-{{ forloop.counter }}"
@@ -128,7 +128,7 @@
               <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
                   <ul>
                     {% for category in categories %}
-                      <li x-data="{ open: {% if report.category|slugify == category.name|slugify %}true{% else %}false{% endif %} }" class="space-y-1">
+                      <li x-data="{ open: {% if report.category.slug == category.slug %}true{% else %}false{% endif %} }" class="space-y-1">
                         <button
                           @click="open = !open"
                           aria-controls="desktop-sidebar-{{ forloop.counter }}"

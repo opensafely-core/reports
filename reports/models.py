@@ -65,6 +65,7 @@ class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     objects = models.Manager()
     populated = PopulatedCategoryManager()
+    slug = AutoSlugField(populate_from=("name",), unique=True)
 
     class Meta:
         verbose_name_plural = "categories"
