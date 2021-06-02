@@ -33,7 +33,8 @@ class GithubClient:
             self.headers["Authorization"] = f"token {env.str('GITHUB_TOKEN')}"
         if use_cache:
             self.session = requests_cache.CachedSession(
-                backend="sqlite", namespace=env.str("REQUESTS_CACHE_NAME", "http_cache")
+                backend="sqlite",
+                cache_name=env.str("REQUESTS_CACHE_NAME", "http_cache"),
             )
         else:
             self.session = requests.Session()
