@@ -472,7 +472,7 @@ def test_integration():
 
 <body>
     <h1>A Test Output HTML file</h1>
-    <p>The test content</>\t
+    <p>The test content</p>
 </body>
 
 </html>
