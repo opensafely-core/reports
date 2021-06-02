@@ -144,13 +144,11 @@ def test_landing_view_draft_reports_permissions(
         (
             {
                 "test1": {"publication_date": date(2021, 2, 1)},
-                "test2": {
-                    "publication_date": date(2021, 1, 1),
-                    "last_updated": date(2021, 3, 1),
-                },
+                "test2": {"publication_date": date(2021, 1, 1)},
+                "test3": {"publication_date": date(2021, 3, 1)},
             },
             [
-                ("test2", "updated", date(2021, 3, 1)),
+                ("test3", "published", date(2021, 3, 1)),
                 ("test1", "published", date(2021, 2, 1)),
                 ("test2", "published", date(2021, 1, 1)),
             ],
@@ -166,6 +164,19 @@ def test_landing_view_draft_reports_permissions(
             [
                 ("test1", "published", date(2021, 2, 1)),
                 ("test2", "published", date(2021, 1, 1)),
+            ],
+        ),
+        (
+            {
+                "test1": {"publication_date": date(2021, 2, 1)},
+                "test2": {
+                    "publication_date": date(2021, 1, 1),
+                    "last_updated": date(2021, 3, 1),
+                },
+            },
+            [
+                ("test2", "updated", date(2021, 3, 1)),
+                ("test1", "published", date(2021, 2, 1)),
             ],
         ),
         (
@@ -186,9 +197,10 @@ def test_landing_view_draft_reports_permissions(
         ),
     ],
     ids=[
-        "Test reports with both publication and last updated are included, in reverse order",
-        "Test reports with identical publication and updated dates only show publication",
-        "Test only 10 most recent events are shown",
+        "Orders reports by publication date, most recent first",
+        "Only mentions publication if a report is updated the same day it's published",
+        "Only mentions update if a report is updated after publication",
+        "Only 10 most recent events are shown",
     ],
 )
 def test_landing_view_recent_activity(client, reports, expected):

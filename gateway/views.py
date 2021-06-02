@@ -2,7 +2,7 @@ from datetime import datetime
 
 import structlog
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import F, Value
+from django.db.models import F, Q, Value
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
@@ -22,25 +22,34 @@ logger = structlog.getLogger()
 @never_cache
 def landing(request):
     """Landing page for main site and post-login.  Displays recent Report activity"""
-    # Find the latest 10 publication dates in reverse order; this is the maximum number of
-    # Outputs with publication date that we'll show
+    # We want the ten most recently published or updated outputs, without duplication. Until we've pulled them all
+    # back and compared their activity dates we don't know which ones we will be using, so we grab ten of each which
+    # must be enough.
     all_reports = Report.objects.for_user(request.user)
-    published = all_reports.order_by("-publication_date")[:10].annotate(
-        activity=Value("published"), activity_date=F("publication_date")
+
+    # To avoid duplication of reports in the activity list, we don't display the publication event for reports that
+    # have subsequently been updated. However if they are updated on the same day that they were published then we
+    # just consider that as a single publication event. The sum total of this is that we are only interested in
+    # publication dates where there has been no update or where the update date is the same as publication.
+    published = (
+        all_reports.filter(
+            Q(last_updated__isnull=True) | Q(publication_date__exact=F("last_updated")),
+        )
+        .order_by("-publication_date")[:10]
+        .annotate(activity=Value("published"), activity_date=F("publication_date"))
     )
-    # Find the latest 10 last_updated dates in reverse order that are greater than
-    # publication date; if published and output date are the same, we don't want to
-    # show both; last updated should always be after published
-    last_10_updated = all_reports.filter(
-        last_updated__isnull=False,
-        last_updated__gt=F("publication_date"),
-    ).order_by("-last_updated")[:10]
-    updated = last_10_updated.annotate(
-        activity=Value("updated"), activity_date=F("last_updated")
+
+    # As above, we ignore updates when they happen on the same day as publication.
+    updated = (
+        all_reports.filter(
+            last_updated__isnull=False,
+            last_updated__gt=F("publication_date"),
+        )
+        .order_by("-last_updated")[:10]
+        .annotate(activity=Value("updated"), activity_date=F("last_updated"))
     )
-    # sort Outputs by activity date and select the 10 most recent; this may return
-    # duplicate Outputs if their published and last_updated dates are both recent, but
-    # that's OK
+
+    # Merge the publish and update events and grab the ten most recent.
     recent_activity = sorted(
         [*published, *updated], key=lambda x: x.activity_date, reverse=True
     )[:10]
