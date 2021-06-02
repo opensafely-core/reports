@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_control
+from lxml.html.clean import Cleaner
 
 from .github import GithubReport
 from .models import Report
@@ -63,38 +64,24 @@ def report_fetch_view(request, github_report):
 
 
 def process_html(html):
-    soup = BeautifulSoup(html, "html.parser")
+    # We want to handle complete HTML documents and also fragments. We're going to extract the contents of the body
+    # at the end of this function, but it's easiest to normalize to complete documents because that's what the
+    # HTML-wrangling libraries we're using are most comfortable handling.
+    if "<html>" not in html:
+        html = f"<html><body>{html}</body></head>"
 
-    # Reports may be formatted as proper HTML documents, or just as fragments of HTML. In the former case we want
-    # just the body, in the latter we want the whole thing.
-    if soup.html:
-        if soup.html.body:
-            content = _contents_of_tag(soup.html.body)
-        else:
-            raise ValueError("HTML document has an <html>, but no <body>.")
-    else:
-        content = soup
+    cleaned = Cleaner(page_structure=False, style=True, kill_tags=["head"]).clean_html(
+        html
+    )
 
-    # As well as removing any <head>, we defensively remove <script> or <style> elements that may have been inserted
-    # elsewhere in the document.
-    for tag in ["script", "style"]:
-        for element in content.find_all(tag):
-            element.decompose()
+    soup = BeautifulSoup(cleaned, "html.parser")
 
-    # For small screens we want to allow side-scrolling for just a small number of elements. To enable this each one needs to be
-    # wrapped in a div that we can target for styling.
+    # For small screens we want to allow side-scrolling for just a small number of elements. To enable this each one
+    # needs to be wrapped in a div that we can target for styling.
     for tag in ["table", "pre"]:
-        for element in content.find_all(tag):
+        for element in soup.find_all(tag):
             element.wrap(soup.new_tag("div", attrs={"class": "overflow-wrapper"}))
 
-    return mark_safe(str(content))
+    body_content = "".join([str(element) for element in soup.body.contents])
 
-
-def _contents_of_tag(tag):
-    # There isn't any way through the BeautifulSoup API to address the entire contents of a tag as a single
-    # document-without-a-single-root-node. But the internals of the library can cope with such documents -- as long
-    # as they are handed to the BeautifulSoup constructor. So we rip out the contents of this tag as a list of
-    # strings and re-parse it.
-    return BeautifulSoup(
-        "".join([str(element) for element in tag.contents]), "html.parser"
-    )
+    return mark_safe(body_content)

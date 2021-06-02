@@ -5,6 +5,7 @@ django-structlog
 django-vite
 furl
 gunicorn
+lxml
 requests-cache
 social-auth-core[openidconnect]
 social-auth-app-django
