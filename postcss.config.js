@@ -1,8 +1,9 @@
 module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-    cssnano: {
+  plugins: [
+    require('tailwindcss'),
+    require("postcss-color-rgba-fallback"),
+    require('autoprefixer'),
+    require('cssnano')({
       preset: [
         "default",
         {
@@ -10,6 +11,6 @@ module.exports = {
           discardComments: { removeAll: true },
         },
       ],
-    },
-  },
+    }),
+  ],
 };

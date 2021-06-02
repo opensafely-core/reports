@@ -1,3 +1,5 @@
+import legacy from "@vitejs/plugin-legacy";
+
 /**
  * @type {import('vite').UserConfig}
  */
@@ -14,6 +16,9 @@ const config = {
     outDir: "static/dist",
     emptyOutDir: true,
   },
+  plugins: [legacy({
+    additionalLegacyPolyfills: ['regenerator-runtime/runtime']
+  })],
 };
 
 export default config;
