@@ -340,7 +340,7 @@ def test_report_view_cache(client, log_output):
         {
             "report_id": report.id,
             "slug": report.slug,
-            "event": "Cache token refreshed, redirecting...",
+            "event": "Cache token refreshed and requests cache cleared; redirecting...",
         },
     )
     assert response.status_code == 302

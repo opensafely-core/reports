@@ -33,7 +33,8 @@ class GithubClient:
             self.headers["Authorization"] = f"token {env.str('GITHUB_TOKEN')}"
         if use_cache:
             self.session = requests_cache.CachedSession(
-                backend="sqlite", namespace=env.str("REQUESTS_CACHE_NAME", "http_cache")
+                backend="sqlite",
+                cache_name=env.str("REQUESTS_CACHE_NAME", "http_cache"),
             )
         else:
             self.session = requests.Session()
@@ -214,3 +215,11 @@ class GithubReport:
             self.report.save()
 
         return file.decoded_content
+
+    def clear_cache(self):
+        """Clear all request cache urls for this repo"""
+        cached_urls = self.client.session.cache.urls
+        repo_path = f"opensafely/{self.report.repo}".lower()
+        for cached_url in cached_urls:
+            if repo_path in cached_url.lower():
+                self.client.session.cache.delete_url(cached_url)
