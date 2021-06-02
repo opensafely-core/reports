@@ -60,6 +60,7 @@ ensure-groups:
 # blow away the local database and repopulate it
 dev-reset:
     rm db.sqlite3
+    rm http_cache.sqlite
     just setup
 
 # run the dev server

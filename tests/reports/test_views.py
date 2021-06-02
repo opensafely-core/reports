@@ -350,7 +350,7 @@ def test_report_view_cache(client, log_output):
 @pytest.mark.parametrize(
     "html",
     [
-        b"""
+        """
             <!DOCTYPE html>
             <html>
                 <head>
@@ -364,7 +364,7 @@ def test_report_view_cache(client, log_output):
                 </body>
             </html>
         """,
-        b"""
+        """
             <html>
                 <body>
                     <p>foo</p>
@@ -372,11 +372,11 @@ def test_report_view_cache(client, log_output):
                 </body>
             </html>
         """,
-        b"""
+        """
             <p>foo</p>
             <div>Stuff</div>
         """,
-        b"""
+        """
             <script>Some Javascript nonsense</script>
             <p>foo</p>
             <div>
@@ -384,9 +384,22 @@ def test_report_view_cache(client, log_output):
                 <script>Some more Javascript nonsense</script>
             </div>
         """,
-        b"""
+        """
+            <p onclick="alert('BOOM!')">foo</p>
+            <div>
+                Stuff
+            </div>
+        """,
+        """
             <style>Mmmm, lovely styles...</style>
             <p>foo</p>
+            <div>
+                Stuff
+                <style>MOAR STYLZ</style>
+            </div>
+        """,
+        """
+            <p style="color: red;">foo</p>
             <div>
                 Stuff
                 <style>MOAR STYLZ</style>
@@ -398,7 +411,9 @@ def test_report_view_cache(client, log_output):
         "Extracts body from HTML document without head",
         "Returns HTML without body tags unchanged",
         "Strips out all script tags",
+        "Strips out inline handlers",
         "Strips out all style tags",
+        "Strips out inline styles",
     ],
 )
 def test_html_processing_extracts_body(html):
@@ -415,12 +430,12 @@ def test_html_processing_extracts_body(html):
     ("input", "report"),
     [
         (
-            b"""
+            """
                 <table>
                     <tr><td>something</td></tr>
                 </table>
             """,
-            b"""
+            """
                 <div class="overflow-wrapper">
                     <table>
                         <tr><td>something</td></tr>
@@ -429,7 +444,7 @@ def test_html_processing_extracts_body(html):
             """,
         ),
         (
-            b"""
+            """
                 <html>
                     <body>
                         <table>
@@ -438,7 +453,7 @@ def test_html_processing_extracts_body(html):
                     </body>
                 </html>
             """,
-            b"""
+            """
                 <div class="overflow-wrapper">
                     <table>
                         <tr><td>something</td></tr>
@@ -447,7 +462,7 @@ def test_html_processing_extracts_body(html):
             """,
         ),
         (
-            b"""
+            """
                 <table>
                     <tr><td>something</td></tr>
                 </table>
@@ -455,7 +470,7 @@ def test_html_processing_extracts_body(html):
                     <tr><td>something else</td></tr>
                 </table>
             """,
-            b"""
+            """
                 <div class="overflow-wrapper">
                     <table>
                         <tr><td>something</td></tr>
@@ -469,10 +484,10 @@ def test_html_processing_extracts_body(html):
             """,
         ),
         (
-            b"""
+            """
                 <pre>Some code or something here</pre>
             """,
-            b"""
+            """
                 <div class="overflow-wrapper">
                     <pre>Some code or something here</pre>
                 </div>
