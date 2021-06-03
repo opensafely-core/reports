@@ -203,39 +203,44 @@ class Report(models.Model):
         instance._loaded_values = dict(zip(field_names, values))
         return instance
 
-    def save(self, *args, **kwargs):
-        # if updating an existing instance, check fields changed and refresh cache if required
-        # instances just created (in tests/shell) will not have called `from_db`
-        if hasattr(self, "_loaded_values") and not self._state.adding:
-            requests_cache_fields = {"repo", "branch", "report_html_file_path"}
-            # exclude fields that are autopopulated or irrelevant for http caching from the check
-            exclude_fields = {
-                "id",
-                "slug",
-                "cache_token",
-                "last_updated",
-                "use_git_blob",
-                "is_draft",
-            }
-            all_field_keys = self._loaded_values.keys()
-            http_cache_fields = (
-                set(all_field_keys) - requests_cache_fields - exclude_fields
+    def _check_and_refresh_cache(self):
+        requests_cache_fields = {"repo", "branch", "report_html_file_path"}
+        # exclude fields that are autopopulated or irrelevant for http caching from the check
+        exclude_fields = {
+            "id",
+            "slug",
+            "cache_token",
+            "last_updated",
+            "use_git_blob",
+            "is_draft",
+        }
+        all_field_keys = self._loaded_values.keys()
+        http_cache_fields = set(all_field_keys) - requests_cache_fields - exclude_fields
+        if any(
+            getattr(self, field) != self._loaded_values[field]
+            for field in requests_cache_fields
+        ):
+            logger.info(
+                "Source repo field(s) updated; refreshing cache token and clearing requests cache"
             )
-            if any(
-                getattr(self, field) != self._loaded_values[field]
-                for field in requests_cache_fields
-            ):
-                logger.info(
-                    "Source repo field(s) updated; refreshing cache token and clearing requests cache"
-                )
-                self.refresh_cache_token(commit=False)
-            elif any(
-                getattr(self, field) != self._loaded_values[field]
-                for field in http_cache_fields
-            ):
-                logger.info("Non-repo field(s) updated; refreshing cache token only")
-                self.refresh_cache_token(refresh_http_cache=False, commit=False)
+            self.refresh_cache_token(commit=False)
+        elif any(
+            getattr(self, field) != self._loaded_values[field]
+            for field in http_cache_fields
+        ):
+            logger.info("Non-repo field(s) updated; refreshing cache token only")
+            self.refresh_cache_token(refresh_http_cache=False, commit=False)
 
+    def save(self, *args, **kwargs):
+        # If updating an existing instance, check fields changed and refresh cache if required
+        # For an existing instance, `from_db` will be called when the instance is retrieved from the database, and initial
+        # values stored on the instance. When we call save, we will have the _loaded_values attribute.  If this save is
+        # creating a new instance, the _loaded_values attribute will not be present.
+        # Instances may be created, saved, and then updated and saved again without re-fetching from the db (typically in tests/shell);
+        # In this case they will not have called `from_db` and will not have loaded initial values
+        initial_values_loaded_from_db = hasattr(self, "_loaded_values")
+        if initial_values_loaded_from_db:
+            self._check_and_refresh_cache()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
