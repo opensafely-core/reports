@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+  {% with meta_title="500 - Server error" meta_description="" %}
+    <title>{{ meta_title }}</title>
+    <meta name="description" content="{{ meta_description }}">
+    {% include "partials/seo.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block content %}
+<section class="py-20">
+  <div class="container px-4 mx-auto text-center">
+    <span class="text-4xl text-blue-700 font-bold font-heading">Error 500</span>
+    <h1 class="mb-6 text-4xl font-bold font-heading">Server error</h1>
+    <p class="mb-8 text-gray-600">Sorry, but we are unable to load that page.</p>
+    <div class="flex justify-center">
+      <div class="inline-flex rounded-md shadow">
+        <a href="/" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+          Go to the homepage
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
