@@ -7,10 +7,12 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
+from environs import Env
 
 from .github import GithubAPIException, GithubReport
 
 
+env = Env()
 logger = structlog.getLogger()
 
 
@@ -147,11 +149,13 @@ class Report(models.Model):
     def __str__(self):
         return self.slug
 
-    def refresh_cache_token(self):
+    def refresh_cache_token(self, refresh_http_cache=True, commit=True):
         """Refresh cache token to invalidate http cache and clear request cache for github requests related to this repo"""
         self.cache_token = uuid4()
-        GithubReport(self).clear_cache()
-        self.save()
+        if refresh_http_cache:
+            GithubReport(self).clear_cache()
+        if commit:
+            self.save()
 
     @property
     def meta_title(self):
@@ -159,36 +163,80 @@ class Report(models.Model):
 
     def clean(self):
         """Validate the repo, branch and report file path on save"""
-        # Disable caching to fetch the repo and contents.  If this is a new report file in
-        # an existing folder, we don't want to use a previously cached request
-        github_report = GithubReport(self, use_cache=False)
-        try:
-            # noinspection PyStatementEffect
-            github_report.repo
-        except GithubAPIException:
-            raise ValidationError(
-                {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
-            )
+        # GITHUB_VALIDATION env var can optionally be set to False to skip this validation in tests
+        if env.bool("GITHUB_VALIDATION", True):
+            # Disable caching to fetch the repo and contents.  If this is a new report file in
+            # an existing folder, we don't want to use a previously cached request
+            github_report = GithubReport(self, use_cache=False)
+            try:
+                # noinspection PyStatementEffect
+                github_report.repo
+            except GithubAPIException:
+                raise ValidationError(
+                    {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
+                )
 
-        try:
-            github_report.get_parent_contents()
-        except GithubAPIException as error:
-            # This happens if either the branch or the report file's parent path is invalid
-            raise ValidationError(
-                _("Error fetching report file: %(error_message)s"),
-                params={"error_message": str(error)},
-            )
+            try:
+                github_report.get_parent_contents()
+            except GithubAPIException as error:
+                # This happens if either the branch or the report file's parent path is invalid
+                raise ValidationError(
+                    _("Error fetching report file: %(error_message)s"),
+                    params={"error_message": str(error)},
+                )
 
-        if not any(github_report.matching_report_file_from_parent_contents()):
-            raise ValidationError(
-                {
-                    "report_html_file_path": _(
-                        "File could not be found (branch %(branch)s)"
-                    )
-                    % {"branch": self.branch}
-                }
-            )
+            if not any(github_report.matching_report_file_from_parent_contents()):
+                raise ValidationError(
+                    {
+                        "report_html_file_path": _(
+                            "File could not be found (branch %(branch)s)"
+                        )
+                        % {"branch": self.branch}
+                    }
+                )
         super().clean()
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        """Extended from_db method to store original field values on the instance"""
+        instance = super().from_db(db, field_names, values)
+        instance._loaded_values = dict(zip(field_names, values))
+        return instance
+
+    def save(self, *args, **kwargs):
+        # if updating an existing instance, check fields changed and refresh cache if required
+        # instances just created (in tests/shell) will not have called `from_db`
+        if hasattr(self, "_loaded_values") and not self._state.adding:
+            requests_cache_fields = {"repo", "branch", "report_html_file_path"}
+            # exclude fields that are autopopulated or irrelevant for http caching from the check
+            exclude_fields = {
+                "id",
+                "slug",
+                "cache_token",
+                "last_updated",
+                "use_git_blob",
+                "is_draft",
+            }
+            all_field_keys = self._loaded_values.keys()
+            http_cache_fields = (
+                set(all_field_keys) - requests_cache_fields - exclude_fields
+            )
+            if any(
+                getattr(self, field) != self._loaded_values[field]
+                for field in requests_cache_fields
+            ):
+                logger.info(
+                    "Source repo field(s) updated; refreshing cache token and clearing requests cache"
+                )
+                self.refresh_cache_token(commit=False)
+            elif any(
+                getattr(self, field) != self._loaded_values[field]
+                for field in http_cache_fields
+            ):
+                logger.info("Non-repo field(s) updated; refreshing cache token only")
+                self.refresh_cache_token(refresh_http_cache=False, commit=False)
+
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("reports:report_view", args=(self.slug, self.cache_token))
