@@ -1,4 +1,5 @@
 import datetime
+from os import environ
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
@@ -128,3 +129,65 @@ def test_report_menu_name_is_limited_to_sixty_characters():
     )
     with pytest.raises(ValidationError, match="at most 60 characters"):
         report.full_clean()
+
+
+@pytest.mark.parametrize(
+    "update_fields,cache_token_changed,logs_exist,last_log",
+    [
+        ({}, False, False, None),
+        (
+            {"description": "new"},
+            True,
+            True,
+            "Non-repo field(s) updated; refreshing cache token only",
+        ),
+        ({"is_draft": False}, False, False, None),
+        (
+            {"report_html_file_path": "foo.html"},
+            True,
+            True,
+            "Source repo field(s) updated; refreshing cache token and clearing requests cache",
+        ),
+    ],
+    ids=[
+        "no updates",
+        "non-repo field updated",
+        "irrelevant field updated",
+        "repo field updated",
+    ],
+)
+@pytest.mark.django_db
+def test_cache_refresh_on_report_save(
+    reset_environment_after_test,
+    log_output,
+    update_fields,
+    cache_token_changed,
+    logs_exist,
+    last_log,
+):
+    environ["GITHUB_VALIDATION"] = "False"
+    report = baker.make(
+        Report,
+        category=Category.objects.first(),
+        title="test",
+        report_html_file_path="test.html",
+        is_draft=False,
+    )
+    report.save()
+    report_id = report.id
+    initial_cache_token = report.cache_token
+    # No cache logs on initial save
+    assert log_output.entries == []
+
+    # Fetch from the db again so the initial values are registered
+    report = Report.objects.get(id=report_id)
+    # update fields and save
+    for field, value in update_fields.items():
+        setattr(report, field, value)
+    report.save()
+    if logs_exist:
+        assert log_output.entries[-1]["event"] == last_log
+    else:
+        assert log_output.entries == []
+    assert (initial_cache_token != report.cache_token) == cache_token_changed
+    log_output.entries.clear()
