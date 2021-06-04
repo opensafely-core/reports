@@ -4,12 +4,14 @@ from uuid import uuid4
 import structlog
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.forms.models import model_to_dict
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from environs import Env
+from furl import furl
 
-from .github import GithubAPIException, GithubReport
+from .github import GithubAPIException, GithubRepo, GithubReport
 
 
 env = Env()
@@ -201,6 +203,9 @@ class Report(models.Model):
         """Extended from_db method to store original field values on the instance"""
         instance = super().from_db(db, field_names, values)
         instance._loaded_values = dict(zip(field_names, values))
+        instance._loaded_values["links"] = {
+            link.pop("id"): link for link in instance.links.values()
+        }
         return instance
 
     def _check_and_refresh_cache(self):
@@ -213,6 +218,7 @@ class Report(models.Model):
             "last_updated",
             "use_git_blob",
             "is_draft",
+            "links",
         }
         all_field_keys = self._loaded_values.keys()
         http_cache_fields = set(all_field_keys) - requests_cache_fields - exclude_fields
@@ -238,10 +244,77 @@ class Report(models.Model):
         # creating a new instance, the _loaded_values attribute will not be present.
         # Instances may be created, saved, and then updated and saved again without re-fetching from the db (typically in tests/shell);
         # In this case they will not have called `from_db` and will not have loaded initial values
+
+        # call full_clean first to validate the repo fields before doing cache updates
+        self.full_clean()
         initial_values_loaded_from_db = hasattr(self, "_loaded_values")
         if initial_values_loaded_from_db:
             self._check_and_refresh_cache()
         super().save(*args, **kwargs)
 
+        # Generate the repo Link if it doesn't already exist
+        if not self.links.filter(
+            url__icontains=f"github.com/opensafely/{self.repo}"
+        ).exists():
+            # get the repo url from the GithubRepo directly, to avoid calling the github api just to build the url
+            repo_url = furl(
+                GithubRepo(client=None, owner="opensafely", name=self.repo).url
+            )
+            Link.objects.create(
+                report=self,
+                url=repo_url,
+                label=f"Source code: opensafely/{self.repo}",
+                icon="github",
+            )
+
     def get_absolute_url(self):
         return reverse("reports:report_view", args=(self.slug, self.cache_token))
+
+
+class Link(models.Model):
+    report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name="links")
+    icon = models.CharField(
+        choices=(("github", "GitHub"), ("paper", "Paper"), ("link", "Link")),
+        max_length=20,
+        default="link",
+        help_text="Icon to display with this link",
+    )
+    label = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="A short name/description of this link",
+    )
+    url = models.URLField()
+
+    class Meta:
+        verbose_name_plural = "Related Links (note that a link to the source code repo will be automatically generated on save)"
+
+    def __str__(self):
+        return f"{self.url}"
+
+    def save(self, *args, **kwargs):
+        # For links added or editied after a report's initial save, check if the link has changed and refresh the report's
+        # cache token.
+        # On a report's initial save, a Link for the repo url is generated; at this point the report has no links yet, and
+        # we don't need to check if the cache refresh is required as we know the report is new
+        if self.report.links.exists():
+            initial_report_links = self.report.links.all()
+            this_link = initial_report_links.filter(id=self.id)
+            if not this_link.exists():
+                logger.info("Link added to report; refreshing report cache token")
+                self.report.refresh_cache_token()
+            else:
+                this_link_from_report = this_link.first()
+                if any(
+                    getattr(self, field) != value
+                    for field, value in model_to_dict(this_link_from_report).items()
+                ):
+                    logger.info("Link updated; refreshing report cache token")
+                    self.report.refresh_cache_token()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        logger.info("Link deleted; refreshing report cache token")
+        self.report.refresh_cache_token()
+        super().delete(*args, **kwargs)
