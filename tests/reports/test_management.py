@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core import management
 
-from reports.models import Report
+from reports.models import Link, Report
 
 
 User = get_user_model()
@@ -36,14 +36,26 @@ def test_ensure_superuser_with_existing_superuser():
 @pytest.mark.django_db
 def test_populate_reports():
     assert Report.objects.exists() is False
+    assert Link.objects.exists() is False
     management.call_command("populate_reports")
 
     assert Report.objects.count() == 1
-    assert Report.objects.first().title == "Vaccine Coverage"
+    report = Report.objects.first()
+    assert report.title == "Vaccine Coverage"
+    assert f"opensafely/{report.repo}" in report.links.first().url
 
     # calling it again does nothing
     management.call_command("populate_reports")
     assert Report.objects.count() == 1
+    assert report.links.count() == 1
+
+    # delete the link
+    report.links.first().delete()
+    assert report.links.count() == 0
+    # calling it again creates the repo link if it doesn't exist yes
+    management.call_command("populate_reports")
+    assert Report.objects.count() == 1
+    assert report.links.count() == 1
 
 
 @pytest.mark.django_db

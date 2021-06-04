@@ -114,6 +114,24 @@ def reset_environment_after_test():
     environ.update(old_environ)
 
 
+class MockRepo:
+    def __init__(self, url):
+        self.url = url
+
+
+@pytest.fixture
+def mock_repo_url(mocker):
+    def create_mock_repo(url):
+        mocker.patch("reports.github.GithubReport.repo", MockRepo(url))
+
+    return create_mock_repo
+
+
+@pytest.fixture
+def skip_github_validation(reset_environment_after_test):
+    environ["GITHUB_VALIDATION"] = "False"
+
+
 baker.generators.add(
     "reports.models.AutoPopulatingCharField",
     baker.generators.default_mapping[django.db.models.CharField],

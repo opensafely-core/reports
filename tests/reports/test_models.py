@@ -1,12 +1,11 @@
 import datetime
-from os import environ
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from model_bakery import baker
 
-from reports.models import Category, Report
+from reports.models import Category, Link, Report
 
 
 REAL_REPO_DETAILS = {
@@ -59,16 +58,15 @@ REAL_REPO_DETAILS = {
 def test_report_model_validation(fields, expected_valid, expected_errors):
     """Fetch and extract html from a real repo"""
     report_fields = {**REAL_REPO_DETAILS, **fields}
-    report = baker.make(Report, **report_fields)
     if not expected_valid:
         with pytest.raises(ValidationError, match=expected_errors):
-            report.full_clean()
+            baker.make(Report, **report_fields)
     else:
-        report.full_clean()
+        baker.make(Report, **report_fields)
 
 
 @pytest.mark.django_db
-def test_category_manager():
+def test_category_manager(mock_repo_url, skip_github_validation):
     # one category exists already, from the migrations.
     category = Category.objects.first()
     # Create a second category; neither have any associated Reports
@@ -76,8 +74,8 @@ def test_category_manager():
 
     # No populated categories
     assert Category.populated.exists() is False
-
-    baker.make(Report, category=category)
+    mock_repo_url("https://github.com/opensafely/test-repo")
+    baker.make_recipe("reports.dummy_report", category=category)
     # 2 category objects, only one populated
     assert Category.objects.count() == 2
     assert Category.populated.count() == 1
@@ -85,11 +83,14 @@ def test_category_manager():
 
 
 @pytest.mark.django_db
-def test_category_for_user(user_no_permission, user_with_permission):
+def test_category_for_user(
+    user_no_permission, user_with_permission, mock_repo_url, skip_github_validation
+):
     category = Category.objects.first()
     draft_category = baker.make(Category, name="test")
-    baker.make(Report, category=category)
-    baker.make(Report, category=draft_category, is_draft=True)
+    mock_repo_url("https://github.com/opensafely/test-repo")
+    baker.make_recipe("reports.dummy_report", category=category)
+    baker.make_recipe("reports.dummy_report", category=draft_category, is_draft=True)
 
     user = AnonymousUser()
     assert list(Category.populated.for_user(user)) == list(
@@ -132,21 +133,17 @@ def test_report_menu_name_is_limited_to_sixty_characters():
 
 
 @pytest.mark.parametrize(
-    "update_fields,cache_token_changed,logs_exist,last_log",
+    "update_fields,cache_token_changed",
     [
-        ({}, False, False, None),
+        ({}, False),
         (
             {"description": "new"},
             True,
-            True,
-            "Non-repo field(s) updated; refreshing cache token only",
         ),
-        ({"is_draft": False}, False, False, None),
+        ({"is_draft": False}, False),
         (
             {"report_html_file_path": "foo.html"},
             True,
-            True,
-            "Source repo field(s) updated; refreshing cache token and clearing requests cache",
         ),
     ],
     ids=[
@@ -158,14 +155,12 @@ def test_report_menu_name_is_limited_to_sixty_characters():
 )
 @pytest.mark.django_db
 def test_cache_refresh_on_report_save(
-    reset_environment_after_test,
-    log_output,
+    skip_github_validation,
+    mock_repo_url,
     update_fields,
     cache_token_changed,
-    logs_exist,
-    last_log,
 ):
-    environ["GITHUB_VALIDATION"] = "False"
+    mock_repo_url("https://github.com/opensafely/test")
     report = baker.make(
         Report,
         category=Category.objects.first(),
@@ -173,11 +168,8 @@ def test_cache_refresh_on_report_save(
         report_html_file_path="test.html",
         is_draft=False,
     )
-    report.save()
     report_id = report.id
     initial_cache_token = report.cache_token
-    # No cache logs on initial save
-    assert log_output.entries == []
 
     # Fetch from the db again so the initial values are registered
     report = Report.objects.get(id=report_id)
@@ -185,9 +177,54 @@ def test_cache_refresh_on_report_save(
     for field, value in update_fields.items():
         setattr(report, field, value)
     report.save()
-    if logs_exist:
-        assert log_output.entries[-1]["event"] == last_log
-    else:
-        assert log_output.entries == []
     assert (initial_cache_token != report.cache_token) == cache_token_changed
-    log_output.entries.clear()
+
+
+@pytest.mark.django_db
+def test_cache_refresh_on_report_save_with_links(
+    skip_github_validation,
+    mock_repo_url,
+):
+    mock_repo_url("https://github.com/opensafely/test")
+    report = baker.make(
+        Report,
+        category=Category.objects.first(),
+        title="test",
+        report_html_file_path="test.html",
+        is_draft=False,
+    )
+    initial_cache_token = report.cache_token
+    # add a new link
+    link = baker.make(Link, report=report, url="https://test.test", label="test")
+    report.refresh_from_db()
+    assert initial_cache_token != report.cache_token
+
+    # # update link
+    initial_cache_token = report.cache_token
+    link.icon = "github"
+    link.save()
+    report.refresh_from_db()
+    assert initial_cache_token != report.cache_token
+
+    # delete link
+    initial_cache_token = report.cache_token
+    link.delete()
+    report.refresh_from_db()
+    assert initial_cache_token != report.cache_token
+
+
+@pytest.mark.django_db
+def test_generate_repo_link_for_new_report(skip_github_validation, mock_repo_url):
+    mock_repo_url("https://github.com/opensafely/test")
+    assert Link.objects.exists() is False
+    report = baker.make_recipe("reports.dummy_report", repo="test")
+    assert Link.objects.count() == 1
+    link = Link.objects.first()
+    assert link.url == "https://github.com/opensafely/test"
+
+    # if the link matches the org/repo, it isn't updated on saving again.  Scheme, trailing / and case are ignored
+    link.url = "http://github.com/opensafely/Test/"
+    link.save()
+    report.refresh_from_db()
+    assert report.links.count() == 1
+    assert report.links.first().url == "http://github.com/opensafely/Test/"

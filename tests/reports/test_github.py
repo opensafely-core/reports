@@ -288,19 +288,16 @@ def test_github_repo_get_url(httpretty):
 
 
 @pytest.mark.django_db
-def test_get_normal_html_from_github(httpretty):
+def test_get_normal_html_from_github(httpretty, skip_github_validation):
     html = """
         <html>
             <body><p>foo</p></body>
         </html>
     """
-
-    repo = GithubRepo(GithubClient(use_cache=False), name="test", owner="test")
-    report = baker.make(Report, report_html_file_path="foo.html")
     # Mock the github request
     httpretty.register_uri(
         httpretty.GET,
-        "https://api.github.com/repos/test/test/contents/foo.html?ref=main",
+        "https://api.github.com/repos/opensafely/test/contents/foo.html?ref=main",
         responses=[
             httpretty.Response(
                 status=200,
@@ -317,19 +314,20 @@ def test_get_normal_html_from_github(httpretty):
     )
     register_commits_uri(
         httpretty,
-        owner="test",
+        owner="opensafely",
         repo="test",
         path="foo.html",
         sha="main",
         commit_dates="2021-04-25T10:00:00Z",
     )
-
+    repo = GithubRepo(GithubClient(use_cache=False), name="test", owner="opensafely")
+    report = baker.make(Report, report_html_file_path="foo.html", repo="test")
     github_report = GithubReport(report, repo=repo)
     assert github_report.get_html() == html
 
 
 @pytest.mark.django_db
-def test_get_large_html_from_github(httpretty):
+def test_get_large_html_from_github(httpretty, skip_github_validation):
     """
     Test that a GithubException for a too-large file is caught and the content fetched
     from the git_blob by sha instead
@@ -339,19 +337,18 @@ def test_get_large_html_from_github(httpretty):
             <body><p>foo</p></body>
         </html>
     """
-
     # Mock the github requests
     # /contents on the too-large file returns a 403
     httpretty.register_uri(
         httpretty.GET,
-        "https://api.github.com/repos/test/test/contents/foo.html?ref=main",
+        "https://api.github.com/repos/opensafely/test/contents/foo.html?ref=main",
         status=403,
         body=json.dumps({"errors": [{"code": "too_large"}]}),
     )
     # /contents on the parent folder returns two files
     httpretty.register_uri(
         httpretty.GET,
-        "https://api.github.com/repos/test/test/contents/?ref=main",
+        "https://api.github.com/repos/opensafely/test/contents/?ref=main",
         status=200,
         body=json.dumps(
             [
@@ -364,7 +361,7 @@ def test_get_large_html_from_github(httpretty):
     # /git/blobs on the sha from the found file in the parent folder
     httpretty.register_uri(
         httpretty.GET,
-        "https://api.github.com/repos/test/test/git/blobs/abcd1234",
+        "https://api.github.com/repos/opensafely/test/git/blobs/abcd1234",
         status=200,
         body=json.dumps(
             {
@@ -379,15 +376,17 @@ def test_get_large_html_from_github(httpretty):
     )
     register_commits_uri(
         httpretty,
-        owner="test",
+        owner="opensafely",
         repo="test",
         path="foo.html",
         sha="main",
         commit_dates="2021-04-25T10:00:00Z",
     )
 
-    repo = GithubRepo(client=GithubClient(use_cache=False), owner="test", name="test")
-    report = baker.make(Report, report_html_file_path="foo.html")
+    repo = GithubRepo(
+        client=GithubClient(use_cache=False), owner="opensafely", name="test"
+    )
+    report = baker.make(Report, repo="test", report_html_file_path="foo.html")
     assert report.use_git_blob is False
 
     github_report = GithubReport(report, repo=repo)
@@ -413,32 +412,36 @@ def test_get_large_html_from_github(httpretty):
     assert len(latest_requests) == 7
     assert (
         latest_requests[-3].url
-        == "https://api.github.com/repos/test/test/contents/?ref=main"
+        == "https://api.github.com/repos/opensafely/test/contents/?ref=main"
     )
     assert (
         latest_requests[-2].url
-        == "https://api.github.com/repos/test/test/commits?sha=main&path=foo.html"
+        == "https://api.github.com/repos/opensafely/test/commits?sha=main&path=foo.html"
     )
     assert (
         latest_requests[-1].url
-        == "https://api.github.com/repos/test/test/git/blobs/abcd1234"
+        == "https://api.github.com/repos/opensafely/test/git/blobs/abcd1234"
     )
 
 
 @pytest.mark.django_db
-def test_github_report_get_parent_contents_invalid_folder(httpretty):
-    repo = GithubRepo(
-        client=GithubClient(use_cache=False), owner="test", name="test-folder"
-    )
-    report = baker.make(Report, report_html_file_path="test-folder/foo.html")
-
+def test_github_report_get_parent_contents_invalid_folder(
+    httpretty, skip_github_validation
+):
     # Mock the github request
     httpretty.register_uri(
         httpretty.GET,
-        "https://api.github.com/repos/test/test-folder/contents/test-folder?ref=main",
+        "https://api.github.com/repos/opensafely/test-repo/contents/test-folder?ref=main",
         status=404,
         body=json.dumps({"message": "Not found"}),
     )
+    repo = GithubRepo(
+        client=GithubClient(use_cache=False), owner="opensafely", name="test-repo"
+    )
+    report = baker.make(
+        Report, repo="test-repo", report_html_file_path="test-folder/foo.html"
+    )
+
     github_report = GithubReport(report, repo=repo)
     with pytest.raises(GithubAPIException, match="Not found"):
         github_report.get_parent_contents()
