@@ -29,7 +29,7 @@
       <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
         {% if report.description %}
           <div class="sm:col-span-2">
-            <dt class="text-sm font-medium text-gray-500">
+            <dt class="text-sm font-semibold text-gray-600">
               Description
             </dt>
             <dd class="mt-1 text-sm text-gray-900">
@@ -38,7 +38,7 @@
           </div>
         {% endif %}
         <div class="sm:col-span-1">
-          <dt class="text-sm font-medium text-gray-500">
+          <dt class="text-sm font-semibold text-gray-600">
             Published
           </dt>
           <dd class="mt-1 text-sm text-gray-900">
@@ -46,7 +46,7 @@
           </dd>
         </div>
         <div class="sm:col-span-1">
-          <dt class="text-sm font-medium text-gray-500">
+          <dt class="text-sm font-semibold text-gray-600">
             Last updated
           </dt>
           <dd class="mt-1 text-sm text-gray-900">
@@ -55,7 +55,7 @@
         </div>
         {% if report.authors %}
           <div class="sm:col-span-1">
-            <dt class="text-sm font-medium text-gray-500">
+            <dt class="text-sm font-semibold text-gray-600">
               Authors
             </dt>
             <dd class="mt-1 text-sm text-gray-900">
@@ -64,7 +64,7 @@
           </div>
         {% endif %}
         <div class="sm:col-span-1">
-          <dt class="text-sm font-medium text-gray-500">
+          <dt class="text-sm font-semibold text-gray-600">
             Contact
           </dt>
           <dd class="mt-1 text-sm text-gray-900">
@@ -76,7 +76,7 @@
         </div>
 
         <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">
+          <dt class="text-sm font-semibold text-gray-600">
             Links
           </dt>
           {% for link in report.links.all %}
@@ -85,11 +85,11 @@
                   <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                     <div class="w-0 flex-1 flex items-center">
                       {% if link.icon == "github" %}
-                        {% include "icons/brand/github.svg" with htmlClass="flex-shrink-0 h-5 w-5 text-gray-600" %}
+                        {% include "icons/brand/github.svg" with htmlClass="flex-shrink-0 h-5 w-5 text-gray-500" %}
                       {% elif link.icon == "paper" %}
-                        Placeholder for Paper icon
+                        {% include "icons/outline/newspaper.svg" with htmlClass="flex-shrink-0 h-5 w-5 text-gray-500" %}
                       {% else %}
-                        Placeholder for Link icon
+                        {% include "icons/outline/paper-clip.svg" with htmlClass="flex-shrink-0 h-5 w-5 text-gray-500" %}
                       {% endif %}
                       <a href="{{ link.url }}" class="ml-2 text-blue-600 hover:text-blue-900 font-semibold hover:underline">
                         {{ link.label }}
