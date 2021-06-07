@@ -1,3 +1,4 @@
+import json
 from base64 import b64decode
 from datetime import datetime
 from pathlib import Path
@@ -52,10 +53,13 @@ class GithubClient:
 
         # Report some expected errors
         if response.status_code == 403:
-            errors = response.json()["errors"]
-            for error in errors:
-                if error["code"] == "too_large":
-                    raise GithubAPIException("Error: File too large")
+            errors = response.json().get("errors")
+            if errors:
+                for error in errors:
+                    if error["code"] == "too_large":
+                        raise GithubAPIException("Error: File too large")
+            else:
+                raise GithubAPIException(json.dumps(response.json()))
         elif response.status_code == 404:
             raise GithubAPIException(response.json()["message"])
         # raise any other unexpected status
