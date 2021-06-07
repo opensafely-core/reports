@@ -44,7 +44,8 @@ env = [
   "SOCIAL_AUTH_NHSID_KEY=dummy-client-id",
   "SOCIAL_AUTH_NHSID_SECRET=dummy-secret",
   "SOCIAL_AUTH_NHSID_API_URL=https://dummy-nhs.net/oidc",
-  "REQUESTS_CACHE_NAME=test_cache"
+  "REQUESTS_CACHE_NAME=test_cache",
+  "DJANGO_VITE_DEV_MODE=True",
 ]
 filterwarnings = [
     "ignore::django.utils.deprecation.RemovedInDjango40Warning:social_django",
