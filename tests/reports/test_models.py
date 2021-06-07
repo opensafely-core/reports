@@ -1,4 +1,5 @@
 import datetime
+from os import environ
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
@@ -55,8 +56,11 @@ REAL_REPO_DETAILS = {
         "Test existing but non-html file path",
     ],
 )
-def test_report_model_validation(fields, expected_valid, expected_errors):
+def test_report_model_validation(
+    fields, expected_valid, expected_errors, reset_environment_after_test
+):
     """Fetch and extract html from a real repo"""
+    environ["GITHUB_VALIDATION"] = "True"
     report_fields = {**REAL_REPO_DETAILS, **fields}
     if not expected_valid:
         with pytest.raises(ValidationError, match=expected_errors):
@@ -66,7 +70,7 @@ def test_report_model_validation(fields, expected_valid, expected_errors):
 
 
 @pytest.mark.django_db
-def test_category_manager(mock_repo_url, skip_github_validation):
+def test_category_manager(mock_repo_url):
     # one category exists already, from the migrations.
     category = Category.objects.first()
     # Create a second category; neither have any associated Reports
@@ -83,9 +87,7 @@ def test_category_manager(mock_repo_url, skip_github_validation):
 
 
 @pytest.mark.django_db
-def test_category_for_user(
-    user_no_permission, user_with_permission, mock_repo_url, skip_github_validation
-):
+def test_category_for_user(user_no_permission, user_with_permission, mock_repo_url):
     category = Category.objects.first()
     draft_category = baker.make(Category, name="test")
     mock_repo_url("https://github.com/opensafely/test-repo")
@@ -155,7 +157,6 @@ def test_report_menu_name_is_limited_to_sixty_characters():
 )
 @pytest.mark.django_db
 def test_cache_refresh_on_report_save(
-    skip_github_validation,
     mock_repo_url,
     update_fields,
     cache_token_changed,
@@ -181,10 +182,7 @@ def test_cache_refresh_on_report_save(
 
 
 @pytest.mark.django_db
-def test_cache_refresh_on_report_save_with_links(
-    skip_github_validation,
-    mock_repo_url,
-):
+def test_cache_refresh_on_report_save_with_links(mock_repo_url):
     mock_repo_url("https://github.com/opensafely/test")
     report = baker.make(
         Report,
@@ -214,7 +212,7 @@ def test_cache_refresh_on_report_save_with_links(
 
 
 @pytest.mark.django_db
-def test_generate_repo_link_for_new_report(skip_github_validation, mock_repo_url):
+def test_generate_repo_link_for_new_report(mock_repo_url):
     mock_repo_url("https://github.com/opensafely/test")
     assert Link.objects.exists() is False
     report = baker.make_recipe("reports.dummy_report", repo="test")

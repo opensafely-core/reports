@@ -127,7 +127,7 @@ def mock_repo_url(mocker):
     return create_mock_repo
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def skip_github_validation(reset_environment_after_test):
     environ["GITHUB_VALIDATION"] = "False"
 

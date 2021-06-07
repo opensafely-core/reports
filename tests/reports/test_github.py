@@ -288,7 +288,7 @@ def test_github_repo_get_url(httpretty):
 
 
 @pytest.mark.django_db
-def test_get_normal_html_from_github(httpretty, skip_github_validation):
+def test_get_normal_html_from_github(httpretty):
     html = """
         <html>
             <body><p>foo</p></body>
@@ -327,7 +327,7 @@ def test_get_normal_html_from_github(httpretty, skip_github_validation):
 
 
 @pytest.mark.django_db
-def test_get_large_html_from_github(httpretty, skip_github_validation):
+def test_get_large_html_from_github(httpretty):
     """
     Test that a GithubException for a too-large file is caught and the content fetched
     from the git_blob by sha instead
@@ -425,9 +425,7 @@ def test_get_large_html_from_github(httpretty, skip_github_validation):
 
 
 @pytest.mark.django_db
-def test_github_report_get_parent_contents_invalid_folder(
-    httpretty, skip_github_validation
-):
+def test_github_report_get_parent_contents_invalid_folder(httpretty):
     # Mock the github request
     httpretty.register_uri(
         httpretty.GET,

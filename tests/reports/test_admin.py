@@ -5,7 +5,7 @@ from model_bakery import baker
 
 
 @pytest.mark.django_db
-def test_admin_update_cache_action(client, mock_repo_url, skip_github_validation):
+def test_admin_update_cache_action(client, mock_repo_url):
     """Test the update_cache admin action refreshes the cache_token for selected reports"""
     mock_repo_url("http://github.com/opensafely/test-repo")
     get_user_model().objects.create_superuser("admin", "admin@test.com", "test")

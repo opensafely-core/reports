@@ -11,7 +11,7 @@ from reports.views import process_html
 
 
 @pytest.mark.django_db
-def test_landing_view(client, skip_github_validation, mock_repo_url):
+def test_landing_view(client, mock_repo_url):
     """Test landing view context"""
     mock_repo_url("https://github.com/opensafely/test-repo")
     assert Report.objects.exists() is False
@@ -30,7 +30,7 @@ def test_landing_view(client, skip_github_validation, mock_repo_url):
 
 
 @pytest.mark.django_db
-def test_landing_view_ordering(client, mock_repo_url, skip_github_validation):
+def test_landing_view_ordering(client, mock_repo_url):
     """Test categories and reports in context are alphabetically ordered"""
     mock_repo_url("https://github.com/opensafely/test-repo")
     # By default we have one Category, set up in the migration
@@ -83,7 +83,6 @@ def test_landing_view_ordering(client, mock_repo_url, skip_github_validation):
 def test_landing_view_draft_reports_permissions(
     client,
     mock_repo_url,
-    skip_github_validation,
     user_with_permission,
     user_no_permission,
     user_attributes,
@@ -207,9 +206,7 @@ def test_landing_view_draft_reports_permissions(
         "Only 10 most recent events are shown",
     ],
 )
-def test_landing_view_recent_activity(
-    client, mock_repo_url, skip_github_validation, reports, expected
-):
+def test_landing_view_recent_activity(client, mock_repo_url, reports, expected):
     mock_repo_url("https://github.com/opensafely/test-repo")
     for menu_name, report_fields in reports.items():
         baker.make_recipe("reports.dummy_report", menu_name=menu_name, **report_fields)
