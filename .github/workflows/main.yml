@@ -165,6 +165,7 @@ jobs:
           SOCIAL_AUTH_NHSID_KEY: dummy-client-id
           SOCIAL_AUTH_NHSID_SECRET: dummy-secret
           SOCIAL_AUTH_NHSID_API_URL: https://dummy-nhs.net/oidc
+          DJANGO_VITE_DEV_MODE: True
         run: |
           source ${{ github.workspace }}/venv/bin/activate
           just test

@@ -21,7 +21,7 @@ class Command(BaseCommand):
             report_html_file_path="test-outputs/vaccine-coverage-new.html",
         )
 
-        if "INCLUDE_PRIVATE" in os.environ:
+        if "INCLUDE_PRIVATE" in os.environ:  # pragma: no cover
             self.ensure_report(
                 category,
                 title="SRO Measures",
@@ -49,6 +49,9 @@ class Command(BaseCommand):
         )
         if created:
             self.stderr.write(f"Created report '{report.title}'")
+        else:
+            # save existing reports to ensure repo links have been generated
+            report.save()
 
 
 # The built-in get_or_create() doesn't do validation, which we want here for safety and because it triggers the setup

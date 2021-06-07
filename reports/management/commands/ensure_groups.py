@@ -7,7 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         group, _ = Group.objects.get_or_create(name="researchers")
-        models = ["report", "category"]
+        models = ["report", "category", "link"]
         required_permissions = Permission.objects.filter(
             content_type__app_label="reports", content_type__model__in=models
         )

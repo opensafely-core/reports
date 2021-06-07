@@ -1,3 +1,4 @@
+import json
 from base64 import b64decode
 from datetime import datetime
 from pathlib import Path
@@ -52,10 +53,13 @@ class GithubClient:
 
         # Report some expected errors
         if response.status_code == 403:
-            errors = response.json()["errors"]
-            for error in errors:
-                if error["code"] == "too_large":
-                    raise GithubAPIException("Error: File too large")
+            errors = response.json().get("errors")
+            if errors:
+                for error in errors:
+                    if error["code"] == "too_large":
+                        raise GithubAPIException("Error: File too large")
+            else:
+                raise GithubAPIException(json.dumps(response.json()))
         elif response.status_code == 404:
             raise GithubAPIException(response.json()["message"])
         # raise any other unexpected status
@@ -79,15 +83,18 @@ class GithubRepo:
     Fetch contents of a Github Repo
     """
 
-    def __init__(self, client, owner, name):
+    def __init__(self, client, owner, name, url=None):
         self.client = client
         self._owner = owner
         self._name = name
         self.repo_path_segments = ["repos", owner, name]
+        self._url = url
 
     @property
     def url(self):
-        return f"https://github.com/{self._owner}/{self._name}"
+        if self._url is None:
+            self._url = f"https://github.com/{self._owner}/{self._name}"
+        return self._url
 
     def get_contents(self, path, ref):
         """
