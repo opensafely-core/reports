@@ -125,7 +125,7 @@ class Report(models.Model):
     description = models.TextField(
         help_text="Short description to display before rendered report and in meta tags",
     )
-    publication_date = models.DateField(help_text="Date published")
+    publication_date = models.DateField(help_text="Date of first publication")
     last_updated = models.DateField(
         null=True,
         blank=True,
