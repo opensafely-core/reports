@@ -132,6 +132,18 @@ def skip_github_validation(reset_environment_after_test):
     environ["GITHUB_VALIDATION"] = "False"
 
 
+@pytest.fixture
+def mock_github_report_with_html(mocker):
+    def create_report(html):
+        report = baker.make_recipe("reports.dummy_report")
+        mock_report = mocker.Mock()
+        mock_report.report = report
+        mock_report.get_html.return_value = html
+        return mock_report
+
+    return create_report
+
+
 baker.generators.add(
     "reports.models.AutoPopulatingCharField",
     baker.generators.default_mapping[django.db.models.CharField],

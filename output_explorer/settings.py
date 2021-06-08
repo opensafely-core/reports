@@ -198,3 +198,11 @@ initialise_sentry()
 
 # Needed for the debug context processor to work locally
 INTERNAL_IPS = ["127.0.0.1"]
+
+# Caching
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache_table",
+    }
+}
