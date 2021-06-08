@@ -37,9 +37,30 @@
             </dd>
           </div>
         {% endif %}
+        {% if report.authors %}
+          <div class="sm:col-span-2">
+            <dt class="text-sm font-semibold text-gray-600">
+              Authors
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              {{ report.authors }}
+            </dd>
+          </div>
+        {% endif %}
+        <div class="sm:col-span-2">
+          <dt class="text-sm font-semibold text-gray-600">
+            Contact
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            Get in touch and tell us how you use this report or new features you'd like to see:
+            <a href="mailto:{{ report.contact_email }}" class="text-blue-600 hover:text-blue-900 font-semibold hover:underline">
+              {{ report.contact_email }}
+            </a>
+          </dd>
+        </div>
         <div class="sm:col-span-1">
           <dt class="text-sm font-semibold text-gray-600">
-            Published
+            First published
           </dt>
           <dd class="mt-1 text-sm text-gray-900">
             {{ report.publication_date|date:"d M Y"}}
@@ -51,27 +72,6 @@
           </dt>
           <dd class="mt-1 text-sm text-gray-900">
             {{ report.last_updated|date:"d M Y"}}
-          </dd>
-        </div>
-        {% if report.authors %}
-          <div class="sm:col-span-1">
-            <dt class="text-sm font-semibold text-gray-600">
-              Authors
-            </dt>
-            <dd class="mt-1 text-sm text-gray-900">
-              {{ report.authors }}
-            </dd>
-          </div>
-        {% endif %}
-        <div class="sm:col-span-1">
-          <dt class="text-sm font-semibold text-gray-600">
-            Contact
-          </dt>
-          <dd class="mt-1 text-sm text-gray-900">
-            Get in touch and tell us how you use this report or new features you'd like to see:
-            <a href="mailto:{{ report.contact_email }}" class="text-blue-600 hover:text-blue-900 font-semibold hover:underline">
-              {{ report.contact_email }}
-            </a>
           </dd>
         </div>
 
