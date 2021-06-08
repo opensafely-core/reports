@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
-from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import never_cache
 from lxml.html.clean import Cleaner
 
 from .github import GithubReport
@@ -14,12 +14,13 @@ from .models import Report
 logger = structlog.getLogger()
 
 
-@cache_control(cache_timeout=86400)
-def report_view(request, slug, cache_token=None):
+@never_cache
+def report_view(request, slug):
     """
     Fetches an html report file from github, and renders the style and body tags within
-    the report template page.  Caches for 24 hours, can be forced to refetch and update
-    the cache with the `force-update` query parameter.
+    the report template page.  This entire view is never cached, however the template content is cached (in the template)
+    for 24 hours using the report's cache_token as a key, and can be forced to refetch and update the cache with the
+    `force-update` query parameter.
     """
     try:
         report = Report.objects.for_user(request.user).get(slug=slug)
@@ -35,23 +36,9 @@ def report_view(request, slug, cache_token=None):
             slug=report.slug,
         )
         return redirect(report.get_absolute_url())
-    elif report.cache_token != cache_token:
-        # If an invalid cache_token is encountered, redirect to the latest one
-        logger.warn(
-            "Cache token not found, redirecting...",
-            report_id=report.pk,
-            slug=report.slug,
-        )
-        return redirect(report.get_absolute_url())
 
     logger.info("Cache missed", report_id=report.pk, slug=report.slug)
     github_report = GithubReport(report)
-    response = report_fetch_view(request, github_report)
-    return response
-
-
-def report_fetch_view(request, github_report):
-    # Fetch the uncached report view
     return TemplateResponse(
         request,
         "reports/report.html",
