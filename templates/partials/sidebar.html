@@ -20,7 +20,7 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave="transition-opacity ease-linear duration-300"></div>
     <div
-      class="relative flex-1 flex flex-col max-w-xs w-full pb-4 bg-gray-800"
+      class="relative flex-1 flex flex-col max-w-xs w-full pb-4 bg-oxford-800"
       x-cloak
       x-show="open"
       x-transition:enter-end="translate-x-0"
@@ -44,17 +44,17 @@
           {% include "icons/outline/x.svg" with htmlClass="h-6 w-6 text-white" attrs="aria-hidden='true'" %}
         </button>
       </div>
-      <div class="flex items-center h-16 flex-shrink-0 px-4 bg-gray-900">
+      <div class="flex items-center h-16 flex-shrink-0 px-4 bg-oxford-900">
         <span class="text-xl text-white font-semibold">OpenSAFELY</span>
       </div>
       <div class="mt-5 flex-1 h-0 overflow-y-auto">
-        <nav class="flex-1 px-2 py-4 bg-gray-800">
+        <nav class="flex-1 px-2 py-4 bg-oxford-800">
           <div class="space-y-1">
-            <a href="/" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-900 hover:text-gray-50 ">
+            <a href="/" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900 hover:text-gray-50">
               {% include "icons/outline/home.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
               Home
             </a>
-            <a href="mailto:team@opensafely.org" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-900 hover:text-gray-50 ">
+            <a href="mailto:team@opensafely.org" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900 hover:text-gray-50 ">
               {% include "icons/outline/mail-open.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
               Contact
             </a>
@@ -64,7 +64,7 @@
               Reports
             </p>
             <div class="mt-2 space-y-1">
-              <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
+              <nav class="flex-1 px-2 space-y-1 bg-oxford-800" aria-label="Sidebar">
                 <ul>
                   {% for category in categories %}
                     <li x-data="{ open: {% if report.category.id == category.id %}true{% else %}false{% endif %} }" class="space-y-1">
@@ -72,7 +72,7 @@
                         @click="open = !open"
                         aria-controls="mobile-sidebar-{{ forloop.counter }}"
                         aria-expanded="false"
-                        class="text-white hover:bg-gray-900 hover:text-gray-50 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900"
+                        class="text-white hover:bg-oxford-900 hover:text-gray-50 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-oxford-900"
                         type="button"
                         x-bind:aria-expanded="open.toString()">
                         {% include "icons/outline/chevron-right.svg" with htmlClass="text-gray-300 mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150" attrs=":class=\"{ 'text-gray-400 rotate-90': open, 'text-gray-300': !(open) }\"" %}
@@ -86,9 +86,9 @@
                         {% category_reports_for_user category as category_reports %}
                         {% for single_report in category_reports %}
                           <li>
-                            <a href="{{ single_report.get_absolute_url }}" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md
+                            <a href="{{ single_report.get_absolute_url }}" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-white hover:bg-oxford-900 hover:text-gray-50 rounded-md
                               {% if single_report.id == report.id %}
-                                bg-gray-700
+                                bg-oxford-700
                               {% endif %}
                             ">
                               {{ single_report.menu_name }} {% if single_report.is_draft %}(Draft){% endif %}
@@ -113,17 +113,17 @@
 <div class="hidden lg:flex lg:flex-shrink-0">
   <div class="flex flex-col w-64">
     <div class="flex flex-col h-0 flex-1">
-      <div class="flex items-center h-16 flex-shrink-0 px-4 bg-gray-900">
+      <div class="flex items-center h-16 flex-shrink-0 px-4 bg-oxford-900">
         <span class="text-xl text-white font-semibold">OpenSAFELY</span>
       </div>
       <div class="flex-1 flex flex-col overflow-y-auto">
-        <nav class="flex-1 px-2 py-4 bg-gray-800">
+        <nav class="flex-1 px-2 py-4 bg-oxford-800">
           <div class="space-y-1">
-            <a href="/" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-900">
+            <a href="/" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900">
               {% include "icons/outline/home.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
               Home
             </a>
-            <a href="mailto:team@opensafely.org" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-900">
+            <a href="mailto:team@opensafely.org" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900">
               {% include "icons/outline/mail-open.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
               Contact
             </a>
@@ -133,7 +133,7 @@
               Reports
             </h2>
             <div class="mt-2 space-y-1">
-              <nav class="flex-1 px-2 space-y-1 bg-gray-800" aria-label="Sidebar">
+              <nav class="flex-1 px-2 space-y-1 bg-oxford-800" aria-label="Sidebar">
                   <ul>
                     {% for category in categories %}
                       <li x-data="{ open: {% if report.category.id == category.id %}true{% else %}false{% endif %} }" class="space-y-1">
@@ -141,7 +141,7 @@
                           @click="open = !open"
                           aria-controls="desktop-sidebar-{{ forloop.counter }}"
                           aria-expanded="false"
-                          class="text-white hover:bg-gray-900 hover:text-gray-50 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-900"
+                          class="text-white hover:bg-oxford-900 hover:text-gray-50 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-oxford-900"
                           type="button"
                           x-bind:aria-expanded="open.toString()">
                           {% include "icons/outline/chevron-right.svg" with htmlClass="text-gray-300 mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150" attrs=":class=\"{ 'text-gray-400 rotate-90': open, 'text-gray-300': !(open) }\"" %}
@@ -158,9 +158,9 @@
                                 <a
                                   href="{{ single_report.get_absolute_url }}"
                                   class="
-                                    group w-full flex items-center pl-8 pr-2 py-2 text-sm font-medium text-white hover:bg-gray-900 hover:text-gray-50 rounded-md
+                                    group w-full flex items-center pl-8 pr-2 py-2 text-sm font-medium text-white hover:bg-oxford-900 hover:text-gray-50 rounded-md
                                     {% if single_report.id == report.id %}
-                                      bg-gray-700
+                                      bg-oxford-700 bg-opacity-50
                                     {% endif %}
                                   ">
                                   {{ single_report.menu_name }} {% if single_report.is_draft %}(Draft){% endif %}
