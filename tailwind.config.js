@@ -44,6 +44,12 @@ module.exports = {
               color: theme("colors.blue.900"),
               "text-decoration": "underline",
             },
+            'code::before': {
+              content: ''
+            },
+            'code::after': {
+              content: ''
+            }
           },
         },
       }),
