@@ -41,7 +41,7 @@ module.exports = {
               "font-weight": 600,
             },
             "a:hover": {
-              color: theme("colors.blue.900"),
+              color: theme("colors.oxford.800"),
               "text-decoration": "underline",
             },
             "code::before": {
