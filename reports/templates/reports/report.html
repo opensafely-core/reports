@@ -53,7 +53,7 @@
           </dt>
           <dd class="mt-1 text-sm text-gray-900">
             Get in touch and tell us how you use this report or new features you'd like to see:
-            <a href="mailto:{{ report.contact_email }}" class="text-blue-600 hover:text-blue-900 font-semibold hover:underline">
+            <a href="mailto:{{ report.contact_email }}" class="text-oxford-600 hover:text-oxford-800 font-semibold hover:underline">
               {{ report.contact_email }}
             </a>
           </dd>
@@ -91,7 +91,7 @@
                       {% else %}
                         {% include "icons/outline/paper-clip.svg" with htmlClass="flex-shrink-0 h-5 w-5 text-gray-500" %}
                       {% endif %}
-                      <a href="{{ link.url }}" class="ml-2 text-blue-600 hover:text-blue-900 font-semibold hover:underline">
+                      <a href="{{ link.url }}" class="ml-2 text-oxford-600 hover:text-oxford-800 font-semibold hover:underline">
                         {{ link.label }}
                       </a>
                     </div>
@@ -106,7 +106,7 @@
 
   <div class="bg-white shadow overflow-hidden sm:rounded-lg max-w-screen-lg mx-auto my-6">
     <div class="max-w-4xl mx-auto">
-      <div class="prose prose-sm sm:prose prose-blue sm:prose-blue px-8 sm:max-w-none mx-auto py-16">
+      <div class="prose prose-sm sm:prose prose-oxford sm:prose-oxford px-8 sm:max-w-none mx-auto py-16">
         {{ notebook_contents }}
       </div>
     </div>
