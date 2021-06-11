@@ -7,8 +7,6 @@ from .views import report_view
 app_name = "reports"
 
 urlpatterns = [
-    path("<slug:slug>/<uuid:cache_token>/", report_view, name="report_view"),
-    path("<slug:slug>/<str:cache_token>/", report_view, name="report_view"),
     path("<slug:slug>/", report_view, name="report_view"),
     path("", RedirectView.as_view(url="/", permanent=True)),
 ]

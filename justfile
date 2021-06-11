@@ -12,7 +12,7 @@ dev-config:
 	./scripts/dev-env.sh .env
 
 # set up/update the local dev env
-setup: pip-install npm-install migrate ensure-superuser ensure-reports ensure-groups collectstatic
+setup: pip-install npm-install migrate ensure-superuser ensure-reports ensure-groups collectstatic createcachetable
 
 # install correct versions of all Python dependencies
 pip-install:
@@ -56,6 +56,10 @@ ensure-reports:
 # ensure the researchers group exists with relevant permissions
 ensure-groups:
     ./manage.py ensure_groups
+
+# create the database cache table
+createcachetable:
+    ./manage.py createcachetable
 
 # blow away the local database and repopulate it
 dev-reset:

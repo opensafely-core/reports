@@ -268,7 +268,7 @@ class Report(models.Model):
             )
 
     def get_absolute_url(self):
-        return reverse("reports:report_view", args=(self.slug, self.cache_token))
+        return reverse("reports:report_view", args=(self.slug,))
 
 
 class Link(models.Model):

@@ -1,5 +1,4 @@
 from datetime import date, timedelta
-from uuid import uuid4
 
 import pytest
 from bs4 import BeautifulSoup
@@ -7,7 +6,6 @@ from django.urls import reverse
 from model_bakery import baker
 
 from reports.models import Category, Report
-from reports.views import process_html
 
 
 @pytest.mark.django_db
@@ -230,7 +228,7 @@ def test_report_view(client):
     response = client.get(report.get_absolute_url())
 
     assert_html_equal(
-        response.context["notebook_contents"],
+        response.context["github_report"].process_html(),
         """
             <h1>A Test Output HTML file</h1>
             <p>The test content</p>
@@ -281,22 +279,6 @@ def test_draft_report_view_permissions(
     assert response.status_code == expected_status
 
 
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    "cache_token",
-    [uuid4(), "a-non-token-string", None],
-    ids=["Test invalid uuid", "Test invalid string", "Test no token"],
-)
-def test_report_view_with_invalid_token(client, cache_token):
-    """Test a single report page"""
-    # report for a real file
-    report = baker.make_recipe("reports.real_report")
-    args = (report.slug, cache_token) if cache_token is not None else (report.slug,)
-    response = client.get(reverse("reports:report_view", args=args))
-    assert response.status_code == 302
-    assert response.url == report.get_absolute_url()
-
-
 def assert_last_cache_log(log_entries, expected_log_items):
     last_cache_log = next(
         (
@@ -321,17 +303,8 @@ def test_report_view_cache(client, log_output):
     """
     report = baker.make_recipe("reports.real_report")
 
-    # nothing cached yet
+    # fetch report
     response = client.get(report.get_absolute_url())
-    assert_last_cache_log(
-        log_output,
-        {"report_id": report.id, "slug": report.slug, "event": "Cache missed"},
-    )
-    assert response.status_code == 200
-
-    # fetch it again
-    client.get(report.get_absolute_url())
-    assert_last_cache_log(log_output, None)
     assert response.status_code == 200
 
     # force update
@@ -351,6 +324,7 @@ def test_report_view_cache(client, log_output):
     assert response.url == report.get_absolute_url()
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "html",
     [
@@ -420,9 +394,10 @@ def test_report_view_cache(client, log_output):
         "Strips out inline styles",
     ],
 )
-def test_html_processing_extracts_body(html):
+def test_html_processing_extracts_body(mock_github_report_with_html, html):
+    github_report = mock_github_report_with_html(html)
     assert_html_equal(
-        process_html(html),
+        github_report.process_html(),
         """
             <p>foo</p>
             <div>Stuff</div>
@@ -430,6 +405,7 @@ def test_html_processing_extracts_body(html):
     )
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     ("input", "report"),
     [
@@ -505,8 +481,9 @@ def test_html_processing_extracts_body(html):
         "Wraps <pre> elements in overflow wrappers",
     ],
 )
-def test_html_processing_wraps_scrollables(input, report):
-    assert_html_equal(process_html(input), report)
+def test_html_processing_wraps_scrollables(mock_github_report_with_html, input, report):
+    github_report = mock_github_report_with_html(input)
+    assert_html_equal(github_report.process_html(), report)
 
 
 def assert_html_equal(actual, expected):
