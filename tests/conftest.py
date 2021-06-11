@@ -17,6 +17,7 @@ from social_django.utils import load_strategy
 from structlog.testing import LogCapture
 
 from gateway.backends import NHSIDConnectAuth
+from reports.github import GithubReport
 
 from .gateway.mocks import OPENID_CONFIG
 
@@ -132,13 +133,20 @@ def skip_github_validation(reset_environment_after_test):
     environ["GITHUB_VALIDATION"] = "False"
 
 
+class MockGithubReport(GithubReport):
+    def __init__(self, report, html):
+        self.report = report
+        self.html = html
+
+    def get_html(self):
+        return self.html
+
+
 @pytest.fixture
 def mock_github_report_with_html(mocker):
     def create_report(html):
         report = baker.make_recipe("reports.dummy_report")
-        mock_report = mocker.Mock()
-        mock_report.report = report
-        mock_report.get_html.return_value = html
+        mock_report = MockGithubReport(report, html)
         return mock_report
 
     return create_report

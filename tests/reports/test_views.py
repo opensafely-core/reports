@@ -2,12 +2,10 @@ from datetime import date, timedelta
 
 import pytest
 from bs4 import BeautifulSoup
-from django.core.cache import cache
 from django.urls import reverse
 from model_bakery import baker
 
 from reports.models import Category, Report
-from reports.views import process_html
 
 
 @pytest.mark.django_db
@@ -230,7 +228,7 @@ def test_report_view(client):
     response = client.get(report.get_absolute_url())
 
     assert_html_equal(
-        response.context["notebook_contents"],
+        response.context["github_report"].process_html(),
         """
             <h1>A Test Output HTML file</h1>
             <p>The test content</p>
@@ -397,10 +395,9 @@ def test_report_view_cache(client, log_output):
     ],
 )
 def test_html_processing_extracts_body(mock_github_report_with_html, html):
-    cache.clear()
     github_report = mock_github_report_with_html(html)
     assert_html_equal(
-        process_html(github_report),
+        github_report.process_html(),
         """
             <p>foo</p>
             <div>Stuff</div>
@@ -485,48 +482,8 @@ def test_html_processing_extracts_body(mock_github_report_with_html, html):
     ],
 )
 def test_html_processing_wraps_scrollables(mock_github_report_with_html, input, report):
-    cache.clear()
     github_report = mock_github_report_with_html(input)
-    assert_html_equal(process_html(github_report), report)
-
-
-@pytest.mark.django_db
-def test_html_processing_cache(mock_github_report_with_html):
-    input_html = """
-        <table>
-            <tr><td>something</td></tr>
-        </table>
-    """
-    expected_report_html = """
-        <div class="overflow-wrapper">
-            <table>
-                <tr><td>something</td></tr>
-            </table>
-        </div>
-    """
-    github_report = mock_github_report_with_html(input_html)
-    assert_html_equal(process_html(github_report), expected_report_html)
-
-    # update the input html
-    input_html = """
-        <table>
-            <tr><td>something else</td></tr>
-        </table>
-    """
-    github_report.get_html.return_value = input_html
-    # it's cached, so the output html is the same
-    assert_html_equal(process_html(github_report), expected_report_html)
-
-    # refresh the cache token, processed html is regenerated
-    github_report.report.refresh_cache_token()
-    refeshed_expected_report_html = """
-        <div class="overflow-wrapper">
-            <table>
-                <tr><td>something else</td></tr>
-            </table>
-        </div>
-    """
-    assert_html_equal(process_html(github_report), refeshed_expected_report_html)
+    assert_html_equal(github_report.process_html(), report)
 
 
 def assert_html_equal(actual, expected):
