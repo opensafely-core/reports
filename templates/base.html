@@ -34,7 +34,7 @@
   <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
   <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
 </head>
-<body>
+<body class="lg:overflow-y-hidden">
   <div x-data="{ open: false }" @keydown.window.escape="open = false" class="pt-12 lg:pt-0 lg:h-screen flex overflow-hidden bg-white">
     {% include "partials/sidebar.html" %}
 
