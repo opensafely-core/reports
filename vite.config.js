@@ -16,9 +16,13 @@ const config = {
     outDir: "static/dist",
     emptyOutDir: true,
   },
-  plugins: [legacy({
-    additionalLegacyPolyfills: ['regenerator-runtime/runtime']
-  })],
+  plugins: [
+    legacy({
+      targets: ["ie >= 11"],
+      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+      polyfills: ["es.promise", "es.array.iterator"],
+    }),
+  ],
 };
 
 export default config;
