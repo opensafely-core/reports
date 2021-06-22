@@ -13,7 +13,7 @@ if (isIE11) {
  * Plausible Analytics only on production
  * Compat mode for IE11
  */
-// if (document.location.hostname === "reports.opensafely.org") {
+if (document.location.hostname === "reports.opensafely.org") {
   const ua = window.navigator.userAgent;
   const trident = ua.indexOf("Trident/");
   const msie = ua.indexOf("MSIE ");
@@ -32,4 +32,4 @@ if (isIE11) {
   }
 
   document.head.appendChild(script);
-// }
+}
