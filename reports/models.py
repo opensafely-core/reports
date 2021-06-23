@@ -62,7 +62,12 @@ class PopulatedCategoryManager(models.Manager):
         report_category_ids = set(
             Report.objects.for_user(user).values_list("category_id", flat=True)
         )
-        return self.get_queryset().filter(id__in=report_category_ids).order_by("name")
+        queryset = (
+            self.get_queryset().filter(id__in=report_category_ids).order_by("name")
+        )
+        if user.is_staff:
+            return queryset
+        return queryset.exclude(name__iexact="archive")
 
 
 class Category(models.Model):

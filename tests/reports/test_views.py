@@ -241,6 +241,19 @@ def test_report_view(client):
 
 
 @pytest.mark.django_db
+def test_archive_report_view(client):
+    """Test that an archive report is accessible, but not listed in categories"""
+    category = Category.objects.first()
+    baker.make_recipe("reports.real_report", category=category)
+    archive_report = baker.make_recipe("reports.real_report", category__name="Archive")
+
+    response = client.get(archive_report.get_absolute_url())
+    assert response.status_code == 200
+    assert response.context["report"] == archive_report
+    assert [category.id for category in response.context["categories"]] == [category.id]
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "user_attributes,is_draft,expected_status",
     [

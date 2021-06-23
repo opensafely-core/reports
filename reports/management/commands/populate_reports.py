@@ -10,6 +10,7 @@ class Command(BaseCommand):
     help = "Populate the database with sample reports if they are not already there. For development use only."
 
     def handle(self, *args, **options):
+        Category.objects.get_or_create(name="Archive")
         category, _ = Category.objects.get_or_create(name="Reports")
 
         self.ensure_report(

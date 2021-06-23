@@ -107,6 +107,29 @@ def test_category_for_user(user_no_permission, user_with_permission, mock_repo_u
 
 
 @pytest.mark.django_db
+def test_archive_category_for_user(
+    user_no_permission, user_with_permission, mock_repo_url
+):
+    # Archive category is never returned in the populated_for_user manager
+    category = Category.objects.first()
+    archive_category = baker.make(Category, name="Archive")
+    mock_repo_url("https://github.com/opensafely/test-repo")
+    baker.make_recipe("reports.dummy_report", category=category)
+    baker.make_recipe("reports.dummy_report", category=archive_category)
+
+    user = AnonymousUser()
+    assert list(Category.populated.for_user(user)) == list(
+        Category.objects.filter(id=category.id)
+    )
+    assert list(Category.populated.for_user(user_no_permission)) == list(
+        Category.objects.filter(id=category.id)
+    )
+    assert list(Category.populated.for_user(user_with_permission)) == list(
+        Category.objects.filter(id=category.id)
+    )
+
+
+@pytest.mark.django_db
 def test_report_menu_name_autopopulates():
     category = baker.make(Category, name="test")
     report = Report(
