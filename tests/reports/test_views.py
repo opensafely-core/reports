@@ -221,6 +221,28 @@ def test_landing_view_recent_activity(client, mock_repo_url, reports, expected):
 
 
 @pytest.mark.django_db
+def test_landing_view_recent_activity_archived_reports(
+    client, mock_repo_url, user_no_permission
+):
+    """Archived reports do not appear in recent activity unless user is staff"""
+    mock_repo_url("https://github.com/opensafely/test-repo")
+    report = baker.make_recipe(
+        "reports.dummy_report", menu_name="test", publication_date="2021-02-01"
+    )
+    # report is not archived, appears in recent activity
+    response = client.get(reverse("gateway:landing"))
+    assert list(response.context["recent_activity"]) == [report]
+
+    # archived report
+    category = baker.make(Category, name="Archive")
+    report.category = category
+    report.save()
+
+    response = client.get(reverse("gateway:landing"))
+    assert list(response.context["recent_activity"]) == []
+
+
+@pytest.mark.django_db
 def test_report_view(client):
     """Test a single report page"""
     # report for a real file
