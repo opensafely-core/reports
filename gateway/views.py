@@ -25,7 +25,9 @@ def landing(request):
     # We want the ten most recently published or updated outputs, without duplication. Until we've pulled them all
     # back and compared their activity dates we don't know which ones we will be using, so we grab ten of each which
     # must be enough.
-    all_reports = Report.objects.for_user(request.user)
+    all_reports = Report.objects.for_user(request.user).exclude(
+        category__name__iexact="archive"
+    )
 
     # To avoid duplication of reports in the activity list, we don't display the publication event for reports that
     # have subsequently been updated. However if they are updated on the same day that they were published then we
