@@ -4,7 +4,7 @@
 {% load django_vite %}
 
 {% block extra_head %}
-  {% vite_asset 'assets/scripts/notebook.js' %}
+  {% vite_asset 'assets/src/scripts/notebook.js' %}
 {% endblock %}}
 
 {% block meta %}
@@ -145,7 +145,7 @@
         });
       </script>
 
-      {% vite_asset 'assets/scripts/notebook-legacy.js' scripts_attrs=scripts_attrs %}
+      {% vite_asset 'assets/src/scripts/notebook-legacy.js' scripts_attrs=scripts_attrs %}
     {% endcache %}
   {% endwith %}
 {% endblock %}
