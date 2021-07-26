@@ -1,4 +1,5 @@
 import legacy from "@vitejs/plugin-legacy";
+import copy from "rollup-plugin-copy";
 
 /**
  * @type {import('vite').UserConfig}
@@ -21,6 +22,15 @@ const config = {
       targets: ["ie >= 11"],
       additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
       polyfills: ["es.promise", "es.array.iterator"],
+    }),
+    copy({
+      targets: [
+        {
+          src: "./node_modules/alpinejs/dist/*",
+          dest: "./assets/dist/vendor",
+        },
+      ],
+      hook: "writeBundle",
     }),
   ],
 };
