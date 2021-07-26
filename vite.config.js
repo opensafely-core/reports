@@ -9,11 +9,11 @@ const config = {
     manifest: true,
     rollupOptions: {
       input: {
-        main: "./assets/scripts/main.js",
-        notebook: "./assets/scripts/notebook.js",
+        main: "./assets/src/scripts/main.js",
+        notebook: "./assets/src/scripts/notebook.js",
       },
     },
-    outDir: "static/dist",
+    outDir: "assets/dist",
     emptyOutDir: true,
   },
   plugins: [
