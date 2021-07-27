@@ -48,10 +48,10 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install node_modules
-        run: npm install
+        run: npm ci
 
       - name: Build assets
         run: npm run build
@@ -60,8 +60,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: node-assets
-          path: static/dist
-
+          path: assets/dist
 
   format:
     needs: build
@@ -151,7 +150,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-assets
-          path: static/dist
+          path: assets/dist
 
       - name: Check requirements
         run: |

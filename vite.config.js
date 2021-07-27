@@ -1,4 +1,5 @@
 import legacy from "@vitejs/plugin-legacy";
+import copy from "rollup-plugin-copy";
 
 /**
  * @type {import('vite').UserConfig}
@@ -9,11 +10,11 @@ const config = {
     manifest: true,
     rollupOptions: {
       input: {
-        main: "./assets/scripts/main.js",
-        notebook: "./assets/scripts/notebook.js",
+        main: "./assets/src/scripts/main.js",
+        notebook: "./assets/src/scripts/notebook.js",
       },
     },
-    outDir: "static/dist",
+    outDir: "assets/dist",
     emptyOutDir: true,
   },
   plugins: [
@@ -21,6 +22,15 @@ const config = {
       targets: ["ie >= 11"],
       additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
       polyfills: ["es.promise", "es.array.iterator"],
+    }),
+    copy({
+      targets: [
+        {
+          src: "./node_modules/alpinejs/dist/*",
+          dest: "./assets/dist/vendor",
+        },
+      ],
+      hook: "writeBundle",
     }),
   ],
 };

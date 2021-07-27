@@ -19,8 +19,8 @@
   {% vite_hmr_client %}
 
   {# Modern browsers #}
-  <script async defer type="module" src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.8.2/alpine.js" integrity="sha512-No22QdEJ4zlXvdQDpm6oeXcjwajpNxvnstx6NEU/5qZFysa5gsgj/bSfAFpSc9Za5LjbgQLRXyCeY53aWmk8ZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  {% vite_asset 'assets/scripts/main.js' %}
+  <script async defer type="module" src="{% static 'vendor/alpine.js' %}"></script>
+  {% vite_asset 'assets/src/scripts/main.js' %}
 
   {% block extra_head %}{% endblock %}
 
@@ -50,12 +50,9 @@
   </div>
 
   {# Legacy browsers #}
-  <script nomodule src="https://polyfill.io/v3/polyfill.min.js"></script>
-  <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/6.8.3/system.min.js" integrity="sha512-dGQpe9Hb1dXjYT7TSrTS6qnRmzrhY9wsyRtN6BR2R+XgiXf5cpgvWVGPWptrarkfoldzpIkl7adWEddhoKsX6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.8.2/alpine-ie11.js" integrity="sha512-KA2IvqHkHQMVbJlMnypXkjiHFkYAVaYSd193ckoVZYZ7AH2qZqlv7odiJcjAF2lECSEHptHFrrKaIWCXqZCXHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+  <script nomodule src="{% static 'vendor/alpine-ie11.js' %}"></script>
   {% vite_asset "vite/legacy-polyfills" scripts_attrs=scripts_attrs %}
-  {% vite_asset 'assets/scripts/main-legacy.js' scripts_attrs=scripts_attrs %}
+  {% vite_asset 'assets/src/scripts/main-legacy.js' scripts_attrs=scripts_attrs %}
 
   {% block extra_js %}{% endblock %}
 </body>

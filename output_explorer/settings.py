@@ -142,13 +142,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    BASE_DIR / "assets" / "dist",
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static", BASE_DIR / "static" / "dist"]
-STATIC_ROOT = BASE_DIR / "collected-static"
 
-DJANGO_VITE_ASSETS_PATH = "/static/dist/"
+DJANGO_VITE_ASSETS_PATH = "/static/"
 DJANGO_VITE_DEV_MODE = env.bool("DJANGO_VITE_DEV_MODE", default=False)
-DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "collected-static" / "dist" / "manifest.json"
+DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "staticfiles" / "manifest.json"
 
 # Insert Whitenoise Middleware.
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
