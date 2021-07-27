@@ -29,6 +29,6 @@ RUN pip install --no-cache-dir --requirement requirements.txt
 WORKDIR /app
 COPY . /app
 
-COPY --from=nodeassets /usr/src/app/static/dist ./static/dist
+COPY --from=nodeassets /usr/src/app/assets/dist ./assets/dist
 
 ENTRYPOINT ["/app/entrypoint.sh"]
