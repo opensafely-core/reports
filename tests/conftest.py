@@ -119,6 +119,9 @@ class MockRepo:
     def __init__(self, url):
         self.url = url
 
+    def clear_cache(self):
+        ...
+
 
 @pytest.fixture
 def mock_repo_url(mocker):

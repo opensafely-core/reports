@@ -72,9 +72,9 @@ run:
     python manage.py runserver localhost:8000
 
 # run the test suite and coverage
-test:
+test ARGS='':
 	python manage.py collectstatic --no-input && \
-	pytest --cov=output_explorer --cov=gateway --cov=reports --cov=tests
+	pytest --cov=output_explorer --cov=gateway --cov=reports --cov=tests {{ ARGS }}
 
 # run specific test(s)
 test-only TESTPATH:
