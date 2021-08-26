@@ -18,7 +18,7 @@ if (test $session_from_env = "not-found"); then
     export BW_SESSION
 fi
 
-GH_DEV_TOKEN_BW_ID=10242708-234a-4162-982f-ace700ee5c53
+GH_DEV_TOKEN_BW_ID=a90d92d4-37f0-4036-91c8-ad8f01076b86
 NHSID_DEV_TOKEN_BW_ID=d56dc9f4-d732-45d9-90fd-ad1200b7e27c
 
 write() {
