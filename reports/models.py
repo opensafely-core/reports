@@ -193,7 +193,7 @@ class Report(models.Model):
                     params={"error_message": str(error)},
                 )
 
-            if github_report.matching_file_from_parent_contents() is None:
+            if not github_report.file_exists():
                 raise ValidationError(
                     {
                         "report_html_file_path": _(

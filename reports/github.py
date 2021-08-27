@@ -25,10 +25,15 @@ class GithubReport:
             self._repo = self.client.get_repo("opensafely", self.report.repo)
         return self._repo
 
-    def matching_file_from_parent_contents(self):
-        return self.repo.get_matching_file_from_parent_contents(
-            self.report.report_html_file_path, self.report.branch
-        )
+    def file_exists(self):
+        if (
+            self.repo.get_matching_file_from_parent_contents(
+                self.report.report_html_file_path, self.report.branch
+            )
+            is None
+        ):
+            return False
+        return True
 
     def get_parent_contents(self):
         return self.repo.get_parent_contents(
