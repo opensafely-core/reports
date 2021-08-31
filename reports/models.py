@@ -10,8 +10,9 @@ from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from environs import Env
 from furl import furl
+from osgithub import GithubAPIException, GithubRepo
 
-from .github import GithubAPIException, GithubRepo, GithubReport
+from .github import GithubReport
 
 
 env = Env()
@@ -160,7 +161,7 @@ class Report(models.Model):
         """Refresh cache token to invalidate http cache and clear request cache for github requests related to this repo"""
         self.cache_token = uuid4()
         if refresh_http_cache:
-            GithubReport(self).clear_cache()
+            GithubReport(self).repo.clear_cache()
         if commit:
             self.save()
 
@@ -192,7 +193,7 @@ class Report(models.Model):
                     params={"error_message": str(error)},
                 )
 
-            if not any(github_report.matching_report_file_from_parent_contents()):
+            if not github_report.file_exists():
                 raise ValidationError(
                     {
                         "report_html_file_path": _(
