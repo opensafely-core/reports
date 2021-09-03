@@ -46,6 +46,12 @@ REAL_REPO_DETAILS = {
             False,
             "project.yaml must be an html file",
         ),
+        (
+            {"doi": "https://doi.test", "is_draft": True},
+            False,
+            "DOIs cannot be assigned to draft reports",
+        ),
+        ({"doi": "https://doi.test", "is_draft": False}, True, None),
     ],
     ids=[
         "Test valid",
@@ -54,6 +60,8 @@ REAL_REPO_DETAILS = {
         "Test non-existent report file and parent path",
         "Test non-existent branch",
         "Test existing but non-html file path",
+        "Test DOI with draft report",
+        "Test DOI with published report",
     ],
 )
 def test_report_model_validation(
