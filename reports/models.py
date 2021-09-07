@@ -132,6 +132,13 @@ class Report(models.Model):
         help_text="Short description to display before rendered report and in meta tags",
     )
     publication_date = models.DateField(help_text="Date of first publication")
+    doi = models.URLField(
+        null=True,
+        blank=True,
+        help_text="DOI for this report; note DOIs for associated publications should be "
+        "entered as associated Links",
+        verbose_name="DOI",
+    )
     last_updated = models.DateField(
         null=True,
         blank=True,
@@ -170,7 +177,14 @@ class Report(models.Model):
         return f"{self.title} | OpenSAFELY: Reports"
 
     def clean(self):
-        """Validate the repo, branch and report file path on save"""
+        """Validate the DOI, repo, branch and report file path on save"""
+        # DOIs must link to publicly accessible landing pages.  If a DOI is entered, this report
+        # must be published
+        if self.doi and self.is_draft:
+            raise ValidationError(
+                {"doi": _("DOIs cannot be assigned to draft reports")}
+            )
+
         # GITHUB_VALIDATION env var can optionally be set to False to skip this validation in tests
         if env.bool("GITHUB_VALIDATION", True):
             # Disable caching to fetch the repo and contents.  If this is a new report file in

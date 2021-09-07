@@ -76,6 +76,15 @@
                   {{ report.last_updated|date:"d M Y"}}
                 </dd>
               </div>
+              {% if report.doi %}
+              <div class="sm:col-span-2">
+                <p class="mt-1 text-sm text-gray-900">
+                  <a href="{{ report.doi }}" class="text-oxford-600 hover:text-oxford-800 font-semibold hover:underline">
+                    {{ report.doi }}
+                  </a>
+                </p>
+              </div>
+              {% endif %}
 
               <div class="sm:col-span-2">
                 <dt class="text-sm font-semibold text-gray-600">

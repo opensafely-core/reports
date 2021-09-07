@@ -94,7 +94,7 @@ def mock_backend_and_strategy(httpretty):
     backend = NHSIDConnectAuth()
     request_factory = RequestFactory()
     request = request_factory.get("/", data={"x": "1"})
-    SessionMiddleware(lambda: None).process_request(request)
+    SessionMiddleware().process_request(request)
     strategy = load_strategy(request=request)
 
     httpretty.register_uri(
