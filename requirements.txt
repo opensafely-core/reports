@@ -194,9 +194,9 @@ environs[django]==9.3.3 \
     --hash=sha256:72b867ff7b553076cdd90f3ee01ecc1cf854987639c9c459f0ed0d3d44ae490c \
     --hash=sha256:ee5466156b50fe03aa9fec6e720feea577b5bf515d7f21b2c46608272557ba26
     # via -r requirements.in
-furl==2.1.2 \
-    --hash=sha256:a2c6adb472fc5faba2e18b6c28b83464b80201f168fd10b81997895a7cb5d5a6 \
-    --hash=sha256:f7dba33eafbee7dbc83963534b25e72f816cced48ac53191ee60bfcc62933918
+furl==2.1.3 \
+    --hash=sha256:5a6188fe2666c484a12159c18be97a1977a71d632ef5bb867ef15f54af39cc4e \
+    --hash=sha256:9ab425062c4217f9802508e45feb4a83e54324273ac4b202f1850363309666c0
     # via
     #   -r requirements.in
     #   osgithub
