@@ -190,9 +190,9 @@ ecdsa==0.17.0 \
     --hash=sha256:5cf31d5b33743abe0dfc28999036c849a69d548f994b535e527ee3cb7f3ef676 \
     --hash=sha256:b9f500bb439e4153d0330610f5d26baaf18d17b8ced1bc54410d189385ea68aa
     # via python-jose
-environs[django]==9.3.3 \
-    --hash=sha256:72b867ff7b553076cdd90f3ee01ecc1cf854987639c9c459f0ed0d3d44ae490c \
-    --hash=sha256:ee5466156b50fe03aa9fec6e720feea577b5bf515d7f21b2c46608272557ba26
+environs[django]==9.3.4 \
+    --hash=sha256:7412eca2996027a0a1eafd89bbfec872568e7b4ca75fc980817bfd7788cb5a1f \
+    --hash=sha256:eecf57fb1b91f1166a8a16344a3fd12ea55b7a0f233c906d86506bdb40738a0f
     # via -r requirements.in
 furl==2.1.2 \
     --hash=sha256:a2c6adb472fc5faba2e18b6c28b83464b80201f168fd10b81997895a7cb5d5a6 \
