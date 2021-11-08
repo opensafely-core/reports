@@ -132,9 +132,9 @@ ipython==7.27.0 \
     --hash=sha256:58b55ebfdfa260dad10d509702dc2857cb25ad82609506b070cf2d7b7df5af13 \
     --hash=sha256:75b5e060a3417cf64f138e0bb78e58512742c57dc29db5a5058a2b1f0c10df02
     # via ipdb
-isort==5.9.3 \
-    --hash=sha256:9c2ea1e62d871267b78307fe511c0838ba0da28698c5732d54e2790bf3ba9899 \
-    --hash=sha256:e17d6e2b81095c9db0a03a8025a957f334d6ea30b26f9ec70805411e5c7c81f2
+isort==5.10.0 \
+    --hash=sha256:1a18ccace2ed8910bd9458b74a3ecbafd7b2f581301b0ab65cfdd4338272d76f \
+    --hash=sha256:e52ff6d38012b131628cf0f26c51e7bd3a7c81592eefe3ac71411e692f1b9345
     # via -r requirements.dev.in
 jedi==0.18.0 \
     --hash=sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93 \
@@ -222,6 +222,14 @@ pyparsing==2.4.7 \
     --hash=sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1 \
     --hash=sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b
     # via packaging
+pytest==6.2.5 \
+    --hash=sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89 \
+    --hash=sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134
+    # via
+    #   pytest-cov
+    #   pytest-django
+    #   pytest-env
+    #   pytest-mock
 pytest-cov==2.12.1 \
     --hash=sha256:261bb9e47e65bd099c89c3edf92972865210c36813f80ede5277dceb77a4a62a \
     --hash=sha256:261ceeb8c227b726249b376b8526b600f38667ee314f910353fa318caa01f4d7
@@ -237,14 +245,6 @@ pytest-mock==3.6.1 \
     --hash=sha256:30c2f2cc9759e76eee674b81ea28c9f0b94f8f0445a1b87762cadf774f0df7e3 \
     --hash=sha256:40217a058c52a63f1042f0784f62009e976ba824c418cced42e88d5f40ab0e62
     # via -r requirements.dev.in
-pytest==6.2.5 \
-    --hash=sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89 \
-    --hash=sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134
-    # via
-    #   pytest-cov
-    #   pytest-django
-    #   pytest-env
-    #   pytest-mock
 pytz==2021.1 \
     --hash=sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da \
     --hash=sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798
