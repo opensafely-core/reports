@@ -2,7 +2,7 @@
 {% load django_vite %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" x-data="{ isSidebarVisible: false }" @keydown.window.escape="isSidebarVisible = false">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -32,7 +32,7 @@
   <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
 </head>
 <body class="lg:overflow-y-hidden">
-  <div x-data="{ open: false }" @keydown.window.escape="open = false" class="pt-12 lg:pt-0 lg:h-screen flex overflow-hidden bg-white">
+  <div class="pt-12 lg:pt-0 lg:h-screen flex overflow-hidden bg-white">
     {% include "partials/sidebar.html" %}
 
     <div class="ie-block flex flex-col w-0 flex-1 overflow-hidden">
