@@ -19,7 +19,8 @@
   {% vite_hmr_client %}
 
   {# Modern browsers #}
-  <script async defer type="module" src="{% static 'vendor/alpine.js' %}"></script>
+  <script defer type="module" src="{% static 'vendor/alpine-magic-helpers/screen.js' %}"></script>
+  <script defer type="module" src="{% static 'vendor/alpine.js' %}"></script>
   {% vite_asset 'assets/src/scripts/main.js' %}
 
   {% block extra_head %}{% endblock %}
