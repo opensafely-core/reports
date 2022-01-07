@@ -54,10 +54,11 @@ h6:hover .anchor-link {
 }
 
 //
-// SRO Measures custom styles
+// Custom styles
 //
-#docNav,
-.docNav {
+
+// Custom navigation menu
+#docNav {
   @apply m-0 p-0 list-none bg-oxford-50 pt-14 pb-4 px-5 rounded-lg relative overflow-hidden;
 
   &::before {
@@ -78,6 +79,7 @@ h6:hover .anchor-link {
   @apply absolute bottom-0 right-8 px-4 py-2 border border-transparent text-base font-medium rounded-t-md text-white bg-oxford-700 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500;
 }
 
+// Custom <details /> element
 details {
   @apply block my-2 border border-oxford-400 bg-oxford-50 rounded-lg overflow-hidden;
 
