@@ -52,4 +52,52 @@ h6:hover .anchor-link {
     overflow-x: unset;
   }
 }
+
+//
+// SRO Measures custom styles
+//
+#docNav,
+.docNav {
+  @apply m-0 p-0 list-none bg-oxford-50 pt-14 pb-4 px-5 rounded-lg relative overflow-hidden;
+
+  &::before {
+    @apply absolute top-0 left-0 z-50 w-auto h-auto py-2 px-4 bg-oxford-900 text-white rounded-br-md font-semibold text-lg;
+    content: "Menu";
+  }
+
+  li {
+    @apply my-1;
+
+    a {
+      @apply text-lg;
+    }
+  }
+}
+
+#menuBtn {
+  @apply absolute bottom-0 right-8 px-4 py-2 border border-transparent text-base font-medium rounded-t-md text-white bg-oxford-700 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500;
+}
+
+details {
+  @apply block my-2 border border-oxford-400 bg-oxford-50 rounded-lg overflow-hidden;
+
+  &:not([open]) {
+    summary {
+      @apply hover:bg-oxford-100 hover:text-oxford-900;
+    }
+  }
+
+  summary {
+    @apply py-2 px-4 cursor-pointer text-lg font-semibold text-oxford-600;
+  }
+
+  .details__wrapper {
+    @apply px-8 m-0;
+
+    > *:first-child {
+      @apply mt-0;
+    }
+  }
+}
+
 /*! purgecss end ignore */
