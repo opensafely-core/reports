@@ -1,10 +1,10 @@
 {% load reports_tags %}
 
-<div class="fixed inset-0 z-40 lg:relative lg:flex w-64 lg:bg-oxford-800" x-show="$screen('lg') || isSidebarVisible">
+<header class="fixed inset-0 z-30 lg:relative lg:flex w-64 lg:bg-oxford-800" x-show="$screen('lg') || isSidebarVisible">
   <div
     @click="isSidebarVisible = false"
     aria-hidden="true"
-    class="fixed inset-0 z-0 bg-gray-600 bg-opacity-75"
+    class="fixed inset-0 z-20 bg-gray-600 bg-opacity-75"
     x-cloak
     x-show="!$screen('lg') && isSidebarVisible"
     x-transition:enter-end="opacity-100"
@@ -32,7 +32,7 @@
     </button>
   </div>
   <div
-    class="fixed h-screen overflow-y-scroll w-64 z-10 bg-oxford-800"
+    class="fixed h-screen overflow-y-scroll w-64 z-40 bg-oxford-800"
     x-show="$screen('lg') || isSidebarVisible"
     x-transition:enter-end="translate-x-0"
     x-transition:enter-start="-translate-x-full"
@@ -105,4 +105,4 @@
       </div>
     </nav>
   </div>
-</div>
+</header>
