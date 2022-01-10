@@ -7,8 +7,29 @@
   display: none !important;
 }
 
+:root {
+  --animation-duration: 1s;
+  --transiton-duration: 0.5s;
+}
 html {
-  scroll-padding-top: 70px;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-duration: 0;
+    --transiton-duration: 0;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media (max-width: 1024px) {
+  html {
+    scroll-padding-top: 4rem;
+  }
 }
 
 #skip-link {
