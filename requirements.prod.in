@@ -2,7 +2,7 @@
 
 # To generate requirements file, run:
 # pip-compile --generate-hashes --output-file=requirements.prod.txt requirements.prod.in
-
+django<4.0
 bs4
 environs[django]
 django-extensions
