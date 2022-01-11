@@ -1,30 +1,146 @@
+# just has no idiom for setting a default value for an environment variable
+# so we shell out, as we need VIRTUAL_ENV in the justfile environment
+export VIRTUAL_ENV  := `echo ${VIRTUAL_ENV:-.venv}`
+
+# TODO: make it /scripts on windows?
+export BIN := VIRTUAL_ENV + "/bin"
+export PIP := BIN + "/python -m pip"
+# enforce our chosen pip compile flags
+export COMPILE := BIN + "/pip-compile --allow-unsafe --generate-hashes"
+
+
 # list available commands
 default:
-    @just --list
+    @{{ just_executable() }} --list
 
-# deploy the project
-deploy:
-	git push dokku main
 
-# configure the local dev env
-dev-config:
-	cp dotenv-sample .env
-	./scripts/dev-env.sh .env
+# clean up temporary files
+clean:
+    rm -rf .venv
 
-# set up/update the local dev env
-setup: pip-install npm-install migrate ensure-superuser ensure-reports ensure-groups collectstatic createcachetable
 
-# install correct versions of all Python dependencies
-pip-install:
-    pip install pip-tools
-    pip-sync requirements.txt requirements.dev.txt
-    pre-commit install
+# ensure valid virtualenv
+virtualenv:
+    #!/usr/bin/env bash
+    # allow users to specify python version in .env
+    PYTHON_VERSION=${PYTHON_VERSION:-python3.9}
+
+    # create venv and upgrade pip
+    test -d $VIRTUAL_ENV || { $PYTHON_VERSION -m venv $VIRTUAL_ENV && $PIP install --upgrade pip; }
+
+    # ensure we have pip-tools so we can run pip-compile
+    test -e $BIN/pip-compile || $PIP install pip-tools
+
+
+# update requirements.prod.txt if requirement.prod.in has changed
+requirements-prod: virtualenv
+    #!/usr/bin/env bash
+    # exit if .in file is older than .txt file (-nt = 'newer than', but we negate with || to avoid error exit code)
+    test requirements.prod.in -nt requirements.prod.txt || exit 0
+    $COMPILE --output-file=requirements.prod.txt requirements.prod.in
+
+
+# update requirements.dev.txt if requirements.dev.in has changed
+requirements-dev: requirements-prod
+    #!/usr/bin/env bash
+    # exit if .in file is older than .txt file (-nt = 'newer than', but we negate with || to avoid error exit code)
+    test requirements.dev.in -nt requirements.dev.txt || exit 0
+    $COMPILE --output-file=requirements.dev.txt requirements.dev.in
+
+
+# ensure prod requirements installed and up to date
+prodenv: requirements-prod
+    #!/usr/bin/env bash
+    # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
+    test requirements.prod.txt -nt $VIRTUAL_ENV/.prod || exit 0
+
+    $PIP install -r requirements.prod.txt
+    touch $VIRTUAL_ENV/.prod
+
+
+# && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
+# a killer feature over Makefiles.
+#
+# ensure dev requirements installed and up to date
+devenv: prodenv requirements-dev && install-precommit
+    #!/usr/bin/env bash
+
+    # configure the local dev env
+    if test -f .env; then
+        echo ".env file found"
+    else
+        echo "Creating .env file"
+        cp dotenv-sample .env
+        ./scripts/dev-env.sh .env
+    fi
+
+    # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
+    test requirements.dev.txt -nt $VIRTUAL_ENV/.dev || exit 0
+
+    $PIP install -r requirements.dev.txt
+    touch $VIRTUAL_ENV/.dev
+
+
+# ensure precommit is installed
+install-precommit:
+    #!/usr/bin/env bash
+    BASE_DIR=$(git rev-parse --show-toplevel)
+    test -f $BASE_DIR/.git/hooks/pre-commit || $BIN/pre-commit install
+
+
+# upgrade dev or prod dependencies (all by default, specify package to upgrade single package)
+upgrade env package="": virtualenv
+    #!/usr/bin/env bash
+    opts="--upgrade"
+    test -z "{{ package }}" || opts="--upgrade-package {{ package }}"
+    $COMPILE $opts --output-file=requirements.{{ env }}.txt requirements.{{ env }}.in
+
+
+# *ARGS is variadic, 0 or more. This allows us to do `just test -k match`, for example.
+# Run the tests
+test *ARGS: devenv
+    $BIN/python manage.py collectstatic --no-input && \
+    $BIN/python -m pytest --cov=. --cov-report html --cov-report term-missing:skip-covered {{ ARGS }}
+
+
+# runs the format (black), sort (isort) and lint (flake8) check but does not change any files
+check: devenv
+    $BIN/black --check .
+    $BIN/isort --check-only --diff .
+    $BIN/flake8
+
+
+# fix formatting and import sort ordering
+fix: devenv
+    $BIN/black .
+    $BIN/isort .
+
+
+# setup/update local dev environment
+dev-setup: devenv npm-install
+    $BIN/python manage.py migrate
+    $BIN/python manage.py collectstatic --no-input --clear | grep -v '^Deleting '
+    # create an admin/admin superuser locally if necessary
+    $BIN/python manage.py ensure_superuser
+    # ensure the local app is populated with example reports
+    INCLUDE_PRIVATE=t $BIN/python manage.py populate_reports
+    # ensure the researchers group exists with relevant permissions
+    $BIN/python manage.py ensure_groups
+    # create the database cache table
+    $BIN/python manage.py createcachetable
+
+
+# Run the dev project
+run: devenv
+    $BIN/python manage.py runserver localhost:8000
+
 
 # install all JS dependencies
 npm-install: check-fnm
     fnm use
     npm ci
     npm run build
+
 
 check-fnm:
     #!/usr/bin/env bash
@@ -33,84 +149,9 @@ check-fnm:
         exit 1
     fi
 
-# compile requirements
-compile:
-    pip-compile --generate-hashes requirements.in
-    pip-compile --generate-hashes requirements.dev.in
-
-collectstatic:
-    ./manage.py collectstatic --no-input --clear | grep -v '^Deleting '
-
-# run django migrations locally
-migrate:
-    ./manage.py migrate
-
-# create an admin/admin superuser locally if necessary
-ensure-superuser:
-    ./manage.py ensure_superuser
-
-# ensure the local app is populated with example reports
-ensure-reports:
-    INCLUDE_PRIVATE=t ./manage.py populate_reports
-
-# ensure the researchers group exists with relevant permissions
-ensure-groups:
-    ./manage.py ensure_groups
-
-# create the database cache table
-createcachetable:
-    ./manage.py createcachetable
 
 # blow away the local database and repopulate it
 dev-reset:
     rm db.sqlite3
     rm http_cache.sqlite
-    just setup
-
-# run the dev server
-run:
-    python manage.py runserver localhost:8000
-
-# run the test suite and coverage
-test ARGS='':
-	python manage.py collectstatic --no-input && \
-	pytest --cov=output_explorer --cov=gateway --cov=reports --cov=tests {{ ARGS }}
-
-# run specific test(s)
-test-only TESTPATH:
-    pytest {{TESTPATH}}
-
-# run the format checker, sort checker and linter
-check:
-    #!/bin/bash
-    set -e
-    echo "Running black, isort and flake8"
-    black --check .
-    isort --check-only --diff .
-    flake8
-
-# run the format checker (black)
-format:
-    #!/bin/bash
-    set -e
-    echo "Running black"
-    black --check .
-
-# run the linter (flake8)
-lint:
-    #!/bin/bash
-    set -e
-    echo "Running flake8"
-    flake8
-
-# run the sort checker (isort)
-sort:
-    #!/bin/bash
-    set -e
-    echo "Running isort"
-    isort --check-only --diff .
-
-# fix formatting and import sort ordering
-fix:
-    black .
-    isort .
+    just dev-setup
