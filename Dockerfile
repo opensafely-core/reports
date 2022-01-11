@@ -23,8 +23,8 @@ RUN apt-get update && \
 # Do this first to cache them in docker layer so we can skip package
 # installation if they haven't changed
 WORKDIR /
-COPY requirements.txt .
-RUN pip install --no-cache-dir --requirement requirements.txt
+COPY requirements.prod.txt .
+RUN pip install --no-cache-dir --requirement requirements.prod.txt
 
 WORKDIR /app
 COPY . /app
