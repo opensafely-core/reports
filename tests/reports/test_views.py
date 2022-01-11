@@ -442,7 +442,7 @@ def test_html_processing_extracts_body(mock_github_report_with_html, html):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    ("input", "report"),
+    ("input_html", "report"),
     [
         (
             """
@@ -516,8 +516,10 @@ def test_html_processing_extracts_body(mock_github_report_with_html, html):
         "Wraps <pre> elements in overflow wrappers",
     ],
 )
-def test_html_processing_wraps_scrollables(mock_github_report_with_html, input, report):
-    github_report = mock_github_report_with_html(input)
+def test_html_processing_wraps_scrollables(
+    mock_github_report_with_html, input_html, report
+):
+    github_report = mock_github_report_with_html(input_html)
     assert_html_equal(github_report.process_html(), report)
 
 

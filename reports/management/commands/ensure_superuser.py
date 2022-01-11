@@ -3,7 +3,9 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Create an admin/admin superuser if it doesn't already exist. For development use only."
+    help = """
+        Create an admin/admin superuser if it doesn't already exist. For development use only.
+    """  # noqa: A003
 
     def handle(self, *args, **options):
         User = get_user_model()
