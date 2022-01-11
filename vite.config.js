@@ -29,6 +29,10 @@ const config = {
           src: "./node_modules/alpinejs/dist/*",
           dest: "./assets/dist/vendor",
         },
+        {
+          src: "./node_modules/alpine-magic-helpers/dist/*",
+          dest: "./assets/dist/vendor/alpine-magic-helpers",
+        },
       ],
       hook: "writeBundle",
     }),
