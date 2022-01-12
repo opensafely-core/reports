@@ -1,12 +1,20 @@
--c requirements.txt
+--constraint requirements.prod.txt
+
+# Additional dev requirements
+# To generate a requirements file that includes both prod and dev requirements, run:
+# pip-compile --generate-hashes --output-file=requirements.dev.txt requirements.dev.in
+django<4.0
 black
 flake8
+flake8-builtins
+flake8-no-pep420
 httpretty
 ipdb
 isort
 model-bakery
+pip-tools
 pre-commit
-pytest-cov
+pytest-coverage
 pytest-django
 pytest-env
 pytest-mock

@@ -3,7 +3,9 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Ensure the researchers group exists with relevant permissions."
+    help = """
+        Ensure the researchers group exists with relevant permissions.
+    """  # noqa: A003
 
     def handle(self, *args, **options):
         group, _ = Group.objects.get_or_create(name="researchers")

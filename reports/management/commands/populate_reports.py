@@ -7,7 +7,10 @@ from reports.models import Category, Report
 
 
 class Command(BaseCommand):
-    help = "Populate the database with sample reports if they are not already there. For development use only."
+    help = """
+        Populate the database with sample reports if they are not already there.
+        For development use only.
+    """  # noqa: A003
 
     def handle(self, *args, **options):
         Category.objects.get_or_create(name="Archive")
