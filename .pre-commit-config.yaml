@@ -5,26 +5,26 @@ repos:
     - id: black
       language_version: python3.9
 
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
     hooks:
     - id: flake8
       language_version: python3.9
-      additional_dependencies: [
-        "flake8-builtins",
-        # skipping flake8-implicit-str-concat due to conflict in attrs version
-        # Should be fixed in next version, see https://github.com/keisheiled/flake8-implicit-str-concat/pull/31
-        # "flake8-implicit-str-concat"
-      ]
+      additional_dependencies:
+      - "flake8-builtins"
+      - "flake8-no-pep420"
+      # skipping flake8-implicit-str-concat due to conflict in attrs version
+      # Should be fixed in next version, see https://github.com/keisheiled/flake8-implicit-str-concat/pull/31
+      # - "flake8-implicit-str-concat"
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.8.0
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
     hooks:
     - id: isort
       language_version: python3.9
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v4.1.0
     hooks:
     - id: trailing-whitespace
     - id: end-of-file-fixer
