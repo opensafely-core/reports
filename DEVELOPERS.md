@@ -69,7 +69,7 @@ dokku$ dokku http-auth:off output-explorer
 
 ### Prerequisites:
 
-- **Python v3.9.x**
+- **Python v3.10.x**
 - **Pip**
 - **[fnm](#install-fnm)**
 - **[Just](#install-just)**
