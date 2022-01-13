@@ -94,7 +94,10 @@ def mock_backend_and_strategy(httpretty):
     backend = NHSIDConnectAuth()
     request_factory = RequestFactory()
     request = request_factory.get("/", data={"x": "1"})
-    SessionMiddleware().process_request(request)
+    # As of Django 4, the `get_response` arg to SessionMiddleware (via MiddlewareMixin)
+    # is required and can't be None.  SessionMiddleware never uses it, so it
+    # doesn't matter what we give it here.
+    SessionMiddleware(object()).process_request(request)
     strategy = load_strategy(request=request)
 
     httpretty.register_uri(

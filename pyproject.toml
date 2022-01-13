@@ -45,6 +45,5 @@ env = [
   "DJANGO_VITE_DEV_MODE=True",
 ]
 filterwarnings = [
-    "ignore::django.utils.deprecation.RemovedInDjango40Warning:social_django",
     "ignore::django.utils.deprecation.RemovedInDjango41Warning:social_django",
 ]
