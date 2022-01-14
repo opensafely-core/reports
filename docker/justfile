@@ -1,0 +1,37 @@
+export DOCKER_USERID := `id -u`
+export DOCKER_GROUPID := `id -g`
+
+
+build env="dev":
+    #!/usr/bin/env bash
+
+    # enable modern docker build features
+    export DOCKER_BUILDKIT=1
+    export COMPOSE_DOCKER_CLI_BUILD=1
+
+    # set build args for prod builds
+    export BUILD_DATE=$(date -u +'%y-%m-%dT%H:%M:%SZ')
+    export GITREF=$(git rev-parse --short HEAD)
+
+    # build the thing
+    docker-compose build --pull {{ env }}
+
+
+# run tests in docker container
+test: build
+    docker-compose run --rm test
+
+
+# run dev server in docker container
+serve: build
+    docker-compose up dev
+
+
+# run command in dev container
+run *args="bash": build
+    docker-compose run dev {{ args }}
+
+
+# exec command in existing dev container
+exec *args="bash": build
+    docker-compose exec dev {{ args }}
