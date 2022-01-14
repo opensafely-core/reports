@@ -97,12 +97,6 @@ RUN --mount=type=cache,target=/root/.cache \
 #    version of the code included when the prod image was built.
 FROM base-python as output-explorer-base
 
-# Create a non-root user to run the app as
-# We currently use host bind mounts in production backends, which means if we
-# need to match the uid inside the container to the one on the host.  To do
-# this, we reserve uid/gid 10000 to use as our running user on the host.
-RUN useradd --create-home --user-group --uid 10000 appuser
-
 # copy venv over from builder image. These will have root:root ownership, but
 # are readable by all.
 COPY --from=builder /opt/venv /opt/venv
@@ -120,9 +114,6 @@ VOLUME /app
 
 # This may not be necessary, but it probably doesn't hurt
 ENV PYTHONPATH=/app
-
-# switch to running as the user
-USER appuser
 
 
 ##################################################
@@ -153,7 +144,6 @@ ARG GITREF=unknown
 LABEL org.opencontainers.image.revision=$GITREF
 
 
-
 ##################################################
 #
 # Dev image
@@ -163,9 +153,6 @@ LABEL org.opencontainers.image.revision=$GITREF
 #
 FROM output-explorer-base as output-explorer-dev
 
-# switch back to root to run the install of dev requirements.txt
-USER root
-
 # install development requirements
 COPY requirements.dev.txt /tmp/requirements.dev.txt
 # using cache mount instead
@@ -173,12 +160,4 @@ COPY requirements.dev.txt /tmp/requirements.dev.txt
 RUN --mount=type=cache,target=/root/.cache \
     python -m pip install --require-hashes --requirement /tmp/requirements.dev.txt
 
-# in dev, ensure appuser uid matches host user id
-ARG USERID=1000
-ARG GROUPID=1000
-RUN usermod -u $USERID appuser && groupmod -g $GROUPID appuser
-
 CMD ["/app/docker/entrypoints/dev.sh"]
-
-# switch back to appuser
-USER appuser

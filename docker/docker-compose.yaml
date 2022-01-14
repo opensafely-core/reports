@@ -31,17 +31,9 @@ services:
         service: prod
     image: output-explorer-dev
     container_name: output-explorer-dev
-    # running as a specific uid/gid allows files written to mounted volumes by
-    # the docker container's default user to match the host user's uid/gid, for
-    # convienience.
-    user: ${DOCKER_USERID:-1000}:${DOCKER_GROUPID:-1000}
     build:
       # the dev stage in the Dockerfile
       target: output-explorer-dev
-      # pass the uid/gid as build arg
-      args:
-        - USERID=${DOCKER_USERID:-1000}
-        - GROUPID=${DOCKER_GROUPID:-1000}
     # paths relative to docker-compose.yaml file
     env_file:
       - ../.env
