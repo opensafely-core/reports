@@ -14,14 +14,12 @@ FROM ghcr.io/opensafely-core/base-docker:latest as base-python
 RUN rm -f /etc/apt/apt.conf.d/docker-clean
 
 # ensure fully working base python3.10 installation using deadsnakes ppa
-# software-properties-common required for add-apt-repository
-RUN --mount=type=cache,target=/var/cache/apt \
-  /root/docker-apt-install.sh software-properties-common
-RUN add-apt-repository ppa:deadsnakes/ppa
 # see: https://gist.github.com/tiran/2dec9e03c6f901814f6d1e8dad09528e
 # use space efficient utility from base image
 RUN --mount=type=cache,target=/var/cache/apt \
-  /root/docker-apt-install.sh python3.10 python3.10-venv python3.10-distutils tzdata ca-certificates
+    echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main" > /etc/apt/sources.list.d/deadsnakes-ppa.list &&\
+    /usr/lib/apt/apt-helper download-file 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf23c5a6cf475977595c89f51ba6932366a755776' /etc/apt/trusted.gpg.d/deadsnakes.asc &&\
+    root/docker-apt-install.sh python3.10 python3.10-venv python3.10-distutils tzdata ca-certificates
 
 RUN ls usr/bin
 # install any additional system dependencies
