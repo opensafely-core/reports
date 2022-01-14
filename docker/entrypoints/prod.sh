@@ -7,4 +7,4 @@ set -euo pipefail
 ./manage.py collectstatic --no-input
 ./manage.py createcachetable
 
-gunicorn output_explorer.wsgi --config=gunicorn.conf.py
+exec "gunicorn output_explorer.wsgi --config=gunicorn.conf.py"
