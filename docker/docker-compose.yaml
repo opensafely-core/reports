@@ -25,10 +25,20 @@ services:
     ports:
       - "8000:8000"
 
+  node-assets:
+    extends:
+      service: prod
+    image: output-explorer-node-assets
+    build:
+      # the node-builder stage in the Dockerfile
+      target: node-builder
+    volumes:
+      - ..:/app
+
   # main development service
   dev:
     extends:
-        service: prod
+      service: prod
     image: output-explorer-dev
     container_name: output-explorer-dev
     build:
@@ -43,7 +53,7 @@ services:
   # test runner service - uses dev-image with a different commnd
   test:
     extends:
-        service: dev
+      service: dev
     container_name: output-explorer-test
     # override command
     command: /app/docker/entrypoints/test.sh

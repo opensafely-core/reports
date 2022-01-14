@@ -27,25 +27,26 @@ COPY docker/dependencies.txt /tmp/dependencies.txt
 RUN --mount=type=cache,target=/var/cache/apt \
     /root/docker-apt-install.sh /tmp/dependencies.txt
 
-
 #################################################
 #
 # Create node image.
 #
 FROM node:16 AS node-builder
+COPY --from=base-python /root/docker-apt-install.sh /root/docker-apt-install.sh
+
+RUN /root/docker-apt-install.sh rsync
+
 WORKDIR /usr/src/app
 
 # just copy in the files `npm run build` needs
-COPY vite.config.js ./
-COPY package-lock.json package.json ./
+COPY vite.config.js tailwind.config.js postcss.config.js package-lock.json package.json ./
 COPY assets ./assets
+COPY static ./static
 COPY templates ./templates
 COPY gateway/templates ./gateway/templates
 COPY reports/templates ./reports/templates
 
-RUN npm ci
-
-RUN npm run build
+RUN npm ci && npm run build
 
 ##################################################
 #
@@ -101,10 +102,6 @@ FROM base-python as output-explorer-base
 # are readable by all.
 COPY --from=builder /opt/venv /opt/venv
 
-# copy node assets over from node-builder image. These will have root:root ownership, but
-# are readable by all.
-COPY --from=node-builder /usr/src/app/assets/dist /app/assets/dist
-
 # Ensure we're using the venv by default
 ENV VIRTUAL_ENV=/opt/venv/ PATH="/opt/venv/bin:$PATH"
 
@@ -131,6 +128,10 @@ LABEL org.opencontainers.image.title="output-explorer" \
 
 # copy application code
 COPY . /app
+
+# copy node assets over from node-builder image. These will have root:root ownership, but
+# are readable by all.
+COPY --from=node-builder /usr/src/app/assets/dist /app/assets/dist
 
 # We set command rather than entrypoint, to make it easier to run different
 # things from the cli

@@ -22,16 +22,27 @@ test: build
     docker-compose run --rm test
 
 
+# copy built node assets back to host
+copy-assets: build
+    #!/usr/bin/env bash
+
+    # enable modern docker build features
+    export DOCKER_BUILDKIT=1
+    export COMPOSE_DOCKER_CLI_BUILD=1
+    docker-compose build --pull node-assets
+    docker-compose run --rm --no-deps --entrypoint /usr/bin/env node-assets rsync -r /usr/src/app/assets/dist /app/assets
+
+
 # run dev server in docker container
-serve: build
+serve: copy-assets
     docker-compose up dev
 
 
 # run command in dev container
-run *args="bash": build
+run *args="bash": copy-assets
     docker-compose run dev {{ args }}
 
 
 # exec command in existing dev container
-exec *args="bash": build
+exec *args="bash": copy-assets
     docker-compose exec dev {{ args }}
