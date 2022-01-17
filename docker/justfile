@@ -20,11 +20,6 @@ build env="dev":
     docker-compose build --pull {{ env }}
 
 
-# run tests in docker container
-test: build
-    docker-compose run --rm test
-
-
 # copy built node assets back to host
 copy-assets: build
     #!/usr/bin/env bash
@@ -34,6 +29,11 @@ copy-assets: build
     export COMPOSE_DOCKER_CLI_BUILD=1
     docker-compose build --pull node-assets
     docker-compose run --rm --no-deps --entrypoint /usr/bin/env node-assets rsync -r /usr/src/app/assets/dist /app/assets
+
+
+# run tests in docker container
+test: copy-assets
+    docker-compose run --rm test
 
 
 # run dev server in docker container
