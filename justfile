@@ -58,13 +58,8 @@ prodenv: requirements-prod
     touch $VIRTUAL_ENV/.prod
 
 
-# && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
-# a killer feature over Makefiles.
-#
-# ensure dev requirements installed and up to date
-devenv: prodenv requirements-dev && install-precommit
+_env:
     #!/usr/bin/env bash
-
     # configure the local dev env
     if test -f .env; then
         echo ".env file found"
@@ -74,6 +69,12 @@ devenv: prodenv requirements-dev && install-precommit
         ./scripts/dev-env.sh .env
     fi
 
+
+# && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
+# a killer feature over Makefiles.
+#
+# ensure dev requirements installed and up to date
+devenv: _env prodenv requirements-dev && install-precommit
     # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
     test requirements.dev.txt -nt $VIRTUAL_ENV/.dev || exit 0
 
@@ -155,3 +156,28 @@ dev-reset:
     rm db.sqlite3
     rm http_cache.sqlite
     just dev-setup
+
+
+# build docker image env=dev|prod
+docker-build env="dev": _env
+    {{ just_executable() }} docker/build {{ env }}
+
+
+# run tests in docker container
+docker-test: _env
+    {{ just_executable() }} docker/test
+
+
+# run dev server in docker container
+docker-serve: _env
+    {{ just_executable() }} docker/serve
+
+
+# run cmd in dev docker continer
+docker-run *args="bash": _env
+    {{ just_executable() }} docker/run {{ args }}
+
+
+# exec command in an existing dev docker container
+docker-exec *args="bash": _env
+    {{ just_executable() }} docker/exec {{ args }}
