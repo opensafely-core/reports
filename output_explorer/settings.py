@@ -41,6 +41,9 @@ ALLOWED_HOSTS = [furl(BASE_URL).host]
 # Default to True; may need to be False for local/testing
 # SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", True)
 
+# https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-CSRF_TRUSTED_ORIGINS
+CSRF_TRUSTED_ORIGINS = [BASE_URL]
+
 # Application definition
 
 INSTALLED_APPS = [
