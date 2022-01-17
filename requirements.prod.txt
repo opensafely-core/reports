@@ -172,9 +172,9 @@ dj-database-url==0.5.0 \
     --hash=sha256:4aeaeb1f573c74835b0686a2b46b85990571159ffc21aa57ecd4d1e1cb334163 \
     --hash=sha256:851785365761ebe4994a921b433062309eb882fedd318e1b0fcecc607ed02da9
     # via environs
-dj-email-url==1.0.2 \
-    --hash=sha256:15148141c6ef123636e4ca3663e95231ed94ca5ed267e91977e5a4397be8b34c \
-    --hash=sha256:838fd4ded9deba53ae757debef431e25fa7fca31d3948b3c4808ccdc84fab2b7
+dj-email-url==1.0.4 \
+    --hash=sha256:5a0239560c75749be0de86f17425d4526938fe4d8f3ddff4aa8f98224e44183e \
+    --hash=sha256:7ee35df51065d17ac7b55e98ad8eda3a1f6c5d65fc89cdc5de7a96e534942553
     # via environs
 django==4.0.1 \
     --hash=sha256:2485eea3cc4c3bae13080dee866ebf90ba9f98d1afe8fda89bfb0eb2e218ef86 \
@@ -339,9 +339,9 @@ requests==2.27.1 \
     #   requests-cache
     #   requests-oauthlib
     #   social-auth-core
-requests-cache==0.9.0 \
-    --hash=sha256:d82b3af855ffc16807a401cfe5a924957a083512b430e635045cee767b99d169 \
-    --hash=sha256:dbcb543e2ffbd365f0e88d9d63081c305673a1e10b8b9679dd990bb2c57864d9
+requests-cache==0.9.1 \
+    --hash=sha256:3e3384c48dca231ee4c49e7ba53162bc0d99e16721baf085bfba1552d065d151 \
+    --hash=sha256:7737f83f0f48481a904bb9a9402233db5090931e46f9644c502646a573848d35
     # via
     #   -r requirements.prod.in
     #   osgithub
@@ -369,9 +369,9 @@ social-auth-app-django==5.0.0 \
     --hash=sha256:52241a25445a010ab1c108bafff21fc5522d5c8cd0d48a92c39c7371824b065d \
     --hash=sha256:b6e3132ce087cdd6e1707aeb1b588be41d318408fcf6395435da0bc6fe9a9795
     # via -r requirements.prod.in
-social-auth-core[openidconnect]==4.1.0 \
-    --hash=sha256:5ab43b3b15dce5f059db69cc3082c216574739f0edbc98629c8c6e8769c67eb4 \
-    --hash=sha256:983b53167ac56e7ba4909db555602a6e7a98c97ca47183bb222eb85ba627bf2b
+social-auth-core[openidconnect]==4.2.0 \
+    --hash=sha256:08fe6645b98950cff9d6970b6704345f821d78729df0164bca0002c624b001e1 \
+    --hash=sha256:af6fc7d9ee39f0aa697cd953121add638fc32a49816341a9838a67904c39e034
     # via
     #   -r requirements.prod.in
     #   social-auth-app-django
