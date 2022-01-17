@@ -8,6 +8,9 @@ export PIP := BIN + "/python -m pip"
 # enforce our chosen pip compile flags
 export COMPILE := BIN + "/pip-compile --allow-unsafe --generate-hashes"
 
+# Load .env files by default
+set dotenv-load := true
+
 
 # list available commands
 default:
@@ -60,14 +63,15 @@ prodenv: requirements-prod
 
 _env:
     #!/usr/bin/env bash
+    test -f .env || cp dotenv-sample .env
+
+
+_dev-config:
+    #!/usr/bin/env bash
     # configure the local dev env
-    if test -f .env; then
-        echo ".env file found"
-    else
-        echo "Creating .env file"
-        cp dotenv-sample .env
-        ./scripts/dev-env.sh .env
-    fi
+    #!/usr/bin/env bash
+    # ./scripts/dev-env.sh creates a .dev-configured file on completion; exit if file exists
+    test -f .dev-configured || ./scripts/dev-env.sh .env
 
 
 # && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
@@ -132,7 +136,7 @@ dev-setup: devenv npm-install
 
 
 # Run the dev project
-run: devenv
+run: _dev-config devenv
     $BIN/python manage.py runserver localhost:8000
 
 
