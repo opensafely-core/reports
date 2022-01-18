@@ -69,9 +69,10 @@ _env:
 _dev-config:
     #!/usr/bin/env bash
     # configure the local dev env
-    #!/usr/bin/env bash
-    # ./scripts/dev-env.sh creates a .dev-configured file on completion; exit if file exists
-    test -f .dev-configured || ./scripts/dev-env.sh .env
+    set -eu
+    test -f .dev-configured && exit
+    ./scripts/dev-env.sh .env
+    touch .dev-configured
 
 
 # && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
