@@ -43,16 +43,8 @@ dokku$ dokku config:set output-explorer SHOW_LOGIN=False
 
 Merges to the `main` branch will trigger an auto-deploy via GitHub actions.
 
-If you need to manually deploy:
+Note this deploys by building the prod docker image (see `docker/docker-compose.yaml`) and using the dokku [git:from-image](https://dokku.com/docs/deployment/methods/git/#initializing-an-app-repository-from-a-docker-image) command.
 
-```sh
-local$ git clone git@github.com:opensafely-core/output-explorer.git
-local$ cd output-explorer
-local$ git remote add dokku dokku@MYSERVER:output-explorer
-local$ git push dokku main
-```
-
-You may need to add your ssh key to dokku's authorised keys; use the method described [here](https://dokku.com/docs/deployment/user-management/)
 
 ### extras
 
@@ -95,6 +87,8 @@ just #  shortcut for just --list
 See https://github.com/Schniz/fnm#installation.
 
 ### Run local development server
+
+The development server can be run locally, as described below, or in [docker](#using-docker-for-development-and-tests).
 
 #### Set up/update local dev environment
 
@@ -140,3 +134,22 @@ This project uses [Vite](https://vitejs.dev/) which allows for local hot-module 
 3. Open a new terminal tab or window
 4. Run `npm run dev` to start the vite server
 5. Any changes you make in the `assets/` folder will now be updated without requiring a page refresh
+
+
+### Using docker for development and tests
+
+Run a local development server in docker:
+
+```sh
+just docker-serve
+```
+
+Run the tests in docker
+```sh
+just docker-test
+```
+
+Run a command in the dev docker containter
+```sh
+just docker-run <command>
+```
