@@ -38,15 +38,21 @@ RUN /root/docker-apt-install.sh rsync
 
 WORKDIR /usr/src/app
 
+# copy just what npm ci needs
+COPY package-lock.json package.json ./
+RUN --mount=type=cache,target=/usr/src/app/.npm \
+    npm set cache /usr/src/app/.npm && \
+    npm ci
+
 # just copy in the files `npm run build` needs
-COPY vite.config.js tailwind.config.js postcss.config.js package-lock.json package.json ./
+COPY vite.config.js tailwind.config.js postcss.config.js ./
 COPY assets ./assets
 COPY static ./static
 COPY templates ./templates
 COPY gateway/templates ./gateway/templates
 COPY reports/templates ./reports/templates
 
-RUN npm ci && npm run build
+RUN --mount=type=cache,target=./npm npm run build
 
 ##################################################
 #
