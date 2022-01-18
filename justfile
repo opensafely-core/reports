@@ -168,8 +168,8 @@ docker-build env="dev": _env
 
 
 # run tests in docker container
-docker-test: _env
-    {{ just_executable() }} docker/test
+docker-test *args="": _env
+    {{ just_executable() }} docker/test {{ args }}
 
 
 # run dev server in docker container

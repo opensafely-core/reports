@@ -9,4 +9,4 @@ set -euo pipefail
 INCLUDE_PRIVATE=t ./manage.py populate_reports
 ./manage.py createcachetable
 
-./manage.py runserver 0.0.0.0:8000
+exec "$@"

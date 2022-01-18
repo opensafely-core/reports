@@ -49,14 +49,17 @@ services:
       - ../.env
     volumes:
       - ..:/app
+    # override command
+    command: python manage.py runserver 0.0.0.0:8000
 
-  # test runner service - uses dev-image with a different commnd
+  # test runner service - uses dev-image with a different entrypoint commnd
   test:
     extends:
       service: dev
     container_name: output-explorer-test
-    # override command
-    command: /app/docker/entrypoints/test.sh
     # different default test env
     env_file:
       - ../.test.env
+    # override entrypoint and command
+    entrypoint: /app/docker/entrypoints/test.sh
+    command: python -m pytest --cov=. --cov-report html --cov-report term-missing:skip-covered

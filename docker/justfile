@@ -4,13 +4,13 @@ export DOCKER_GROUPID := `id -g`
 # Load .env files by default
 set dotenv-load := true
 
+# enable modern docker build features
+export DOCKER_BUILDKIT := "1"
+export COMPOSE_DOCKER_CLI_BUILD := "1"
+
 
 build env="dev":
     #!/usr/bin/env bash
-
-    # enable modern docker build features
-    export DOCKER_BUILDKIT=1
-    export COMPOSE_DOCKER_CLI_BUILD=1
 
     # set build args for prod builds
     export BUILD_DATE=$(date -u +'%y-%m-%dT%H:%M:%SZ')
@@ -23,17 +23,13 @@ build env="dev":
 # copy built node assets back to host
 copy-assets: build
     #!/usr/bin/env bash
-
-    # enable modern docker build features
-    export DOCKER_BUILDKIT=1
-    export COMPOSE_DOCKER_CLI_BUILD=1
     docker-compose build --pull node-assets
     docker-compose run --rm --no-deps --entrypoint /usr/bin/env node-assets rsync -r /usr/src/app/assets/dist /app/assets
 
 
 # run tests in docker container
-test: copy-assets
-    docker-compose run --rm test
+test *args="": copy-assets
+    docker-compose run --rm test python -m pytest --cov=. --cov-report html --cov-report term-missing:skip-covered {{ args }}
 
 
 # run dev server in docker container

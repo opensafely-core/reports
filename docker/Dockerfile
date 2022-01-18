@@ -167,4 +167,5 @@ COPY requirements.dev.txt /tmp/requirements.dev.txt
 RUN --mount=type=cache,target=/root/.cache \
     python -m pip install --require-hashes --requirement /tmp/requirements.dev.txt
 
-CMD ["/app/docker/entrypoints/dev.sh"]
+# Override ENTRYPOINT rather than CMD so we can pass arbitrary commands to the entrypoint script
+ENTRYPOINT ["/app/docker/entrypoints/dev.sh"]
