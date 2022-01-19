@@ -8,6 +8,9 @@ export PIP := BIN + "/python -m pip"
 # enforce our chosen pip compile flags
 export COMPILE := BIN + "/pip-compile --allow-unsafe --generate-hashes"
 
+# Load .env files by default
+set dotenv-load := true
+
 
 # list available commands
 default:
@@ -58,22 +61,25 @@ prodenv: requirements-prod
     touch $VIRTUAL_ENV/.prod
 
 
+_env:
+    #!/usr/bin/env bash
+    test -f .env || cp dotenv-sample .env
+
+
+_dev-config:
+    #!/usr/bin/env bash
+    # configure the local dev env
+    set -eu
+    test -f .dev-configured && exit
+    ./scripts/dev-env.sh .env
+    touch .dev-configured
+
+
 # && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
 # a killer feature over Makefiles.
 #
 # ensure dev requirements installed and up to date
-devenv: prodenv requirements-dev && install-precommit
-    #!/usr/bin/env bash
-
-    # configure the local dev env
-    if test -f .env; then
-        echo ".env file found"
-    else
-        echo "Creating .env file"
-        cp dotenv-sample .env
-        ./scripts/dev-env.sh .env
-    fi
-
+devenv: _env prodenv requirements-dev && install-precommit
     # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
     test requirements.dev.txt -nt $VIRTUAL_ENV/.dev || exit 0
 
@@ -131,7 +137,7 @@ dev-setup: devenv npm-install
 
 
 # Run the dev project
-run: devenv
+run: _dev-config devenv
     $BIN/python manage.py runserver localhost:8000
 
 
@@ -155,3 +161,28 @@ dev-reset:
     rm db.sqlite3
     rm http_cache.sqlite
     just dev-setup
+
+
+# build docker image env=dev|prod
+docker-build env="dev": _env
+    {{ just_executable() }} docker/build {{ env }}
+
+
+# run tests in docker container
+docker-test *args="": _env
+    {{ just_executable() }} docker/test {{ args }}
+
+
+# run dev server in docker container
+docker-serve: _env
+    {{ just_executable() }} docker/serve
+
+
+# run cmd in dev docker continer
+docker-run *args="bash": _env
+    {{ just_executable() }} docker/run {{ args }}
+
+
+# exec command in an existing dev docker container
+docker-exec *args="bash": _env
+    {{ just_executable() }} docker/exec {{ args }}

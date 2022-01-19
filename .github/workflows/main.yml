@@ -1,6 +1,10 @@
 ---
 name: CI
 
+env:
+    IMAGE_NAME: output-explorer
+    REGISTRY: ghcr.io
+
 on:
   push:
 
@@ -94,22 +98,61 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: hadolint/hadolint-action@v1.4.0
+        with:
+          dockerfile: docker/Dockerfile
+
+  docker-test:
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: extractions/setup-just@aa5d15c144db4585980a44ebfdd2cf337c4f14cb  # v1.4.0
+
+      - name: Build docker image and run tests in it
+        run: |
+          # build docker and run test
+          just docker-test
 
   deploy:
-    needs: [test, lint-dockerfile]
+    needs: [docker-test, lint-dockerfile]
+
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      - uses: extractions/setup-just@aa5d15c144db4585980a44ebfdd2cf337c4f14cb  # v1.4.0
 
-      - name: Deploy to dokku
-        uses: opensafely-core/dokku-deploy-github-action@4b326b36625e4a10add5f9601e8ffbaf048444b9
+      - name: Build docker image
+        run: |
+          # docker-test step will build the dev image by default, so build the prod image
+          just docker-build prod
+
+      - name: Login to Packages Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0
         with:
-          app-name: "output-explorer"
-          dokku-host: "dokku2.ebmdatalab.net"
-          ssh-private-key: ${{ secrets.DOKKU2_DEPLOY_SSH_KEY }}
-          remote-branch: "main"
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: publish docker image
+        run: |
+            PUBLIC_IMAGE_NAME=$REGISTRY/${{ github.repository_owner }}/$IMAGE_NAME
+            docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:latest
+            docker push $PUBLIC_IMAGE_NAME:latest
+
+      - name: Setup SSH Agent
+        run: |
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            ssh-add - <<< "${{ secrets.DOKKU2_DEPLOY_SSH_KEY }}"
+
+      - name: Deploy
+        run: |
+            SHA=$(docker inspect --format='{{index .RepoDigests 0}}' $PUBLIC_IMAGE_NAME:latest)
+            ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" dokku@dokku2.ebmdatalab.net git:from-image proxy $SHA

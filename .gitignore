@@ -103,6 +103,7 @@ venv/
 
 # Env files
 .env
+**/.dev-configured
 
 # local db files
 http_cache.sqlite
