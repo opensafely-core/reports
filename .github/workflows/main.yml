@@ -4,6 +4,7 @@ name: CI
 env:
     IMAGE_NAME: output-explorer
     REGISTRY: ghcr.io
+    SSH_AUTH_SOCK: /tmp/agent.sock
 
 on:
   push:
