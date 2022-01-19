@@ -139,6 +139,9 @@ COPY . /app
 # are readable by all.
 COPY --from=node-builder /usr/src/app/assets/dist /app/assets/dist
 
+# collect static files
+RUN SECRET_KEY=dummy-key python /app/manage.py collectstatic --no-input
+
 # We set command rather than entrypoint, to make it easier to run different
 # things from the cli
 CMD ["/app/docker/entrypoints/prod.sh"]
