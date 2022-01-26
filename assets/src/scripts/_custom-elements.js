@@ -3,7 +3,7 @@ function addMenuButton() {
   menuBtn.id = "menuBtn";
   menuBtn.textContent = "Go to menu";
   menuBtn.href = "#docNav";
-  document.querySelector(".ie-block").parentElement.append(menuBtn);
+  document.getElementById("content").appendChild(menuBtn);
 }
 
 function detailsEl({ summaryText = "", content = [] }) {
@@ -35,8 +35,8 @@ function detailsBuilder({ element }) {
   return content.slice(sliceStart, sliceEnd);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.querySelector('#docNav')) {
+function doOnDocumentLoaded() {
+  if (document.querySelector("#docNav")) {
     addMenuButton();
   }
 
@@ -52,4 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     element.remove();
   });
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", doOnDocumentLoaded);
+} else {
+  doOnDocumentLoaded();
+}
