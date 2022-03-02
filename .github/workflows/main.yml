@@ -164,4 +164,4 @@ jobs:
           SENTRY_PROJECT: output-explorer
         with:
           environment: production
-          ignore_missing: true
+          ignore_empty: true
