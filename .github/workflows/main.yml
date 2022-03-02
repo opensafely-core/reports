@@ -9,6 +9,7 @@ env:
 
 on:
   push:
+  workflow_dispatch:
 
 concurrency: ci-${{ github.ref }}
 
@@ -137,11 +138,8 @@ jobs:
           just docker-build prod
 
       - name: Login to Packages Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            docker login $REGISTRY -u ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
 
       - name: publish docker image
         run: |
@@ -157,3 +155,13 @@ jobs:
         run: |
             SHA=$(docker inspect --format='{{index .RepoDigests 0}}' $PUBLIC_IMAGE_NAME:latest)
             ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" dokku@dokku2.ebmdatalab.net git:from-image output-explorer $SHA
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@744e4b262278339b79fb39c8922efcae71e98e39
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_RELEASE_INTEGRATION_TOKEN }}
+          SENTRY_ORG: ebm-datalab
+          SENTRY_PROJECT: output-explorer
+        with:
+          environment: production
+          ignore_missing: true
