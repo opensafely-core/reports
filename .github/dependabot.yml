@@ -8,3 +8,18 @@ updates:
     reviewers:
       - "rebkwok"
     open-pull-requests-limit: 20
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "production"
+    reviewers:
+      - "tomodwyer"
+    open-pull-requests-limit: 20
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
