@@ -82,7 +82,6 @@ _dev-config:
 devenv: _env prodenv requirements-dev && install-precommit
     # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
     test requirements.dev.txt -nt $VIRTUAL_ENV/.dev || exit 0
-
     $PIP install -r requirements.dev.txt
     touch $VIRTUAL_ENV/.dev
 

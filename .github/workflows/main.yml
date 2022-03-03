@@ -66,7 +66,7 @@ jobs:
         run: just check
 
   test:
-    needs: [check]
+    needs: [build]
     runs-on: ubuntu-latest
 
     steps:
@@ -105,7 +105,6 @@ jobs:
           dockerfile: docker/Dockerfile
 
   docker-test:
-    needs: [test]
     runs-on: ubuntu-latest
 
     steps:
@@ -118,7 +117,7 @@ jobs:
           just docker-test
 
   deploy:
-    needs: [docker-test, lint-dockerfile]
+    needs: [test, docker-test, lint-dockerfile]
 
     runs-on: ubuntu-latest
 
