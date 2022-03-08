@@ -1,11 +1,11 @@
 // Table cells have `white-space: nowrap;` set
 // This will find all cells with longer contents
-// and unset that value
+// and set that value to `normal`
 document
   .querySelectorAll("td")
   .forEach((item) =>
     item.textContent.length > 30
-      ? (item.style.whiteSpace = "break-spaces")
+      ? (item.style.whiteSpace = "normal")
       : null
   );
 
