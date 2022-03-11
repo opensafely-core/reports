@@ -360,6 +360,25 @@ def test_report_view_cache(client, log_output):
 
 
 @pytest.mark.django_db
+def test_report_view_last_updated(client, log_output):
+    """
+    Test that the last updated field (which is fetched on page load and stored on the
+    model) is displayed properly on the report page.
+    """
+    report = baker.make_recipe("reports.real_report")
+    assert report.last_updated is None
+
+    # fetch report
+    response = client.get(report.get_absolute_url())
+    assert response.status_code == 200
+
+    report.refresh_from_db()
+    assert report.last_updated is not None
+
+    assert report.last_updated.strftime("%d %b %Y") in response.rendered_content
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "html",
     [

@@ -144,7 +144,14 @@ def test_get_large_html_from_github(httpretty):
     # get_contents is called twice, once on the single file, once for the parent folder contents
     assert report.use_git_blob is True
 
-    # # re-fetch; get_contents is not called again on the single file, only on the parent folder
+    # refetch; the html has now been stored on the GithubReport, so no additional calls are made
+    assert github_report.get_html() == html
+    latest_requests = httpretty.latest_requests()
+    assert len(latest_requests) == 4
+
+    # instantiate a new GithubReport and re-fetch; get_contents is not called again on the single file,
+    # only on the parent folder
+    github_report = GithubReport(report, repo=repo)
     assert github_report.get_html() == html
     # Only 3 more calls, to /contents for the parent folder, /git/blob for the file contents
     # and /commits for the update date

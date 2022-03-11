@@ -143,6 +143,7 @@ class Report(models.Model):
         null=True,
         blank=True,
         help_text="File last modified date; autopopulated from GitHub",
+        verbose_name="Last released",
     )
     cache_token = models.UUIDField(default=uuid4)
     # Flag to remember if this report needed to use the git blob method (see github.py),
