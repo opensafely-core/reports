@@ -18,6 +18,7 @@ class GithubReport:
         self.client = GithubClient(use_cache=use_cache)
         self.report = report
         self._repo = repo
+        self._fetched_html = None
 
     @property
     def repo(self):
@@ -45,27 +46,41 @@ class GithubReport:
         Fetches a report html file (an exported jupyter notebook) from a github repo based
         on `report`, a Report model instance.
         """
-        if self.report.use_git_blob:
-            file = self.repo.get_contents(
-                self.report.report_html_file_path,
-                self.report.branch,
-                from_git_blob=True,
-            )
-        else:
-            file, fetch_type = self.repo.get_contents(
-                self.report.report_html_file_path,
-                ref=self.report.branch,
-                return_fetch_type=True,
-            )
-            if fetch_type == "blob":
-                self.report.use_git_blob = True
+        if self._fetched_html is None:
+            if self.report.use_git_blob:
+                file = self.repo.get_contents(
+                    self.report.report_html_file_path,
+                    self.report.branch,
+                    from_git_blob=True,
+                )
+            else:
+                file, fetch_type = self.repo.get_contents(
+                    self.report.report_html_file_path,
+                    ref=self.report.branch,
+                    return_fetch_type=True,
+                )
+                if fetch_type == "blob":
+                    self.report.use_git_blob = True
+                    self.report.save()
+
+            if self.report.last_updated != file.last_updated:
+                self.report.last_updated = file.last_updated
                 self.report.save()
 
-        if self.report.last_updated != file.last_updated:
-            self.report.last_updated = file.last_updated
-            self.report.save()
+            self._fetched_html = file.decoded_content
+        return self._fetched_html
 
-        return file.decoded_content
+    def last_updated(self):
+        """
+        Return the last updated date separately to the fully processed HTML
+        """
+        self.get_html()
+        # last_updated is the only field on a Report instance that is retrieved from GitHub (rather
+        # than being entered manually in the Report admin). As it is rendered in the template before
+        # the processed html content, we need to be have refreshed the fetched GitHub data at the
+        # point that the field it rendered, otherwise the pre-fetched (possibly stale) date will be
+        # rendered and cached in the template.
+        return self.report.last_updated
 
     def process_html(self):
         html = self.get_html()
