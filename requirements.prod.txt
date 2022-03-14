@@ -369,9 +369,9 @@ rsa==4.8 \
     --hash=sha256:5c6bd9dc7a543b7fe4304a631f8a8a3b674e2bbfc49c2ae96200cdbe55df6b17 \
     --hash=sha256:95c5d300c4e879ee69708c428ba566c59478fd653cc3a22243eeb8ed846950bb
     # via python-jose
-sentry-sdk==1.5.6 \
-    --hash=sha256:1ab34e3851a34aeb3d1af1a0f77cec73978c4e9698e5210d050e4932953cb241 \
-    --hash=sha256:ac2a50128409d57655279817aedcb7800cace1f76b266f3dd62055d5afd6e098
+sentry-sdk==1.5.7 \
+    --hash=sha256:411a8495bd18cf13038e5749e4710beb4efa53da6351f67b4c2f307c2d9b6d49 \
+    --hash=sha256:aa52da941c56b5a76fd838f8e9e92a850bf893a9eb1e33ffce6c21431d07ee30
     # via -r requirements.prod.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
