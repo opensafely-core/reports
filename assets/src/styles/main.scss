@@ -91,4 +91,47 @@ details {
     }
   }
 }
+
+/**
+ * Oxford Prose
+ */
+.prose-oxford {
+  @apply text-gray-800;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-gray-800;
+  }
+
+  ul > li::before {
+    @apply bg-gray-800;
+  }
+
+  pre {
+    @apply bg-gray-50 text-gray-700;
+  }
+
+  thead th {
+    @apply text-left;
+  }
+
+  code::before,
+  code::after {
+    content: "";
+  }
+
+  a,
+  a strong {
+    @apply text-oxford-600 font-semibold;
+  }
+
+  a:hover,
+  a:hover strong {
+    @apply text-oxford underline;
+  }
+}
 /*! purgecss end ignore */

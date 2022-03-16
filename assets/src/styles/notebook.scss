@@ -101,13 +101,4 @@ details {
     }
   }
 }
-
-// Fix strong links in prose sections
-.prose-oxford a strong {
-  @apply text-oxford-600;
-}
-
-.prose-oxford a:hover strong {
-  @apply text-oxford underline;
-}
 /*! purgecss end ignore */
