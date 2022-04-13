@@ -24,8 +24,24 @@ class ReportAdmin(admin.ModelAdmin):
     fieldsets = (
         ("Navigation", {"fields": ["menu_name", "category"]}),
         (
-            "Report file details",
-            {"fields": ["repo", "branch", "report_html_file_path"]},
+            "Report file details (GitHub)",
+            {
+                "description": (
+                    "A report file can be hosted on either GitHub or the Jobs site, "
+                    "fill in the fields in this section if your file is hosted on GitHub."
+                ),
+                "fields": ["repo", "branch", "report_html_file_path"],
+            },
+        ),
+        (
+            "Report file details (Jobs site)",
+            {
+                "description": (
+                    "A report file can be hosted on either GitHub or the Jobs site, "
+                    "paste the direct URL to your HTML output on the Jobs site."
+                ),
+                "fields": ["job_server_url"],
+            },
         ),
         ("Caching", {"fields": ["cache_token"]}),
         (

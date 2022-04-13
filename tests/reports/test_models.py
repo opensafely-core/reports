@@ -138,6 +138,91 @@ def test_archive_category_for_user(
 
 
 @pytest.mark.django_db
+def test_report_all_github_and_all_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        job_server_url="http://example.com/",
+        **REAL_REPO_DETAILS,
+    )
+
+    try:
+        report.full_clean()
+    except ValidationError as e:
+        assert (
+            e.messages[0]
+            == "Only one of the GitHub or Job Server sections can be filled in."
+        )
+
+
+@pytest.mark.django_db
+def test_report_all_github_and_no_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        **REAL_REPO_DETAILS,
+    )
+
+    report.full_clean()
+
+
+@pytest.mark.django_db
+def test_report_no_github_and_all_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        job_server_url="http://example.com/",
+    )
+
+    report.full_clean()
+
+
+@pytest.mark.django_db
+def test_report_no_github_and_no_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+    )
+
+    try:
+        report.full_clean()
+    except ValidationError as e:
+        assert (
+            e.messages[0]
+            == "Either the GitHub or Job Server sections must be filled in."
+        )
+
+
+@pytest.mark.django_db
+def test_report_some_github_and_no_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        repo="opensafely",
+    )
+
+    try:
+        report.full_clean()
+    except ValidationError as e:
+        assert e.messages[0] == "All of the GitHub section must be completed."
+
+
+@pytest.mark.django_db
 def test_report_menu_name_autopopulates():
     category = baker.make(Category, name="test")
     report = Report(
@@ -145,7 +230,7 @@ def test_report_menu_name_autopopulates():
         category=category,
         publication_date=datetime.date.today(),
         description="A description",
-        **REAL_REPO_DETAILS
+        **REAL_REPO_DETAILS,
     )
     report.full_clean()
     assert report.menu_name == "Fungible watermelon"
@@ -159,7 +244,7 @@ def test_report_menu_name_is_limited_to_sixty_characters():
         category=category,
         publication_date=datetime.date.today(),
         description="A description",
-        **REAL_REPO_DETAILS
+        **REAL_REPO_DETAILS,
     )
     with pytest.raises(ValidationError, match="at most 60 characters"):
         report.full_clean()
@@ -197,6 +282,8 @@ def test_cache_refresh_on_report_save(
         Report,
         category=Category.objects.first(),
         title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
         report_html_file_path="test.html",
         is_draft=False,
     )
@@ -219,6 +306,8 @@ def test_cache_refresh_on_report_save_with_links(mock_repo_url):
         Report,
         category=Category.objects.first(),
         title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
         report_html_file_path="test.html",
         is_draft=False,
     )

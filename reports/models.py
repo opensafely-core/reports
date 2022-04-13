@@ -114,20 +114,29 @@ class Report(models.Model):
         populate_from="title",
         help_text="A short name to display in the side nav",
     )
+
+    # files can be on GitHub or job-server
+    # GitHub
     repo = models.CharField(
-        max_length=255, help_text="Name of the OpenSAFELY repo (case insensitive)"
+        max_length=255,
+        blank=True,
+        help_text="Name of the OpenSAFELY repo (case insensitive)",
     )
-    branch = models.CharField(max_length=255, default="main")
+    branch = models.CharField(max_length=255, default="main", blank=True)
     report_html_file_path = models.CharField(
         max_length=255,
+        blank=True,
         help_text="Path to the report html file within the repo",
         validators=[validate_html_filename],
     )
-    slug = AutoSlugField(max_length=100, populate_from=["title"], unique=True)
+
+    # job-server
+    job_server_url = models.URLField(max_length=255, default="", blank=True)
 
     # front matter fields
     authors = models.TextField(null=True, blank=True)
     title = models.CharField(max_length=255)
+    slug = AutoSlugField(max_length=100, populate_from=["title"], unique=True)
     description = models.TextField(
         help_text="Short description to display before rendered report and in meta tags",
     )
@@ -142,7 +151,7 @@ class Report(models.Model):
     last_updated = models.DateField(
         null=True,
         blank=True,
-        help_text="File last modified date; autopopulated from GitHub",
+        help_text="File last modified date; autopopulated from the file origin",
         verbose_name="Last released",
     )
     cache_token = models.UUIDField(default=uuid4)
@@ -186,8 +195,37 @@ class Report(models.Model):
                 {"doi": _("DOIs cannot be assigned to draft reports")}
             )
 
+        # A report file must be hosted on GitHub OR job-server, so we need to
+        # group the fields and validate that both the groups are valid (all
+        # filled in, not all filled in) and also mutually exclusive.
+
+        # Note self.branch has a default so we ignore it for simplicity,
+        # otherwise we'll have to get the default from self._meta.fields
+        github_fields = [self.repo, self.report_html_file_path]
+        all_github = all(f != "" for f in github_fields)
+        some_github = any(f != "" for f in github_fields)
+        no_github = all(f == "" for f in github_fields)
+
+        empty_job_server_url = self.job_server_url == ""
+
+        # both missing
+        if no_github and empty_job_server_url:
+            raise ValidationError(
+                "Either the GitHub or Job Server sections must be filled in."
+            )
+
+        # both present
+        if all_github and not empty_job_server_url:
+            raise ValidationError(
+                "Only one of the GitHub or Job Server sections can be filled in."
+            )
+
+        # some github, no job-server
+        if (some_github and not all_github) and empty_job_server_url:
+            raise ValidationError("All of the GitHub section must be completed.")
+
         # GITHUB_VALIDATION env var can optionally be set to False to skip this validation in tests
-        if env.bool("GITHUB_VALIDATION", True):
+        if all_github and env.bool("GITHUB_VALIDATION", True):
             # Disable caching to fetch the repo and contents.  If this is a new report file in
             # an existing folder, we don't want to use a previously cached request
             github_report = GithubReport(self, use_cache=False)
