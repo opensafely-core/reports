@@ -13,9 +13,7 @@ repos:
       additional_dependencies:
       - "flake8-builtins"
       - "flake8-no-pep420"
-      # skipping flake8-implicit-str-concat due to conflict in attrs version
-      # Should be fixed in next version, see https://github.com/keisheiled/flake8-implicit-str-concat/pull/31
-      # - "flake8-implicit-str-concat"
+      - "flake8-implicit-str-concat"
 
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
