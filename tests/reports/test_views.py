@@ -256,10 +256,6 @@ def test_report_view(client):
             <p>The test content</p>
         """,
     )
-    assert (
-        response.context["repo_url"]
-        == "https://github.com/opensafely/output-explorer-test-repo"
-    )
 
 
 @pytest.mark.django_db

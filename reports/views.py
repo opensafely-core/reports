@@ -41,6 +41,5 @@ def report_view(request, slug):
         {
             "github_report": github_report,
             "report": github_report.report,
-            "repo_url": github_report.repo.url,
         },
     )
