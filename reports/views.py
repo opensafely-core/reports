@@ -40,6 +40,6 @@ def report_view(request, slug):
         "reports/report.html",
         {
             "github_report": github_report,
-            "report": github_report.report,
+            "report": report,
         },
     )
