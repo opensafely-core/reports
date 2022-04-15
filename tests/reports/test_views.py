@@ -252,7 +252,7 @@ def test_report_view(client):
     response = client.get(report.get_absolute_url())
 
     assert_html_equal(
-        process_html(response.context["github_report"].get_html()),
+        process_html(response.context["remote"].get_html()),
         """
             <h1>A Test Output HTML file</h1>
             <p>The test content</p>

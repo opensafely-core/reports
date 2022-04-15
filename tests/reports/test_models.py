@@ -250,6 +250,47 @@ def test_report_menu_name_is_limited_to_sixty_characters():
         report.full_clean()
 
 
+@pytest.mark.django_db
+def test_report_uses_github(httpretty):
+    category = baker.make(Category, name="test")
+
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        **REAL_REPO_DETAILS,
+    )
+    assert report.uses_github
+
+    httpretty.register_uri(httpretty.GET, "http://example.com", status=200)
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        job_server_url="http://example.com/",
+    )
+    assert not report.uses_github
+
+
+@pytest.mark.django_db
+def test_report_with_missing_job_server_file(httpretty):
+    httpretty.register_uri(httpretty.HEAD, "http://example.com", status=404)
+
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        job_server_url="http://example.com/",
+    )
+
+    with pytest.raises(ValidationError, match="Could not find specified file"):
+        report.full_clean()
+
+
 @pytest.mark.parametrize(
     "update_fields,cache_token_changed",
     [

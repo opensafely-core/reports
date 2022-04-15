@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.models import model_to_dict
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from environs import Env
@@ -13,6 +14,7 @@ from furl import furl
 from osgithub import GithubAPIException, GithubRepo
 
 from .github import GithubReport
+from .job_server import JobServerReport
 
 
 env = Env()
@@ -255,6 +257,20 @@ class Report(models.Model):
                         % {"branch": self.branch}
                     }
                 )
+
+        # confirm the file exists at the given location
+        if not empty_job_server_url:
+            job_server_report = JobServerReport(self, use_cache=False)
+            if not job_server_report.file_exists():
+                raise ValidationError(
+                    {
+                        "job_server_url": mark_safe(
+                            "Could not find specified file with URL: "
+                            f'<a href="{self.job_server_url}">{self.job_server_url}</a>'
+                        )
+                    }
+                )
+
         super().clean()
 
     @classmethod
@@ -328,6 +344,17 @@ class Report(models.Model):
 
     def get_absolute_url(self):
         return reverse("reports:report_view", args=(self.slug,))
+
+    @property
+    def uses_github(self):
+        """
+        Does this report pull its HTML file from GitHub or Jobs site?
+
+        We validate the combination of GitHub and Jobs fields in the clean()
+        method so we know that either all GitHub fields or the Jobs field will
+        be populated when this is used.
+        """
+        return self.job_server_url == ""
 
 
 class Link(models.Model):
