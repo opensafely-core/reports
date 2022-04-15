@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import requests
 import requests_cache
 from environs import Env
@@ -57,8 +59,14 @@ class JobServerClient:
         r = self.session.get(url, allow_redirects=True, timeout=1)
         r.raise_for_status()
 
-        # TODO: need to get the last_updated value here too
-        return r.text
+        # parse the header into a datetime object to avoid implicit coercion elsewhere
+        rfc_7231_date_format = "%a, %d %b %Y %H:%M:%S %Z"
+        last_updated = datetime.strptime(
+            r.headers.get("Last-Modified"),
+            rfc_7231_date_format,
+        )
+
+        return r.text, last_updated
 
 
 class JobServerReport:
@@ -69,6 +77,7 @@ class JobServerReport:
 
     def __init__(self, report, use_cache=True):
         self.client = JobServerClient(use_cache=use_cache)
+        self.report = report
         self._fetched_html = None
 
     def file_exists(self):
@@ -82,12 +91,24 @@ class JobServerReport:
         if self._fetched_html is not None:
             return self._fetched_html
 
-        file = self.client.get_file(self.report.job_server_url)
+        file, last_updated = self.client.get_file(self.report.job_server_url)
 
-        # if self.report.last_updated != file.last_updated:
-        #     self.report.last_updated = file.last_updated
-        #     self.report.save()
+        # convert to a date for Report.last_updated
+        job_server_last_updated = last_updated.date()
+        if self.report.last_updated != job_server_last_updated:
+            self.report.last_updated = job_server_last_updated
+            self.report.save()
 
         self._fetched_html = file
 
         return self._fetched_html
+
+    def last_updated(self):
+        """
+        Return the last updated date separately to the fully processed HTML
+
+        This mirrors GitHubReport.last_updated so we can use a consistent API
+        in the template.
+        """
+        self.get_html()
+        return self.report.last_updated
