@@ -14,7 +14,7 @@ isort
 model-bakery
 pip-tools
 pre-commit
-pytest-coverage
+pytest-cov
 pytest-django
 pytest-env
 pytest-mock
