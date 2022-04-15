@@ -1,11 +1,13 @@
 from datetime import date, timedelta
 
 import pytest
-from bs4 import BeautifulSoup
 from django.urls import reverse
 from model_bakery import baker
 
 from reports.models import Category, Report
+from reports.rendering import process_html
+
+from .utils import assert_html_equal
 
 
 @pytest.mark.django_db
@@ -250,7 +252,7 @@ def test_report_view(client):
     response = client.get(report.get_absolute_url())
 
     assert_html_equal(
-        response.context["github_report"].process_html(),
+        process_html(response.context["github_report"].get_html()),
         """
             <h1>A Test Output HTML file</h1>
             <p>The test content</p>
@@ -372,175 +374,3 @@ def test_report_view_last_updated(client, log_output):
     assert report.last_updated is not None
 
     assert report.last_updated.strftime("%d %b %Y") in response.rendered_content
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    "html",
-    [
-        """
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <style type="text/css">body {margin: 0;}</style>
-                    <style type="text/css">a {background-color: red;}</style>
-                    <script src="https://a-js-package.js"></script>
-                </head>
-                <body>
-                    <p>foo</p>
-                    <div>Stuff</div>
-                </body>
-            </html>
-        """,
-        """
-            <html>
-                <body>
-                    <p>foo</p>
-                    <div>Stuff</div>
-                </body>
-            </html>
-        """,
-        """
-            <p>foo</p>
-            <div>Stuff</div>
-        """,
-        """
-            <script>Some Javascript nonsense</script>
-            <p>foo</p>
-            <div>
-                Stuff
-                <script>Some more Javascript nonsense</script>
-            </div>
-        """,
-        """
-            <p onclick="alert('BOOM!')">foo</p>
-            <div>
-                Stuff
-            </div>
-        """,
-        """
-            <style>Mmmm, lovely styles...</style>
-            <p>foo</p>
-            <div>
-                Stuff
-                <style>MOAR STYLZ</style>
-            </div>
-        """,
-        """
-            <p style="color: red;">foo</p>
-            <div>
-                Stuff
-                <style>MOAR STYLZ</style>
-            </div>
-        """,
-    ],
-    ids=[
-        "Extracts body from HTML full document",
-        "Extracts body from HTML document without head",
-        "Returns HTML without body tags unchanged",
-        "Strips out all script tags",
-        "Strips out inline handlers",
-        "Strips out all style tags",
-        "Strips out inline styles",
-    ],
-)
-def test_html_processing_extracts_body(mock_github_report_with_html, html):
-    github_report = mock_github_report_with_html(html)
-    assert_html_equal(
-        github_report.process_html(),
-        """
-            <p>foo</p>
-            <div>Stuff</div>
-        """,
-    )
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    ("input_html", "report"),
-    [
-        (
-            """
-                <table>
-                    <tr><td>something</td></tr>
-                </table>
-            """,
-            """
-                <div class="overflow-wrapper">
-                    <table>
-                        <tr><td>something</td></tr>
-                    </table>
-                </div>
-            """,
-        ),
-        (
-            """
-                <html>
-                    <body>
-                        <table>
-                            <tr><td>something</td></tr>
-                        </table>
-                    </body>
-                </html>
-            """,
-            """
-                <div class="overflow-wrapper">
-                    <table>
-                        <tr><td>something</td></tr>
-                    </table>
-                </div>
-            """,
-        ),
-        (
-            """
-                <table>
-                    <tr><td>something</td></tr>
-                </table>
-                <table>
-                    <tr><td>something else</td></tr>
-                </table>
-            """,
-            """
-                <div class="overflow-wrapper">
-                    <table>
-                        <tr><td>something</td></tr>
-                    </table>
-                </div>
-                <div class="overflow-wrapper">
-                    <table>
-                        <tr><td>something else</td></tr>
-                    </table>
-                </div>
-            """,
-        ),
-        (
-            """
-                <pre>Some code or something here</pre>
-            """,
-            """
-                <div class="overflow-wrapper">
-                    <pre>Some code or something here</pre>
-                </div>
-            """,
-        ),
-    ],
-    ids=[
-        "Wraps single table in overflow wrappers",
-        "Wraps table in full document in overflow wrappers",
-        "Wraps multiple tables in overflow wrappers",
-        "Wraps <pre> elements in overflow wrappers",
-    ],
-)
-def test_html_processing_wraps_scrollables(
-    mock_github_report_with_html, input_html, report
-):
-    github_report = mock_github_report_with_html(input_html)
-    assert_html_equal(github_report.process_html(), report)
-
-
-def assert_html_equal(actual, expected):
-    assert normalize(actual) == normalize(expected)
-
-
-def normalize(html):
-    return BeautifulSoup(html.strip(), "html.parser").prettify()
