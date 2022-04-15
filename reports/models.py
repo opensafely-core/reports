@@ -328,9 +328,10 @@ class Report(models.Model):
         super().save(*args, **kwargs)
 
         # Generate the repo Link if it doesn't already exist
-        if not self.links.filter(
+        source_repo_link_exists = self.links.filter(
             url__icontains=f"github.com/opensafely/{self.repo}"
-        ).exists():
+        ).exists()
+        if self.repo and not source_repo_link_exists:
             # get the repo url from the GithubRepo directly, to avoid calling the github api just to build the url
             repo_url = furl(
                 GithubRepo(client=None, owner="opensafely", name=self.repo).url
