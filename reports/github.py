@@ -60,8 +60,10 @@ class GithubReport:
                     self.report.use_git_blob = True
                     self.report.save()
 
-            if self.report.last_updated != file.last_updated:
-                self.report.last_updated = file.last_updated
+            # convert to a date for Report.last_updated
+            github_last_updated = file.last_updated.date()
+            if self.report.last_updated != github_last_updated:
+                self.report.last_updated = github_last_updated
                 self.report.save()
 
             self._fetched_html = file.decoded_content
