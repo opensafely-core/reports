@@ -46,4 +46,5 @@ env = [
 ]
 filterwarnings = [
     "ignore::django.utils.deprecation.RemovedInDjango41Warning:social_django",
+    "ignore:distutils Version classes are deprecated:DeprecationWarning:marshmallow",
 ]
