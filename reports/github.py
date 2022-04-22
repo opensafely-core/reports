@@ -1,8 +1,4 @@
-from environs import Env
 from osgithub import GithubClient
-
-
-env = Env()
 
 
 class GithubReport:
