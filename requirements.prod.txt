@@ -355,9 +355,9 @@ requests==2.27.1 \
     #   requests-cache
     #   requests-oauthlib
     #   social-auth-core
-requests-cache==0.9.3 \
-    --hash=sha256:b32f8afba2439e1b3e12cba511c8f579271eff827f063210d62f9efa5bed6564 \
-    --hash=sha256:d8b32405b2725906aa09810f4796e54cc03029de269381b404c426bae927bada
+requests-cache==0.9.4 \
+    --hash=sha256:04bb1212bbefba122080163530555f36e64fcd517ef8f90e289ef76f7ae055da \
+    --hash=sha256:edc51d4ba3f1bcacf100aa6097d0c4ae4c787fe13dcc4b2d3a6ce3064482b072
     # via
     #   -r requirements.prod.in
     #   osgithub
