@@ -180,6 +180,7 @@ def test_report_no_github_and_all_job_server_fields_filled():
         category=category,
         publication_date=datetime.date.today(),
         description="A description",
+        is_draft=True,
         job_server_url="http://example.com/",
     )
 
@@ -288,6 +289,25 @@ def test_report_with_missing_job_server_file(httpretty):
     )
 
     with pytest.raises(ValidationError, match="Could not find specified file"):
+        report.full_clean()
+
+
+@pytest.mark.django_db
+def test_report_with_unpublished_output_and_published(httpretty):
+    httpretty.register_uri(httpretty.HEAD, "http://example.com", status=200)
+
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        is_draft=False,
+        job_server_url="http://example.com/",
+    )
+
+    msg = "Unpublished outputs cannot be used in public reports"
+    with pytest.raises(ValidationError, match=msg):
         report.full_clean()
 
 

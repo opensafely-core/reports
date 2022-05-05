@@ -103,6 +103,10 @@ class JobServerReport:
 
         return self._fetched_html
 
+    @property
+    def is_published(self):
+        return "published" in self.report.job_server_url
+
     def last_updated(self):
         """
         Return the last updated date separately to the fully processed HTML

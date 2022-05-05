@@ -271,6 +271,16 @@ class Report(models.Model):
                     }
                 )
 
+            if not (job_server_report.is_published or self.is_draft):
+                raise ValidationError(
+                    {
+                        "job_server_url": (
+                            "Unpublished outputs cannot be used in public reports.  "
+                            "Either set this report to draft or use a published output."
+                        )
+                    }
+                )
+
         super().clean()
 
     @classmethod
