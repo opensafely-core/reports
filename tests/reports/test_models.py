@@ -138,6 +138,92 @@ def test_archive_category_for_user(
 
 
 @pytest.mark.django_db
+def test_report_all_github_and_all_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        job_server_url="http://example.com/",
+        **REAL_REPO_DETAILS,
+    )
+
+    try:
+        report.full_clean()
+    except ValidationError as e:
+        assert (
+            e.messages[0]
+            == "Only one of the GitHub or Job Server sections can be filled in."
+        )
+
+
+@pytest.mark.django_db
+def test_report_all_github_and_no_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        **REAL_REPO_DETAILS,
+    )
+
+    report.full_clean()
+
+
+@pytest.mark.django_db
+def test_report_no_github_and_all_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        is_draft=True,
+        job_server_url="http://example.com/",
+    )
+
+    report.full_clean()
+
+
+@pytest.mark.django_db
+def test_report_no_github_and_no_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+    )
+
+    try:
+        report.full_clean()
+    except ValidationError as e:
+        assert (
+            e.messages[0]
+            == "Either the GitHub or Job Server sections must be filled in."
+        )
+
+
+@pytest.mark.django_db
+def test_report_some_github_and_no_job_server_fields_filled():
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        repo="opensafely",
+    )
+
+    try:
+        report.full_clean()
+    except ValidationError as e:
+        assert e.messages[0] == "All of the GitHub section must be completed."
+
+
+@pytest.mark.django_db
 def test_report_menu_name_autopopulates():
     category = baker.make(Category, name="test")
     report = Report(
@@ -145,7 +231,7 @@ def test_report_menu_name_autopopulates():
         category=category,
         publication_date=datetime.date.today(),
         description="A description",
-        **REAL_REPO_DETAILS
+        **REAL_REPO_DETAILS,
     )
     report.full_clean()
     assert report.menu_name == "Fungible watermelon"
@@ -159,9 +245,69 @@ def test_report_menu_name_is_limited_to_sixty_characters():
         category=category,
         publication_date=datetime.date.today(),
         description="A description",
-        **REAL_REPO_DETAILS
+        **REAL_REPO_DETAILS,
     )
     with pytest.raises(ValidationError, match="at most 60 characters"):
+        report.full_clean()
+
+
+@pytest.mark.django_db
+def test_report_uses_github(httpretty):
+    category = baker.make(Category, name="test")
+
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        **REAL_REPO_DETAILS,
+    )
+    assert report.uses_github
+
+    httpretty.register_uri(httpretty.GET, "http://example.com", status=200)
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        job_server_url="http://example.com/",
+    )
+    assert not report.uses_github
+
+
+@pytest.mark.django_db
+def test_report_with_missing_job_server_file(httpretty):
+    httpretty.register_uri(httpretty.HEAD, "http://example.com", status=404)
+
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        job_server_url="http://example.com/",
+    )
+
+    with pytest.raises(ValidationError, match="Could not find specified file"):
+        report.full_clean()
+
+
+@pytest.mark.django_db
+def test_report_with_unpublished_output_and_published(httpretty):
+    httpretty.register_uri(httpretty.HEAD, "http://example.com", status=200)
+
+    category = baker.make(Category, name="test")
+    report = Report(
+        title="Fungible watermelon",
+        category=category,
+        publication_date=datetime.date.today(),
+        description="A description",
+        is_draft=False,
+        job_server_url="http://example.com/",
+    )
+
+    msg = "Unpublished outputs cannot be used in public reports"
+    with pytest.raises(ValidationError, match=msg):
         report.full_clean()
 
 
@@ -197,6 +343,8 @@ def test_cache_refresh_on_report_save(
         Report,
         category=Category.objects.first(),
         title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
         report_html_file_path="test.html",
         is_draft=False,
     )
@@ -219,6 +367,8 @@ def test_cache_refresh_on_report_save_with_links(mock_repo_url):
         Report,
         category=Category.objects.first(),
         title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
         report_html_file_path="test.html",
         is_draft=False,
     )

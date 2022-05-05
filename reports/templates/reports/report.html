@@ -2,6 +2,7 @@
 {% load cache %}
 {% load static %}
 {% load django_vite %}
+{% load reports_tags %}
 
 {% block extra_head %}
   {% vite_asset 'assets/src/scripts/notebook.js' %}
@@ -70,7 +71,7 @@
                 Last released
               </dt>
               <dd class="mb-4">
-                {{ github_report.last_updated|date:"d M Y"}}
+                {{ remote.last_updated|date:"d M Y"}}
               </dd>
             </div>
 
@@ -111,7 +112,7 @@
         <section class="bg-white md:shadow md:rounded-lg max-w-screen-lg mx-auto md:my-6">
           <div class="max-w-4xl mx-auto">
             <div class="prose prose-oxford sm:prose-oxford px-4 md:px-8 sm:max-w-none mx-auto py-4 md:py-8 lg:py-16">
-              {{ github_report.process_html }}
+              {% render_html remote %}
             </div>
           </div>
         </section>

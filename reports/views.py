@@ -5,6 +5,7 @@ from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 
 from .github import GithubReport
+from .job_server import JobServerReport
 from .models import Report
 
 
@@ -34,13 +35,14 @@ def report_view(request, slug):
         )
         return redirect(report.get_absolute_url())
 
-    github_report = GithubReport(report)
+    remote_cls = GithubReport if report.uses_github else JobServerReport
+    remote = remote_cls(report)
+
     return TemplateResponse(
         request,
         "reports/report.html",
         {
-            "github_report": github_report,
-            "report": github_report.report,
-            "repo_url": github_report.repo.url,
+            "remote": remote,
+            "report": report,
         },
     )
