@@ -10,6 +10,58 @@ from reports.models import Report
 
 
 @pytest.mark.django_db
+def test_clear_cache_with_non_caching_session(httpretty):
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+
+    # Mock the job-server file_exists() request
+    httpretty.register_uri(
+        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
+    )
+
+    report = baker.make(Report, job_server_url=url)
+
+    # check a non-caching version works
+    JobServerReport(report, use_cache=False).clear_cache()
+
+
+@pytest.mark.django_db
+def test_clear_cache_with_caching_session(httpretty):
+    expected_html = """
+    <html>
+        <body><p>foo</p></body>
+    </html>
+    """
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+
+    # Mock the job-server file_exists() request
+    httpretty.register_uri(
+        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
+    )
+
+    httpretty.register_uri(
+        httpretty.GET,
+        url,
+        responses=[
+            httpretty.Response(
+                status=200,
+                body=expected_html,
+                adding_headers={"Last-Modified": http_date(timezone.now().timestamp())},
+            )
+        ],
+    )
+
+    report = baker.make(Report, job_server_url=url)
+
+    wrapper = JobServerReport(report, use_cache=True)
+
+    wrapper.get_html()
+    assert url in list(wrapper.client.session.cache.urls)
+
+    wrapper.clear_cache()
+    assert url not in list(wrapper.client.session.cache.urls)
+
+
+@pytest.mark.django_db
 def test_get_html_caches(httpretty):
     expected_html = """
     <html>

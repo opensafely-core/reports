@@ -177,10 +177,18 @@ class Report(models.Model):
         return self.slug
 
     def refresh_cache_token(self, refresh_http_cache=True, commit=True):
-        """Refresh cache token to invalidate http cache and clear request cache for github requests related to this repo"""
+        """
+        Refresh cache token to invalidate http cache and clear request cache
+        for hosting requests related to this repo
+        """
         self.cache_token = uuid4()
+
         if refresh_http_cache:
-            GithubReport(self).repo.clear_cache()
+            if self.uses_github:
+                GithubReport(self).repo.clear_cache()
+            else:
+                JobServerReport(self).clear_cache()
+
         if commit:
             self.save()
 
