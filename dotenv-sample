@@ -17,3 +17,13 @@ SOCIAL_AUTH_NHSID_API_URL=https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk/o
 
 # flag for showing/hiding login option
 SHOW_LOGIN=True
+
+
+# Production only
+# BASE_URL='https://reports.opensafely.org'
+# DATABASE_URL='sqlite:////storage/db.sqlite3'
+# DEBUG=False
+# JOB_SERVER_TOKEN="xxx"
+# REQUESTS_CACHE_NAME="http_cache"
+# SENTRY_DSN='https://xxx@xxx.ingest.sentry.io/xxx'
+# SENTRY_ENVIRONMENT='production'
