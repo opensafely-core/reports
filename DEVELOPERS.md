@@ -3,7 +3,7 @@
 ## Deployment
 
 Deployment uses `dokku` and requires the environment variables defined in `dotenv-sample`.
-It is deployed to our `dokku2` instance (see [deployment notes](DEPLOYMENT.md)).
+It is deployed to our `dokku2` instance (see [dokku docs](https://bennettinstitute-team-manual.pages.dev/tools-systems/dokku/)).
 
 ## Local development
 
