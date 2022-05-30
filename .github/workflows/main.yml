@@ -160,7 +160,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_RELEASE_INTEGRATION_TOKEN }}
           SENTRY_ORG: ebm-datalab
-          SENTRY_PROJECT: output-explorer
+          SENTRY_PROJECT: reports
         with:
           environment: production
           ignore_empty: true
