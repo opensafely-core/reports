@@ -153,7 +153,7 @@ jobs:
       - name: Deploy
         run: |
             SHA=$(docker inspect --format='{{index .RepoDigests 0}}' $PUBLIC_IMAGE_NAME:latest)
-            ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" dokku@dokku1.ebmdatalab.net git:from-image output-explorer $SHA
+            ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" dokku@dokku1.ebmdatalab.net git:from-image reports $SHA
 
       - name: Create Sentry release
         uses: getsentry/action-release@744e4b262278339b79fb39c8922efcae71e98e39
