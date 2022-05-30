@@ -2,8 +2,8 @@
 name: CI
 
 env:
-    IMAGE_NAME: output-explorer
-    PUBLIC_IMAGE_NAME: ghcr.io/opensafely-core/output-explorer
+    IMAGE_NAME: reports
+    PUBLIC_IMAGE_NAME: ghcr.io/opensafely-core/reports
     REGISTRY: ghcr.io
     SSH_AUTH_SOCK: /tmp/agent.sock
 
