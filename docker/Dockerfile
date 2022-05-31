@@ -96,13 +96,13 @@ RUN --mount=type=cache,target=/root/.cache \
 #
 # Not including the code at this stage has two benefits:
 #
-# 1) this image only rebuilds when the handlful of files needed to build output-explorer-base
+# 1) this image only rebuilds when the handlful of files needed to build reports-base
 #    changes. If we do `COPY . /app` now, this will rebuild when *any* file changes.
 #
 # 2) Ensures we *have* to mount the volume for dev image, as there's no embedded
 #    version of the code. Otherwise, we could end up accidentally using the
 #    version of the code included when the prod image was built.
-FROM base-python as output-explorer-base
+FROM base-python as reports-base
 
 # copy venv over from builder image. These will have root:root ownership, but
 # are readable by all.
@@ -123,13 +123,13 @@ ENV PYTHONPATH=/app
 # Production image
 #
 # Copy code in, add proper metadata
-FROM output-explorer-base as output-explorer-prod
+FROM reports-base as reports-prod
 
 # Adjust this metadata to fit project. Note that the base-docker image does set
 # some basic metadata.
-LABEL org.opencontainers.image.title="output-explorer" \
+LABEL org.opencontainers.image.title="reports" \
       org.opencontainers.image.description="Output Explorer" \
-      org.opencontainers.image.source="https://github.com/opensafely-core/output-explorer"
+      org.opencontainers.image.source="https://github.com/opensafely-core/reports"
 
 # copy application code
 COPY . /app
@@ -157,10 +157,10 @@ LABEL org.opencontainers.image.revision=$GITREF
 #
 # Dev image
 #
-# Now we build a dev image from our output-explorer-base image. This is basically
+# Now we build a dev image from our reports-base image. This is basically
 # installing dev dependencies and changing the entrypoint
 #
-FROM output-explorer-base as output-explorer-dev
+FROM reports-base as reports-dev
 
 # install development requirements
 COPY requirements.dev.txt /tmp/requirements.dev.txt
