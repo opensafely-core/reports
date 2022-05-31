@@ -3,17 +3,17 @@
 services:
   prod:
     # image name, both locally and public
-    image: output-explorer
+    image: reports
     build:
       context: ..
       # path relative to context
       dockerfile: docker/Dockerfile
       # the prod stage in the Dockerfile
-      target: output-explorer-prod
+      target: reports-prod
       # should speed up the build in CI, where we have a cold cache
       cache_from:  # should speed up the build in CI, where we have a cold cache
         - ghcr.io/opensafely-core/base-docker
-        - ghcr.io/opensafely-core/output-explorer
+        - ghcr.io/opensafely-core/reports
       args:
         # this makes the image work for later cache_from: usage
         - BUILDKIT_INLINE_CACHE=1
@@ -28,7 +28,7 @@ services:
   node-assets:
     extends:
       service: prod
-    image: output-explorer-node-assets
+    image: reports-node-assets
     build:
       # the node-builder stage in the Dockerfile
       target: node-builder
@@ -39,11 +39,11 @@ services:
   dev:
     extends:
       service: prod
-    image: output-explorer-dev
-    container_name: output-explorer-dev
+    image: reports-dev
+    container_name: reports-dev
     build:
       # the dev stage in the Dockerfile
-      target: output-explorer-dev
+      target: reports-dev
     # paths relative to docker-compose.yaml file
     env_file:
       - ../.env
@@ -56,7 +56,7 @@ services:
   test:
     extends:
       service: dev
-    container_name: output-explorer-test
+    container_name: reports-test
     # different default test env
     env_file:
       - ../.test.env
