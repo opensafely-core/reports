@@ -1,20 +1,11 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  mode: "jit",
-  purge: {
-    enabled: true,
-    layers: ["components", "utilities"],
-    content: [
-      "./templates/**/*.html",
-      "./gateway/templates/**/*.html",
-      "./reports/templates/**/*.html",
-    ],
-    options: {
-      safelist: [],
-    },
-  },
-  darkMode: false,
+  content: [
+    "./templates/**/*.html",
+    "./gateway/templates/**/*.html",
+    "./reports/templates/**/*.html",
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -36,9 +27,6 @@ module.exports = {
         },
       },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
 };
