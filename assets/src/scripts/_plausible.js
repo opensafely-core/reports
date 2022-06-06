@@ -1,24 +1,14 @@
 /**
  * Plausible Analytics only on production
- * Compat mode for IE11
  */
-if (document.location.hostname === "reports.opensafely.org") {
-  const ua = window.navigator.userAgent;
-  const trident = ua.indexOf("Trident/");
-  const msie = ua.indexOf("MSIE ");
+ var domain = "reports.opensafely.org";
 
-  const script = document.createElement("script");
-  script.defer = true;
-  script.setAttribute("data-domain", "reports.opensafely.org");
+ if (document.location.hostname === domain) {
+   var script = document.createElement("script");
+   script.defer = true;
+   script.setAttribute("data-domain", domain);
+   script.id = "plausible";
+   script.src = "https://plausible.io/js/plausible.compat.js";
 
-  // Serve legacy compat script to IE users
-  if (trident > 0 || msie > 0) {
-    script.id = "plausible";
-    script.src = "https://plausible.io/js/plausible.compat.js";
-  } else {
-    script.setAttribute("data-api", "/pa/api/event");
-    script.src = "/pa/js/script.js";
-  }
-
-  document.head.appendChild(script);
-}
+   document.head.appendChild(script);
+ }
