@@ -82,8 +82,17 @@ def test_get_large_html_from_github(httpretty):
     httpretty.register_uri(
         httpretty.GET,
         "https://api.github.com/repos/opensafely/test/contents/foo.html?ref=main",
-        status=403,
-        body=json.dumps({"errors": [{"code": "too_large"}]}),
+        status=200,
+        body=json.dumps(
+            {
+                "name": "foo.html",
+                "path": "foo.html",
+                "sha": "abcd1234",
+                "size": 1234,
+                "encoding": "base64",
+                "content": "",
+            }
+        ),
     )
     # /contents on the parent folder returns two files
     httpretty.register_uri(
