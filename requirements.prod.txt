@@ -385,9 +385,9 @@ social-auth-app-django==5.0.0 \
     --hash=sha256:52241a25445a010ab1c108bafff21fc5522d5c8cd0d48a92c39c7371824b065d \
     --hash=sha256:b6e3132ce087cdd6e1707aeb1b588be41d318408fcf6395435da0bc6fe9a9795
     # via -r requirements.prod.in
-social-auth-core[openidconnect]==4.2.0 \
-    --hash=sha256:08fe6645b98950cff9d6970b6704345f821d78729df0164bca0002c624b001e1 \
-    --hash=sha256:af6fc7d9ee39f0aa697cd953121add638fc32a49816341a9838a67904c39e034
+social-auth-core[openidconnect]==4.3.0 \
+    --hash=sha256:1e3440d104f743b02dfe258c9d4dba5b4065abf24b2f7eb362b47054d21797df \
+    --hash=sha256:4686f0e43cf12954216875a32e944847bb1dc69e7cd9573d16a9003bb05ca477
     # via
     #   -r requirements.prod.in
     #   social-auth-app-django
