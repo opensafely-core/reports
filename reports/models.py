@@ -399,11 +399,20 @@ class Link(models.Model):
         return f"{self.url}"
 
     def save(self, *args, **kwargs):
-        # For links added or editied after a report's initial save, check if the link has changed and refresh the report's
+        # For links added or edited after a report's initial save, check if the link has changed and refresh the report's
         # cache token.
         # On a report's initial save, a Link for the repo url is generated; at this point the report has no links yet, and
         # we don't need to check if the cache refresh is required as we know the report is new
-        if self.report.links.exists():
+        report_has_links_pre_save = self.report.links.exists()
+
+        # Save the link first before updating the cache.  `refresh_cache_token` will call
+        # save() on the report, which we don't want to happen before this link is saved in case this
+        # link is the result of the re-creation of a source repo link within the report's save
+        # We DO still want to refresh the cache token in that case, though, so that the new
+        # repo link shows up on the site
+        super().save(*args, **kwargs)
+
+        if report_has_links_pre_save:
             initial_report_links = self.report.links.all()
             this_link = initial_report_links.filter(id=self.id)
             if not this_link.exists():
@@ -417,7 +426,6 @@ class Link(models.Model):
                 ):
                     logger.info("Link updated; refreshing report cache token")
                     self.report.refresh_cache_token()
-        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         logger.info("Link deleted; refreshing report cache token")
