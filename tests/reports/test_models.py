@@ -407,3 +407,41 @@ def test_generate_repo_link_for_new_report(mock_repo_url):
     report.refresh_from_db()
     assert report.links.count() == 1
     assert report.links.first().url == "http://github.com/opensafely/Test/"
+
+
+@pytest.mark.django_db
+def test_report_save_with_multiple_links_not_including_source(mock_repo_url):
+    # Test for a bug that occurred when a report has at least one (non-source-repo) link
+    # and does NOT have a source-repo link
+    mock_repo_url("https://github.com/opensafely/test")
+    report = baker.make_recipe("reports.dummy_report", repo="test", branch="main")
+    initial_cache_token = report.cache_token
+
+    # This report has one link, for the source
+    assert Link.objects.count() == 1
+    link = Link.objects.first()
+    assert link.url == "https://github.com/opensafely/test"
+
+    # Create a second link
+    Link.objects.create(report=report, url="http://test", label="test")
+    report.refresh_from_db()
+    cache_token_after_link_2_creation = report.cache_token
+    assert cache_token_after_link_2_creation != initial_cache_token
+
+    # Delete the source link
+    assert Link.objects.count() == 2
+    Link.objects.get(url="https://github.com/opensafely/test").delete()
+    report.refresh_from_db()
+    cache_token_after_source_link_deletion = report.cache_token
+    assert cache_token_after_source_link_deletion != cache_token_after_link_2_creation
+
+    # Save the report again; previously this resulted in a max recursion error as the
+    # report attempts to create the source link again and refresh the cache token
+    report.save()
+    # The source link is re-created on save
+    assert Link.objects.count() == 2
+    assert Link.objects.filter(url="https://github.com/opensafely/test").exists()
+
+    report.refresh_from_db()
+    cache_token_after_save = report.cache_token
+    assert cache_token_after_save != cache_token_after_source_link_deletion
