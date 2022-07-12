@@ -4,6 +4,8 @@ This is a Django app providing a location for viewing and exploring OpenSAFELY r
 
 Some content is publicly accessible; private content is accessed via authentication with NHS Identity via Open ID Connect. Authorisation is based on the NHS associated organisation information retrieved from NHS Identity.
 
+For more information about internal user management policies, please see the team manual.
+
 
 # For developers
 
