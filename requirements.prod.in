@@ -3,15 +3,16 @@
 # To generate requirements file, run:
 # pip-compile --generate-hashes --output-file=requirements.prod.txt requirements.prod.in
 bs4
-environs[django]
+django-csp
 django-extensions
 django-permissions-policy
 django-structlog
 django-vite
+environs[django]
 furl
 gunicorn
 lxml
-requests-cache
 osgithub
+requests-cache
 sentry-sdk
 whitenoise[brotli]
