@@ -17,7 +17,7 @@ def test_landing_view(client, mock_repo_url):
     assert Report.objects.exists() is False
     # By default we have one Category, set up in the migration
     assert Category.objects.count() == 1
-    response = client.get(reverse("gateway:landing"))
+    response = client.get(reverse("landing"))
 
     # There is a category, but it isn't included in the context because it has no associated Reports
     assert list(response.context["categories"]) == []
@@ -25,7 +25,7 @@ def test_landing_view(client, mock_repo_url):
     # when Reports exist, their categories are included in the context
     baker.make_recipe("reports.dummy_report")
     baker.make_recipe("reports.dummy_report", title="test1")
-    response = client.get(reverse("gateway:landing"))
+    response = client.get(reverse("landing"))
     assert list(response.context["categories"]) == list(Category.objects.all())
 
 
@@ -49,7 +49,7 @@ def test_landing_view_ordering(client, mock_repo_url):
     test_category.reports.add(report1, report2, report3)
     reports_category.reports.add(report4, report5)
 
-    response = client.get(reverse("gateway:landing"))
+    response = client.get(reverse("landing"))
     # Categories are in alphabetical order by name
     assert list(response.context["categories"].values_list("name", flat=True)) == [
         "Reports",
@@ -121,7 +121,7 @@ def test_landing_view_draft_reports_permissions(
     )
     draft_category.reports.add(report4, report5)
 
-    response = client.get(reverse("gateway:landing"))
+    response = client.get(reverse("landing"))
     assert response.context["categories"].count() == len(expected_category_names)
     categories = response.context["categories"]
     assert [category.name for category in categories] == expected_category_names
@@ -211,7 +211,7 @@ def test_landing_view_recent_activity(client, mock_repo_url, reports, expected):
     for menu_name, report_fields in reports.items():
         baker.make_recipe("reports.dummy_report", menu_name=menu_name, **report_fields)
 
-    response = client.get(reverse("gateway:landing"))
+    response = client.get(reverse("landing"))
     # only reports with dates are shown in recent_activity
     # report activity is returned in reverse date order
     # reports have additional annotation fields "activity" and "activity_date"
@@ -232,7 +232,7 @@ def test_landing_view_recent_activity_archived_reports(
         "reports.dummy_report", menu_name="test", publication_date="2021-02-01"
     )
     # report is not archived, appears in recent activity
-    response = client.get(reverse("gateway:landing"))
+    response = client.get(reverse("landing"))
     assert list(response.context["recent_activity"]) == [report]
 
     # archived report
@@ -240,7 +240,7 @@ def test_landing_view_recent_activity_archived_reports(
     report.category = category
     report.save()
 
-    response = client.get(reverse("gateway:landing"))
+    response = client.get(reverse("landing"))
     assert list(response.context["recent_activity"]) == []
 
 

@@ -1,6 +1,9 @@
+from datetime import datetime
+
 import structlog
+from django.db.models import F, Q, Value
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 
@@ -10,6 +13,49 @@ from .models import Report
 
 
 logger = structlog.getLogger()
+
+
+@never_cache
+def landing(request):
+    """Landing page for main site and post-login.  Displays recent Report activity"""
+    # We want the ten most recently published or updated outputs, without duplication. Until we've pulled them all
+    # back and compared their activity dates we don't know which ones we will be using, so we grab ten of each which
+    # must be enough.
+    all_reports = Report.objects.for_user(request.user).exclude(
+        category__name__iexact="archive"
+    )
+
+    # To avoid duplication of reports in the activity list, we don't display the publication event for reports that
+    # have subsequently been updated. However if they are updated on the same day that they were published then we
+    # just consider that as a single publication event. The sum total of this is that we are only interested in
+    # publication dates where there has been no update or where the update date is the same as publication.
+    published = (
+        all_reports.filter(
+            Q(last_updated__isnull=True) | Q(publication_date__exact=F("last_updated")),
+        )
+        .order_by("-publication_date")[:10]
+        .annotate(activity=Value("published"), activity_date=F("publication_date"))
+    )
+
+    # As above, we ignore updates when they happen on the same day as publication.
+    updated = (
+        all_reports.filter(
+            last_updated__isnull=False,
+            last_updated__gt=F("publication_date"),
+        )
+        .order_by("-last_updated")[:10]
+        .annotate(activity=Value("updated"), activity_date=F("last_updated"))
+    )
+
+    # Merge the publish and update events and grab the ten most recent.
+    recent_activity = sorted(
+        [*published, *updated], key=lambda x: x.activity_date, reverse=True
+    )[:10]
+    context = {
+        "recent_activity": recent_activity,
+        "today": datetime.utcnow().date(),
+    }
+    return render(request, "reports/landing.html", context)
 
 
 @never_cache

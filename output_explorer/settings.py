@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_vite",
     "django_extensions",
-    "social_django",
     "gateway",
     "reports",
 ]
@@ -72,7 +71,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_structlog.middlewares.RequestMiddleware",
-    "social_django.middleware.SocialAuthExceptionMiddleware",
 ]
 
 ROOT_URLCONF = "output_explorer.urls"
@@ -88,9 +86,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
-                "gateway.context_processors.show_login",
                 "reports.context_processors.reports",
             ],
         },
@@ -157,41 +152,13 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # EMAIL
 EMAIL_BACKEND = env.str("EMAIL_BACKEND", "django.core.mail.backends.dummy.EmailBackend")
 
-# SOCIAL AUTH
-
+# Auth
 AUTH_USER_MODEL = "gateway.User"
-
-AUTHENTICATION_BACKENDS = (
-    "gateway.backends.NHSIDConnectAuth",
-    "django.contrib.auth.backends.ModelBackend",
-)
 
 LOGIN_ERROR_URL = "/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-LOGIN_URL = reverse_lazy("gateway:login")
-
-SOCIAL_AUTH_PIPELINE = (
-    "social_core.pipeline.social_auth.social_details",
-    "social_core.pipeline.social_auth.social_uid",
-    "social_core.pipeline.social_auth.social_user",
-    "social_core.pipeline.user.get_username",
-    # No email validation for now
-    # 'social_core.pipeline.mail.mail_validation'
-    # 'social_core.pipeline.social_auth.associate_by_email',
-    "social_core.pipeline.user.create_user",
-    "social_core.pipeline.social_auth.associate_user",
-    "social_core.pipeline.social_auth.load_extra_data",
-    "social_core.pipeline.user.user_details",
-    "gateway.pipeline.update_user_profile",
-)
-
-SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ["username", "first_name", "email"]
-SOCIAL_AUTH_NHSID_KEY = env.str("SOCIAL_AUTH_NHSID_KEY", default="")
-SOCIAL_AUTH_NHSID_SECRET = env.str("SOCIAL_AUTH_NHSID_SECRET", default="")
-SOCIAL_AUTH_NHSID_API_URL = env.str("SOCIAL_AUTH_NHSID_API_URL", default="")
-SOCIAL_AUTH_NHSID_USERNAME_KEY = "nhsid_useruid"
-SOCIAL_AUTH_NHSID_SCOPE = ["nhsperson", "associatedorgs"]
+LOGIN_URL = reverse_lazy("admin:login")
 
 # Logging
 LOGGING = logging_config_dict

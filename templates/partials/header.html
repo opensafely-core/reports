@@ -56,7 +56,7 @@
                 </div>
               {% endif %}
               <div class="py-1">
-                <a href="{% url 'gateway:logout' %}" class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-700" role="menuitem" >
+                <a href="#" class="text-gray-700 block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-700" role="menuitem" >
                   Log out
                 </a>
               </div>
@@ -64,7 +64,7 @@
           </div>
         {% else %}
           {% if show_login %}
-            <a href="{% url 'gateway:login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-oxford-600 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-700">
+            <a href="{% url 'login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-oxford-600 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-700">
               Login
             </a>
           {% endif %}

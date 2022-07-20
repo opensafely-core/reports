@@ -12,7 +12,5 @@ gunicorn
 lxml
 requests-cache
 osgithub
-social-auth-core[openidconnect]
-social-auth-app-django
 sentry-sdk
 whitenoise[brotli]
