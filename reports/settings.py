@@ -71,6 +71,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_structlog.middlewares.RequestMiddleware",
+    "reports.middleware.XSSFilteringMiddleware",
 ]
 
 ROOT_URLCONF = "reports.urls"
