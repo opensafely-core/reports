@@ -1,4 +1,3 @@
-import json
 import logging
 from os import environ
 from pathlib import Path
@@ -9,16 +8,9 @@ import pytest
 import structlog
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
-from django.contrib.sessions.middleware import SessionMiddleware
 from django.core import management
-from django.test import RequestFactory
 from model_bakery import baker
-from social_django.utils import load_strategy
 from structlog.testing import LogCapture
-
-from gateway.backends import NHSIDConnectAuth
-
-from .gateway.mocks import OPENID_CONFIG
 
 
 User = get_user_model()
@@ -86,27 +78,6 @@ def httpretty():
     _httpretty.enable()
     yield _httpretty
     _httpretty.disable()
-
-
-@pytest.fixture
-def mock_backend_and_strategy(httpretty):
-    backend = NHSIDConnectAuth()
-    request_factory = RequestFactory()
-    request = request_factory.get("/", data={"x": "1"})
-    # As of Django 4, the `get_response` arg to SessionMiddleware (via MiddlewareMixin)
-    # is required and can't be None.  SessionMiddleware never uses it, so it
-    # doesn't matter what we give it here.
-    SessionMiddleware(object()).process_request(request)
-    strategy = load_strategy(request=request)
-
-    httpretty.register_uri(
-        httpretty.GET,
-        backend.OIDC_ENDPOINT + "/.well-known/openid-configuration",
-        status=200,
-        body=json.dumps(OPENID_CONFIG),
-    )
-
-    return backend, strategy
 
 
 @pytest.fixture

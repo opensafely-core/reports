@@ -38,13 +38,9 @@ skip_glob = [".direnv", "venv", ".venv"]
 DJANGO_SETTINGS_MODULE = "output_explorer.settings"
 env = [
   "SECRET_KEY=12345",
-  "SOCIAL_AUTH_NHSID_KEY=dummy-client-id",
-  "SOCIAL_AUTH_NHSID_SECRET=dummy-secret",
-  "SOCIAL_AUTH_NHSID_API_URL=https://dummy-nhs.net/oidc",
   "REQUESTS_CACHE_NAME=test_cache",
   "DJANGO_VITE_DEV_MODE=True",
 ]
 filterwarnings = [
-    "ignore::django.utils.deprecation.RemovedInDjango41Warning:social_django",
     "ignore:distutils Version classes are deprecated:DeprecationWarning:marshmallow",
 ]

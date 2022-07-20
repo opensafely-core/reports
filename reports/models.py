@@ -362,7 +362,7 @@ class Report(models.Model):
             )
 
     def get_absolute_url(self):
-        return reverse("reports:report_view", args=(self.slug,))
+        return reverse("report_view", args=(self.slug,))
 
     @property
     def uses_github(self):

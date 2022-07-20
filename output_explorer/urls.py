@@ -16,14 +16,17 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import path
+from django.views.generic import RedirectView
+
+from reports.views import landing, report_view
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("social_django.urls", namespace="social")),
-    path("reports/", include("reports.urls", namespace="reports")),
-    path("", include("gateway.urls", namespace="gateway")),
+    path("reports/", RedirectView.as_view(url="/", permanent=True)),
+    path("reports/<slug:slug>/", report_view, name="report_view"),
+    path("", landing, name="landing"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.site_header = "OpenSAFELY Reports Admin"
