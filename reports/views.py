@@ -55,7 +55,7 @@ def landing(request):
         "recent_activity": recent_activity,
         "today": datetime.utcnow().date(),
     }
-    return render(request, "reports/landing.html", context)
+    return render(request, "landing.html", context)
 
 
 @never_cache
@@ -86,7 +86,7 @@ def report_view(request, slug):
 
     return TemplateResponse(
         request,
-        "reports/report.html",
+        "report.html",
         {
             "remote": remote,
             "report": report,
