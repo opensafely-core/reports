@@ -174,3 +174,10 @@ CACHES = {
         "LOCATION": "cache_table",
     }
 }
+
+
+# Permissions Policy
+# https://github.com/adamchainz/django-permissions-policy/blob/main/README.rst
+PERMISSIONS_POLICY = {
+    "interest-cohort": [],
+}
