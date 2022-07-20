@@ -5,6 +5,7 @@
 bs4
 environs[django]
 django-extensions
+django-permissions-policy
 django-structlog
 django-vite
 furl
