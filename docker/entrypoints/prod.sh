@@ -6,4 +6,4 @@ set -euo pipefail
 ./manage.py ensure_groups
 ./manage.py createcachetable
 
-exec gunicorn output_explorer.wsgi --config=gunicorn.conf.py
+exec gunicorn reports.wsgi --config=gunicorn.conf.py
