@@ -2,7 +2,7 @@
 {% load django_vite %}
 
 <!DOCTYPE html>
-<html lang="en" x-data="{ isSidebarVisible: false }" @keydown.window.escape="isSidebarVisible = false">
+<html lang="en" x-data="sidebar" x-on:keydown.window.escape="hideSidebar">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,8 +19,6 @@
   {% vite_hmr_client %}
 
   {# Modern browsers #}
-  <script defer type="module" src="{% static 'vendor/alpine-magic-helpers/screen.js' %}"></script>
-  <script defer type="module" src="{% static 'vendor/alpine.js' %}"></script>
   {% vite_asset 'assets/src/scripts/main.js' %}
 
   {% block extra_head %}{% endblock %}
@@ -32,7 +30,7 @@
   <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
   <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
 </head>
-<body class="flex flex-nowrap" :class="!$screen('lg') && isSidebarVisible ? 'overflow-y-hidden' : 'overflow-y-scroll'">
+<body class="flex flex-nowrap" x-bind="sidebarBodyClass">
   <a id="skip-link" href="#content" class="sr-only focus:not-sr-only">
     Skip to content
   </a>
@@ -51,7 +49,6 @@
   </div>
 
   {# Legacy browsers #}
-  <script nomodule src="{% static 'vendor/alpine-ie11.js' %}"></script>
   {% vite_legacy_polyfills %}
   {% vite_legacy_asset 'assets/src/scripts/main-legacy.js' %}
 
