@@ -182,7 +182,7 @@ CACHES = {
 # https://django-csp.readthedocs.io/en/latest/configuration.html
 # configure django-csp to work with Vite when using it in dev mode
 if DJANGO_VITE_DEV_MODE:
-    CSP_CONNECT_SRC = ["ws://localhost:3000/static/bundle/"]
+    CSP_CONNECT_SRC = ["ws://localhost:3000/static/"]
     CSP_FONT_SRC = ["data:"]
     CSP_SCRIPT_SRC_ELEM = ["http://localhost:3000"]
     CSP_STYLE_SRC = ["'unsafe-inline'"]
