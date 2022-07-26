@@ -226,6 +226,10 @@ environs[django]==9.5.0 \
     --hash=sha256:1e549569a3de49c05f856f40bce86979e7d5ffbbc4398e7f338574c220189124 \
     --hash=sha256:a76307b36fbe856bdca7ee9161e6c466fd7fcffc297109a118c59b54e27e30c9
     # via -r requirements.prod.in
+exceptiongroup==1.0.0rc8 \
+    --hash=sha256:6990c24f06b8d33c8065cfe43e5e8a4bfa384e0358be036af9cc60b6321bd11a \
+    --hash=sha256:ab0a968e1ef769e55d9a596f4a89f7be9ffedbc9fdefdb77cc68cf5c33ce1035
+    # via requests-cache
 furl==2.1.3 \
     --hash=sha256:5a6188fe2666c484a12159c18be97a1977a71d632ef5bb867ef15f54af39cc4e \
     --hash=sha256:9ab425062c4217f9802508e45feb4a83e54324273ac4b202f1850363309666c0
@@ -364,9 +368,9 @@ requests==2.27.1 \
     #   requests-cache
     #   requests-oauthlib
     #   social-auth-core
-requests-cache==0.9.4 \
-    --hash=sha256:04bb1212bbefba122080163530555f36e64fcd517ef8f90e289ef76f7ae055da \
-    --hash=sha256:edc51d4ba3f1bcacf100aa6097d0c4ae4c787fe13dcc4b2d3a6ce3064482b072
+requests-cache==0.9.5 \
+    --hash=sha256:5343132acc8ca4d7810305aa1e8e46367e9c7c8379f7aea4e8c05f401499fc43 \
+    --hash=sha256:bd67575f541f9c10f44f8b49d8d449fb55db8af2e27d93c56349f227b78e4b70
     # via
     #   -r requirements.prod.in
     #   osgithub
