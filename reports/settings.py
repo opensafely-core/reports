@@ -181,6 +181,7 @@ CACHES = {
 # CSP
 # https://django-csp.readthedocs.io/en/latest/configuration.html
 CSP_REPORT_ONLY = DEBUG
+CSP_DEFAULT_SRC = ["'none'"]
 CSP_STYLE_SRC_ELEM = ["'self'", "https://fonts.googleapis.com"]
 CSP_SCRIPT_SRC_ELEM = ["'self'"]
 CSP_FONT_SRC = ["'self'", "https://fonts.gstatic.com"]
