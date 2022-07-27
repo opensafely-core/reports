@@ -8,16 +8,6 @@ SECRET_KEY=abcdefg
 # github token for fetching files from private repos
 GITHUB_TOKEN=dummy
 
-# Our NHS ID client ID and secret
-SOCIAL_AUTH_NHSID_KEY=dummy
-SOCIAL_AUTH_NHSID_SECRET=dummy
-
-# sandbox Simple OIDC URL
-SOCIAL_AUTH_NHSID_API_URL=https://am.nhsdev.auth-ptl.cis2.spineservices.nhs.uk/openam/oauth2/realms/root/realms/oidc
-
-# flag for showing/hiding login option
-SHOW_LOGIN=True
-
 
 # Production only
 # BASE_URL='https://reports.opensafely.org'

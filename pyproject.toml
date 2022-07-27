@@ -13,10 +13,11 @@ exclude = '''
 [tool.coverage.run]
 branch = true
 omit = [
+  ".direnv/*",
   ".venv/*",
-  "output_explorer/asgi.py",
-  "output_explorer/settings.py",
-  "output_explorer/wsgi.py",
+  "reports/asgi.py",
+  "reports/settings.py",
+  "reports/wsgi.py",
   "services/sentry.py",
   "gateway/migrations/*",
   "reports/migrations/*",
@@ -35,16 +36,12 @@ lines_after_imports = 2
 skip_glob = [".direnv", "venv", ".venv"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "output_explorer.settings"
+DJANGO_SETTINGS_MODULE = "reports.settings"
 env = [
   "SECRET_KEY=12345",
-  "SOCIAL_AUTH_NHSID_KEY=dummy-client-id",
-  "SOCIAL_AUTH_NHSID_SECRET=dummy-secret",
-  "SOCIAL_AUTH_NHSID_API_URL=https://dummy-nhs.net/oidc",
   "REQUESTS_CACHE_NAME=test_cache",
   "DJANGO_VITE_DEV_MODE=True",
 ]
 filterwarnings = [
-    "ignore::django.utils.deprecation.RemovedInDjango41Warning:social_django",
     "ignore:distutils Version classes are deprecated:DeprecationWarning:marshmallow",
 ]

@@ -28,5 +28,3 @@ write() {
 }
 
 write GITHUB_TOKEN "$(bw get password $GH_DEV_TOKEN_BW_ID)"
-write SOCIAL_AUTH_NHSID_KEY "$(bw get username $NHSID_DEV_TOKEN_BW_ID)"
-write SOCIAL_AUTH_NHSID_SECRET "$(bw get password $NHSID_DEV_TOKEN_BW_ID)"

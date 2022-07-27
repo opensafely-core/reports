@@ -49,8 +49,6 @@ COPY vite.config.js tailwind.config.js postcss.config.js ./
 COPY assets ./assets
 COPY static ./static
 COPY templates ./templates
-COPY gateway/templates ./gateway/templates
-COPY reports/templates ./reports/templates
 
 RUN --mount=type=cache,target=./npm npm run build
 

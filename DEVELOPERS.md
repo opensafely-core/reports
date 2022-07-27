@@ -57,11 +57,6 @@ just dev-reset
 
 Access at http://localhost:8000
 
-Login with one of the test user accounts (see Bitwarden entry "Output Explorer NHS Identity Open ID Connect" for password):
-
-- 555036632103
-- 555036633104
-- 555036634105
 
 #### Run tests
 
@@ -77,7 +72,7 @@ just test <path/to/test>::<test name>
 
 This project uses [Vite](https://vitejs.dev/) which allows for local hot-module reloading via a development server. To run the Vite server locally, after completing the local dev env setup:
 
-1. Set `DJANGO_VITE_DEV_MODE = True` in `output_explorer/settings.py`
+1. Set `DJANGO_VITE_DEV_MODE = True` in `reports/settings.py`
 2. Open a terminal and run Django with `just run`
 3. Open a new terminal tab or window
 4. Run `npm run dev` to start the vite server
