@@ -4,10 +4,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
-    reviewers:
-      - "rebkwok"
-    open-pull-requests-limit: 20
+      interval: "daily"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -15,11 +12,8 @@ updates:
       interval: "weekly"
     allow:
       - dependency-type: "production"
-    reviewers:
-      - "tomodwyer"
-    open-pull-requests-limit: 20
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "daily"
