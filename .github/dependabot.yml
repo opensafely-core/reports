@@ -5,8 +5,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "rebkwok"
     open-pull-requests-limit: 20
 
   - package-ecosystem: "npm"
@@ -15,8 +13,6 @@ updates:
       interval: "weekly"
     allow:
       - dependency-type: "production"
-    reviewers:
-      - "tomodwyer"
     open-pull-requests-limit: 20
 
   - package-ecosystem: "github-actions"
