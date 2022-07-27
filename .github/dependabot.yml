@@ -5,7 +5,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 20
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -13,7 +12,6 @@ updates:
       interval: "weekly"
     allow:
       - dependency-type: "production"
-    open-pull-requests-limit: 20
 
   - package-ecosystem: "github-actions"
     directory: "/"
