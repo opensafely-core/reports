@@ -190,6 +190,7 @@ CSP_SCRIPT_SRC = CSP_SCRIPT_SRC_ELEM = ["'self'", "https://plausible.io"]
 
 CSP_FONT_SRC = ["'self'", "https://fonts.gstatic.com"]
 CSP_IMG_SRC = ["'self'", "data:"]
+CSP_MANIFEST_SRC = ["'self'"]
 
 # configure django-csp to work with Vite when using it in dev mode
 if DJANGO_VITE_DEV_MODE:
