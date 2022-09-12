@@ -125,7 +125,7 @@ fix: devenv
 
 
 # setup/update local dev environment
-dev-setup: devenv npm-install
+dev-setup: devenv
     $BIN/python manage.py migrate
     $BIN/python manage.py collectstatic --no-input --clear | grep -v '^Deleting '
     # create an admin/admin superuser locally if necessary
@@ -143,26 +143,66 @@ run: _dev-config devenv
     $BIN/python manage.py runserver localhost:8000
 
 
-# install all JS dependencies
-npm-install: check-fnm
-    fnm use
-    npm ci
-    npm run build
-
-
-check-fnm:
-    #!/usr/bin/env bash
-    if ! which fnm >/dev/null; then
-        echo >&2 "You must install fnm. See https://github.com/Schniz/fnm."
-        exit 1
-    fi
-
-
 # blow away the local database and repopulate it
 dev-reset:
     rm db.sqlite3
     rm http_cache.sqlite
     just dev-setup
+
+
+# Remove built assets and collected static files
+assets-clean:
+    rm -rf assets/dist
+    rm -rf staticfiles
+
+
+# Install the Node.js dependencies
+assets-install:
+    #!/usr/bin/env bash
+    set -eu
+
+    # exit if lock file has not changed since we installed them. -nt == "newer than",
+    # but we negate with || to avoid error exit code
+    test package-lock.json -nt node_modules/.written || exit 0
+
+    npm ci
+    touch node_modules/.written
+
+
+# Build the Node.js assets
+assets-build:
+    #!/usr/bin/env bash
+    set -eu
+
+    # find files which are newer than dist/.written in the src directory. grep
+    # will exit with 1 if there are no files in the result.  We negate this
+    # with || to avoid error exit code
+    # we wrap the find in an if in case dist/.written is missing so we don't
+    # trigger a failure prematurely
+    if test -f assets/dist/.written; then
+        find assets/src -type f -newer assets/dist/.written | grep -q . || exit 0
+    fi
+
+    npm run build
+    touch assets/dist/.written
+
+
+# Collect the static files
+assets-collect: devenv
+    #!/usr/bin/env bash
+    set -eu
+
+    # exit if nothing has changed in the built assets since we last collected staticfiles.
+    # -nt == "newer than", but we negate with || to avoid error exit code
+    test assets/dist/.written -nt staticfiles/.written || exit 0
+
+    $BIN/python manage.py collectstatic --no-input
+    touch staticfiles/.written
+
+
+assets: assets-install assets-build assets-collect
+
+assets-rebuild: assets-clean assets
 
 
 # build docker image env=dev|prod
