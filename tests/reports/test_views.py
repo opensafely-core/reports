@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 
 import pytest
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from model_bakery import baker
 
@@ -8,6 +9,9 @@ from reports.models import Category, Report
 from reports.rendering import process_html
 
 from .utils import assert_html_equal
+
+
+User = get_user_model()
 
 
 @pytest.mark.django_db
@@ -245,6 +249,28 @@ def test_landing_view_recent_activity_archived_reports(
 
 
 @pytest.mark.django_db
+def test_login_get(client):
+    response = client.get(reverse("login"))
+
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_login_post(client):
+    user = User.objects.create(username="test")
+    user.set_password("test")
+
+    response = client.post(
+        reverse("login"),
+        {"username": "test", "password": "test"},
+        follow=True,
+    )
+
+    assert response.status_code == 200
+    assert response.redirect_chain == []
+
+
+@pytest.mark.django_db
 def test_report_view(client):
     """Test a single report page"""
     # report for a real file
@@ -372,5 +398,4 @@ def test_report_view_last_updated(client, log_output):
 
     report.refresh_from_db()
     assert report.last_updated is not None
-
     assert report.last_updated.strftime("%d %b %Y") in response.rendered_content
