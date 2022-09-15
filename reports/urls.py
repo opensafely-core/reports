@@ -16,14 +16,24 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.views import LoginView
 from django.urls import path
 from django.views.generic import RedirectView
 
+from .forms import ReportsAuthenticationForm
 from .views import landing, report_view
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path(
+        "login/",
+        LoginView.as_view(
+            template_name="login.html",
+            authentication_form=ReportsAuthenticationForm,
+        ),
+        name="login",
+    ),
     path("reports/", RedirectView.as_view(url="/", permanent=True)),
     path("reports/<slug:slug>/", report_view, name="report_view"),
     path("", landing, name="landing"),
