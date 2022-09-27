@@ -37,6 +37,6 @@ urlpatterns = [
     path("reports/", RedirectView.as_view(url="/", permanent=True)),
     path("reports/<slug:slug>/", report_view, name="report_view"),
     path("", landing, name="landing"),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_header = "OpenSAFELY Reports Admin"

@@ -151,6 +151,13 @@ DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "staticfiles" / "manifest.json"
 # Insert Whitenoise Middleware.
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+
+# User uploaded files
+# https://docs.djangoproject.com/en/4.1/topics/files/
+MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = "/uploads/"
+
+
 # EMAIL
 EMAIL_BACKEND = env.str("EMAIL_BACKEND", "django.core.mail.backends.dummy.EmailBackend")
 
