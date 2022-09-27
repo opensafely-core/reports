@@ -128,7 +128,6 @@ class Report(models.Model):
         "Org",
         on_delete=models.PROTECT,
         related_name="reports",
-        null=True,
     )
 
     menu_name = AutoPopulatingCharField(
