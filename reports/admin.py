@@ -4,7 +4,7 @@ from django.contrib import admin, messages
 from django.utils.safestring import mark_safe
 from django.utils.translation import ngettext
 
-from .models import Category, Link, Report
+from .models import Category, Link, Org, Report
 
 
 @admin.register(Category)
@@ -17,10 +17,16 @@ class LinkInline(admin.TabularInline):
     fields = ("icon", "label", "url")
 
 
+@admin.register(Org)
+class OrgAdmin(admin.ModelAdmin):
+    fields = ["name", "slug", "url", "logo"]
+
+
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
     inlines = (LinkInline,)
     actions = ["update_cache"]
+    list_filter = ["org", "is_external"]
     fieldsets = (
         ("Navigation", {"fields": ["menu_name", "category"]}),
         (
