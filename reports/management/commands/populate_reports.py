@@ -3,7 +3,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from reports.models import Category, Report
+from reports.models import Category, Org, Report
 
 
 class Command(BaseCommand):
@@ -16,8 +16,17 @@ class Command(BaseCommand):
         Category.objects.get_or_create(name="Archive")
         category, _ = Category.objects.get_or_create(name="Reports")
 
+        bennett, _ = Org.objects.get_or_create(
+            slug="bennett",
+            defaults={
+                "name": "Bennett Institute for Applied Data Science",
+                "url": "https://bennett.ox.ac.uk",
+            },
+        )
+
         self.ensure_report(
             category,
+            bennett,
             title="Vaccine Coverage",
             description="Weekly report on COVID-19 vaccination coverage in England",
             repo="output-explorer-test-repo",
@@ -28,6 +37,7 @@ class Command(BaseCommand):
         if "INCLUDE_PRIVATE" in os.environ:  # pragma: no cover
             self.ensure_report(
                 category,
+                bennett,
                 title="SRO Measures",
                 description="Changes in key GP measures during the COVID-19 pandemic",
                 repo="SRO-Measures",
@@ -37,6 +47,7 @@ class Command(BaseCommand):
 
             self.ensure_report(
                 category,
+                bennett,
                 title="SRO Measures - Health Inequalities",
                 description="Changes in key GP measures during the pandemic - health inequalities",
                 repo="SRO-Measures",
@@ -44,10 +55,11 @@ class Command(BaseCommand):
                 report_html_file_path="released_outputs/output/sentinel_measures_demographics.html",
             )
 
-    def ensure_report(self, category, **kwargs):
+    def ensure_report(self, category, org, **kwargs):
         report, created = get_or_create_with_validation(
             Report,
             category=category,
+            org=org,
             publication_date=datetime.datetime(year=2021, month=5, day=10),
             **kwargs,
         )
