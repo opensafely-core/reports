@@ -186,6 +186,8 @@ class Report(models.Model):
 
     contact_email = models.EmailField(default="team@opensafely.org")
 
+    is_external = models.BooleanField(default=False)
+
     class Meta:
         ordering = ("menu_name",)
         permissions = [
