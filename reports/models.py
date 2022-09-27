@@ -86,6 +86,19 @@ class Category(models.Model):
         return self.name
 
 
+class Org(models.Model):
+    name = models.TextField(unique=True)
+    slug = models.SlugField(max_length=255, unique=True)
+    logo = models.FileField(upload_to="org_logos/", null=True)
+    url = models.URLField()
+
+    class Meta:
+        verbose_name = "Organisation"
+
+    def __str__(self):
+        return self.name
+
+
 class ReportManager(models.Manager):
     """
     Manager that can returns only Reports that a particular user has access to
@@ -111,6 +124,12 @@ class Report(models.Model):
         help_text="Report category; used for navigation",
         related_name="reports",
     )
+    org = models.ForeignKey(
+        "Org",
+        on_delete=models.PROTECT,
+        related_name="reports",
+    )
+
     menu_name = AutoPopulatingCharField(
         max_length=60,
         populate_from="title",
@@ -166,6 +185,8 @@ class Report(models.Model):
     )
 
     contact_email = models.EmailField(default="team@opensafely.org")
+
+    is_external = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("menu_name",)

@@ -139,7 +139,7 @@ dev-setup: devenv
 
 
 # Run the dev project
-run: _dev-config devenv
+run: _dev-config assets
     $BIN/python manage.py runserver localhost:8000
 
 

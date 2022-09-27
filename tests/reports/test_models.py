@@ -6,7 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from model_bakery import baker
 
-from reports.models import Category, Link, Report
+from reports.models import Category, Link, Org, Report
 
 
 REAL_REPO_DETAILS = {
@@ -143,6 +143,7 @@ def test_report_all_github_and_all_job_server_fields_filled():
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=baker.make(Org),
         publication_date=datetime.date.today(),
         description="A description",
         job_server_url="http://example.com/",
@@ -164,6 +165,7 @@ def test_report_all_github_and_no_job_server_fields_filled():
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=baker.make(Org),
         publication_date=datetime.date.today(),
         description="A description",
         **REAL_REPO_DETAILS,
@@ -178,6 +180,7 @@ def test_report_no_github_and_all_job_server_fields_filled():
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=baker.make(Org),
         publication_date=datetime.date.today(),
         description="A description",
         is_draft=True,
@@ -193,6 +196,7 @@ def test_report_no_github_and_no_job_server_fields_filled():
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=baker.make(Org),
         publication_date=datetime.date.today(),
         description="A description",
     )
@@ -212,6 +216,7 @@ def test_report_some_github_and_no_job_server_fields_filled():
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=baker.make(Org),
         publication_date=datetime.date.today(),
         description="A description",
         repo="opensafely",
@@ -229,6 +234,7 @@ def test_report_menu_name_autopopulates():
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=baker.make(Org),
         publication_date=datetime.date.today(),
         description="A description",
         **REAL_REPO_DETAILS,

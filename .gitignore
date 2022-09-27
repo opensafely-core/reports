@@ -117,3 +117,5 @@ db.sqlite3
 npm-debug.log*
 node_modules/
 /assets/dist
+
+uploads
