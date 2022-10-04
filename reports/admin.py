@@ -28,6 +28,7 @@ class ReportAdmin(admin.ModelAdmin):
     actions = ["update_cache"]
     list_filter = ["org", "is_external"]
     fieldsets = (
+        ("Organisation", {"fields": ["org"]}),
         ("Navigation", {"fields": ["menu_name", "category"]}),
         (
             "Report file details (GitHub)",
