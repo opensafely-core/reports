@@ -98,6 +98,7 @@ class ReportAdmin(admin.ModelAdmin):
             },
         ),
         ("Visibility", {"fields": ["is_draft"]}),
+        ("External", {"fields": ["external_description"]}),
     )
     readonly_fields = ["last_updated", "cache_token", "doi_suffix"]
 

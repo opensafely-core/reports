@@ -70,11 +70,12 @@ def test_report_model_validation(
     """Fetch and extract html from a real repo"""
     environ["GITHUB_VALIDATION"] = "True"
     report_fields = {**REAL_REPO_DETAILS, **fields}
+    org, _ = Org.objects.get_or_create(slug="bennett")
     if not expected_valid:
         with pytest.raises(ValidationError, match=expected_errors):
-            baker.make(Report, **report_fields)
+            baker.make(Report, org=org, **report_fields)
     else:
-        baker.make(Report, **report_fields)
+        baker.make(Report, org=org, **report_fields)
 
 
 @pytest.mark.django_db
@@ -140,10 +141,11 @@ def test_archive_category_for_user(
 @pytest.mark.django_db
 def test_report_all_github_and_all_job_server_fields_filled():
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
-        org=baker.make(Org),
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         job_server_url="http://example.com/",
@@ -162,10 +164,11 @@ def test_report_all_github_and_all_job_server_fields_filled():
 @pytest.mark.django_db
 def test_report_all_github_and_no_job_server_fields_filled():
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
-        org=baker.make(Org),
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         **REAL_REPO_DETAILS,
@@ -177,10 +180,11 @@ def test_report_all_github_and_no_job_server_fields_filled():
 @pytest.mark.django_db
 def test_report_no_github_and_all_job_server_fields_filled():
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
-        org=baker.make(Org),
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         is_draft=True,
@@ -193,10 +197,11 @@ def test_report_no_github_and_all_job_server_fields_filled():
 @pytest.mark.django_db
 def test_report_no_github_and_no_job_server_fields_filled():
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
-        org=baker.make(Org),
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
     )
@@ -213,10 +218,11 @@ def test_report_no_github_and_no_job_server_fields_filled():
 @pytest.mark.django_db
 def test_report_some_github_and_no_job_server_fields_filled():
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
-        org=baker.make(Org),
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         repo="opensafely",
@@ -231,10 +237,11 @@ def test_report_some_github_and_no_job_server_fields_filled():
 @pytest.mark.django_db
 def test_report_menu_name_autopopulates():
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
-        org=baker.make(Org),
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         **REAL_REPO_DETAILS,
@@ -246,9 +253,11 @@ def test_report_menu_name_autopopulates():
 @pytest.mark.django_db
 def test_report_menu_name_is_limited_to_sixty_characters():
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="012345678901234567890123456789012345678901234567890123456789X",
         category=category,
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         **REAL_REPO_DETAILS,
@@ -260,10 +269,11 @@ def test_report_menu_name_is_limited_to_sixty_characters():
 @pytest.mark.django_db
 def test_report_uses_github(httpretty):
     category = baker.make(Category, name="test")
-
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         **REAL_REPO_DETAILS,
@@ -274,6 +284,7 @@ def test_report_uses_github(httpretty):
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         job_server_url="http://example.com/",
@@ -286,9 +297,11 @@ def test_report_with_missing_job_server_file(httpretty):
     httpretty.register_uri(httpretty.HEAD, "http://example.com", status=404)
 
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         job_server_url="http://example.com/",
@@ -303,9 +316,11 @@ def test_report_with_unpublished_output_and_published(httpretty):
     httpretty.register_uri(httpretty.HEAD, "http://example.com", status=200)
 
     category = baker.make(Category, name="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = Report(
         title="Fungible watermelon",
         category=category,
+        org=org,
         publication_date=datetime.date.today(),
         description="A description",
         is_draft=False,
@@ -345,9 +360,11 @@ def test_cache_refresh_on_report_save(
     cache_token_changed,
 ):
     mock_repo_url("https://github.com/opensafely/test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = baker.make(
         Report,
         category=Category.objects.first(),
+        org=org,
         title="test",
         repo="output-explorer-test-repo",
         branch="master",
@@ -369,9 +386,11 @@ def test_cache_refresh_on_report_save(
 @pytest.mark.django_db
 def test_cache_refresh_on_report_save_with_links(mock_repo_url):
     mock_repo_url("https://github.com/opensafely/test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = baker.make(
         Report,
         category=Category.objects.first(),
+        org=org,
         title="test",
         repo="output-explorer-test-repo",
         branch="master",
@@ -420,7 +439,13 @@ def test_report_save_with_multiple_links_not_including_source(mock_repo_url):
     # Test for a bug that occurred when a report has at least one (non-source-repo) link
     # and does NOT have a source-repo link
     mock_repo_url("https://github.com/opensafely/test")
-    report = baker.make_recipe("reports.dummy_report", repo="test", branch="main")
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make_recipe(
+        "reports.dummy_report",
+        org=org,
+        repo="test",
+        branch="main",
+    )
     initial_cache_token = report.cache_token
 
     # This report has one link, for the source
@@ -451,3 +476,52 @@ def test_report_save_with_multiple_links_not_including_source(mock_repo_url):
     report.refresh_from_db()
     cache_token_after_save = report.cache_token
     assert cache_token_after_save != cache_token_after_source_link_deletion
+
+
+@pytest.mark.django_db
+def test_report_external():
+    baker.make_recipe(
+        "reports.dummy_report",
+        org=baker.make(Org),
+        external_description="test",
+    )
+
+
+@pytest.mark.django_db
+def test_report_internal():
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    baker.make_recipe(
+        "reports.dummy_report",
+        org=org,
+        external_description="",
+    )
+
+
+@pytest.mark.django_db
+def test_report_incorrect_external_fields():
+    with pytest.raises(ValidationError) as e:
+        baker.make_recipe(
+            "reports.dummy_report",
+            org=baker.make(Org),
+            external_description="",
+        )
+
+    assert e.value.message_dict == {
+        "external_description": [
+            "An external description must be set for reports from external organisations."
+        ]
+    }
+
+    with pytest.raises(ValidationError) as e:
+        org, _ = Org.objects.get_or_create(slug="bennett")
+        baker.make_recipe(
+            "reports.dummy_report",
+            org=org,
+            external_description="test",
+        )
+
+    assert e.value.message_dict == {
+        "external_description": [
+            "An external description should not be set for internal reports."
+        ]
+    }
