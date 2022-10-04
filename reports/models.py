@@ -186,8 +186,6 @@ class Report(models.Model):
 
     contact_email = models.EmailField(default="team@opensafely.org")
 
-    is_external = models.BooleanField(default=False)
-
     class Meta:
         ordering = ("menu_name",)
         permissions = [
@@ -395,6 +393,10 @@ class Report(models.Model):
         be populated when this is used.
         """
         return self.job_server_url == ""
+
+    @property
+    def is_external(self):
+        return self.org.slug == "bennett"
 
 
 class Link(models.Model):
