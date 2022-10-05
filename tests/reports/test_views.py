@@ -368,23 +368,6 @@ def test_draft_report_view_permissions(
     assert response.status_code == expected_status
 
 
-def assert_last_cache_log(log_entries, expected_log_items):
-    last_cache_log = next(
-        (
-            log
-            for log in reversed(log_entries.entries)
-            if "cache" in log["event"].lower()
-        ),
-        None,
-    )
-    if expected_log_items is None:
-        assert last_cache_log is None
-    else:
-        for key, value in expected_log_items.items():
-            assert last_cache_log[key] == value
-    log_entries.entries.clear()
-
-
 @pytest.mark.django_db
 def test_report_view_cache(client, log_output, bennett_org):
     """
@@ -404,19 +387,26 @@ def test_report_view_cache(client, log_output, bennett_org):
 
     # force update
     response = client.get(report.get_absolute_url() + "?force-update=")
+
+    assert response.status_code == 302
+    assert response.url == report.get_absolute_url()
+
     old_token = report.cache_token
     report.refresh_from_db()
     assert old_token != report.cache_token
-    assert_last_cache_log(
-        log_output,
-        {
-            "report_id": report.id,
-            "slug": report.slug,
-            "event": "Cache token refreshed and requests cache cleared; redirecting...",
-        },
-    )
-    assert response.status_code == 302
-    assert response.url == report.get_absolute_url()
+
+    expected_log_items = {
+        "report_id": report.id,
+        "slug": report.slug,
+        "event": "Cache token refreshed and requests cache cleared; redirecting...",
+    }
+    cache_logs = [
+        log for log in reversed(log_output.entries) if "cache" in log["event"].lower()
+    ]
+    last_cache_log = next(iter(cache_logs), None)
+    for key, value in expected_log_items.items():
+        assert last_cache_log[key] == value
+    log_output.entries.clear()
 
 
 @pytest.mark.django_db
