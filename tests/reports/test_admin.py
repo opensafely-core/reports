@@ -4,7 +4,7 @@ import pytest
 from django.contrib.admin import AdminSite
 from django.urls import reverse
 
-from reports.admin import ReportAdmin
+from reports.admin import IsExternalFilter, ReportAdmin
 from reports.models import Report
 
 from ..factories import ReportFactory, UserFactory
@@ -51,3 +51,22 @@ def test_admin_doi_suffix(client, bennett_org, mock_repo_url):
     report1 = ReportFactory(org=bennett_org, title="test")
     assert report1.slug != report.slug
     assert report_admin.doi_suffix(report) != report_admin.doi_suffix(report1)
+
+
+@pytest.mark.django_db
+def test_isexternalfilter(rf, bennett_org):
+    report1 = ReportFactory(org=bennett_org)
+    report2 = ReportFactory(external_description="test")
+
+    request = rf.get("/")
+    report_admin = ReportAdmin(Report, AdminSite())
+
+    qs = Report.objects.all()
+
+    # no
+    f = IsExternalFilter(request, {"is_external": "no"}, Report, report_admin)
+    assert list(f.queryset(request, qs)) == [report1]
+
+    # yes
+    f = IsExternalFilter(request, {"is_external": "yes"}, Report, report_admin)
+    assert list(f.queryset(request, qs)) == [report2]
