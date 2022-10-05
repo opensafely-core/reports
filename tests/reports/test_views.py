@@ -1,18 +1,15 @@
 from datetime import date, timedelta
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+from gateway.models import User
 from reports.groups import setup_researchers
 from reports.models import Category, Report
 from reports.rendering import process_html
 
 from ..factories import CategoryFactory, ReportFactory, UserFactory
 from .utils import assert_html_equal
-
-
-User = get_user_model()
 
 
 @pytest.mark.django_db
