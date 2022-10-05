@@ -118,7 +118,7 @@ class ReportAdmin(admin.ModelAdmin):
             messages.SUCCESS,
         )
 
-    def doi_suffix(self, obj):
+    def doi_suffix(self, obj):  # pragma: no cover
         """
         Display a suggested DOI to use, based on the report slug
         """

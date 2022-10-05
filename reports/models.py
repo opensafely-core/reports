@@ -441,7 +441,7 @@ class Link(models.Model):
         verbose_name_plural = "Related Links (note that a link to the source code repo will be automatically generated on save)"
 
     def __str__(self):
-        return f"{self.url}"
+        return self.url
 
     def save(self, *args, **kwargs):
         # For links added or edited after a report's initial save, check if the link has changed and refresh the report's

@@ -445,3 +445,50 @@ def test_report_incorrect_external_fields(bennett_org):
             "An external description should not be set for internal reports."
         ]
     }
+
+
+@pytest.mark.django_db
+def test_category_str():
+    assert str(CategoryFactory(name="test")) == "test"
+
+
+@pytest.mark.django_db
+def test_link_str(bennett_org):
+    report = ReportFactory(repo="test", external_description="test")
+
+    assert str(report.links.first()) == "https://github.com/opensafely/test"
+
+
+@pytest.mark.django_db
+def test_report_refresh_cache_token_with_job_server_report(bennett_org, mocker):
+    report = ReportFactory(
+        org=bennett_org,
+        repo="",
+        branch="",
+        report_html_file_path="",
+        job_server_url="http://example.com",
+        is_draft=True,
+    )
+
+    initial_cache_token = report.cache_token
+    report.refresh_cache_token()
+
+    assert report.cache_token != initial_cache_token
+
+
+@pytest.mark.django_db
+def test_report_str(bennett_org):
+    assert str(ReportFactory(org=bennett_org, title="Test")) == "test"
+
+
+@pytest.mark.django_db
+def test_category_populated(bennett_org):
+    user = UserFactory(is_staff=True)
+
+    ReportFactory(org=bennett_org)
+    category = Category.objects.get(name="Reports")
+    ReportFactory(category=category, org=bennett_org)
+
+    print(Category.objects.all())
+
+    assert list(Category.populated.for_user(user)) == list(Category.objects.all())
