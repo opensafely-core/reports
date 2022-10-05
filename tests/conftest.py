@@ -5,37 +5,23 @@ from pathlib import Path
 import httpretty as _httpretty
 import pytest
 import structlog
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group, Permission
-from django.core import management
+from django.contrib.auth.models import Permission
 from structlog.testing import LogCapture
 
 from reports.models import Org
 
-
-User = get_user_model()
+from .factories import UserFactory
 
 
 @pytest.fixture
 def user_with_permission():
-    user = User.objects.create_user(username="user1", password="testpass")
     permission = Permission.objects.get(codename="view_draft")
+
+    # set up a user with the view_draft permission
+    user = UserFactory()
     user.user_permissions.add(permission)
-    yield user
 
-
-@pytest.fixture
-def user_no_permission():
-    yield User.objects.create_user(username="user2", password="testpass")
-
-
-@pytest.fixture
-def researcher():
-    management.call_command("ensure_groups")
-    group = Group.objects.get(name="researchers")
-    user = User.objects.create_user(username="researcher", password="testpass")
-    user.groups.add(group)
-    yield user
+    return user
 
 
 def remove_cache_file_if_exists():

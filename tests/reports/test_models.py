@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 from reports.models import Category, Link, Report
 
-from ..factories import CategoryFactory, LinkFactory, ReportFactory
+from ..factories import CategoryFactory, LinkFactory, ReportFactory, UserFactory
 
 
 REAL_REPO_DETAILS = {
@@ -98,9 +98,7 @@ def test_category_manager(bennett_org, mock_repo_url):
 
 
 @pytest.mark.django_db
-def test_category_for_user(
-    bennett_org, user_no_permission, user_with_permission, mock_repo_url
-):
+def test_category_for_user(bennett_org, user_with_permission, mock_repo_url):
     mock_repo_url("https://github.com/opensafely/test-repo")
 
     category = CategoryFactory()
@@ -111,7 +109,7 @@ def test_category_for_user(
     assert list(Category.populated.for_user(user)) == list(
         Category.objects.filter(id=category.id)
     )
-    assert list(Category.populated.for_user(user_no_permission)) == list(
+    assert list(Category.populated.for_user(UserFactory())) == list(
         Category.objects.filter(id=category.id)
     )
     assert list(Category.populated.for_user(user_with_permission)) == list(
@@ -120,9 +118,7 @@ def test_category_for_user(
 
 
 @pytest.mark.django_db
-def test_archive_category_for_user(
-    bennett_org, user_no_permission, user_with_permission, mock_repo_url
-):
+def test_archive_category_for_user(bennett_org, user_with_permission, mock_repo_url):
     mock_repo_url("https://github.com/opensafely/test-repo")
 
     # Archive category is never returned in the populated_for_user manager
@@ -134,7 +130,7 @@ def test_archive_category_for_user(
     assert list(Category.populated.for_user(user)) == list(
         Category.objects.filter(id=category.id)
     )
-    assert list(Category.populated.for_user(user_no_permission)) == list(
+    assert list(Category.populated.for_user(UserFactory())) == list(
         Category.objects.filter(id=category.id)
     )
     assert list(Category.populated.for_user(user_with_permission)) == list(

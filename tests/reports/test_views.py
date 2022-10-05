@@ -4,10 +4,11 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+from reports.groups import setup_researchers
 from reports.models import Category, Report
 from reports.rendering import process_html
 
-from ..factories import CategoryFactory, ReportFactory
+from ..factories import CategoryFactory, ReportFactory, UserFactory
 from .utils import assert_html_equal
 
 
@@ -88,7 +89,6 @@ def test_landing_view_draft_reports_permissions(
     client,
     mock_repo_url,
     user_with_permission,
-    user_no_permission,
     user_attributes,
     expected_category_names,
     expected_report_names,
@@ -96,12 +96,12 @@ def test_landing_view_draft_reports_permissions(
 ):
     mock_repo_url("https://github.com/opensafely/test-repo")
     user_selection = {
-        "no_permission": user_no_permission,
+        "no_permission": UserFactory(),
         "has_permission": user_with_permission,
     }
     user = user_selection.get(user_attributes)
     if user is not None:
-        client.login(username=user.username, password="testpass")
+        client.force_login(user)
 
     # By default we have one Category, set up in the migration
     assert Category.objects.count() == 1
@@ -337,9 +337,7 @@ def test_archive_report_view(client, bennett_org):
 )
 def test_draft_report_view_permissions(
     client,
-    user_no_permission,
     user_with_permission,
-    researcher,
     bennett_org,
     user_attributes,
     is_draft,
@@ -355,14 +353,19 @@ def test_draft_report_view_permissions(
         report_html_file_path="test-outputs/output.html",
         is_draft=is_draft,
     )
+
+    # set up a researcher user with the approrpriate group
+    group = setup_researchers()
+    researcher = UserFactory(username="researcher")
+    researcher.groups.add(group)
     user_selection = {
-        "no_permission": user_no_permission,
+        "no_permission": UserFactory(),
         "has_permission": user_with_permission,
         "researcher": researcher,
     }
     user = user_selection.get(user_attributes)
     if user is not None:
-        client.login(username=user.username, password="testpass")
+        client.force_login(user)
 
     response = client.get(report.get_absolute_url())
     assert response.status_code == expected_status
