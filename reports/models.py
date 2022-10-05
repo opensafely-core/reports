@@ -457,12 +457,12 @@ class Link(models.Model):
         if report_has_links_pre_save:
             initial_report_links = self.report.links.all()
             this_link = initial_report_links.filter(id=self.id)
-            if not this_link.exists():
+            if not this_link.exists():  # pragma: no cover
                 logger.info("Link added to report; refreshing report cache token")
                 self.report.refresh_cache_token()
             else:
                 this_link_from_report = this_link.first()
-                if any(
+                if any(  # pragma: no cover
                     getattr(self, field) != value
                     for field, value in model_to_dict(this_link_from_report).items()
                 ):
