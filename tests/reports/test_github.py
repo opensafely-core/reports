@@ -3,11 +3,11 @@ from base64 import b64encode
 from datetime import date
 
 import pytest
-from model_bakery import baker
 from osgithub import GithubAPIException, GithubClient, GithubRepo
 
 from reports.github import GithubReport
-from reports.models import Org, Report
+
+from ..factories import ReportFactory
 
 
 def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
@@ -28,7 +28,7 @@ def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
 
 
 @pytest.mark.django_db
-def test_get_normal_html_from_github(httpretty):
+def test_get_normal_html_from_github(httpretty, bennett_org):
     html = """
         <html>
             <body><p>foo</p></body>
@@ -61,14 +61,15 @@ def test_get_normal_html_from_github(httpretty):
         commit_dates="2021-04-25T10:00:00Z",
     )
     repo = GithubRepo(GithubClient(use_cache=False), name="test", owner="opensafely")
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(Report, org=org, report_html_file_path="foo.html", repo="test")
+    report = ReportFactory(
+        org=bennett_org, repo="test", branch="main", report_html_file_path="foo.html"
+    )
     github_report = GithubReport(report, repo=repo)
     assert github_report.get_html() == html
 
 
 @pytest.mark.django_db
-def test_get_large_html_from_github(httpretty):
+def test_get_large_html_from_github(bennett_org, httpretty):
     """
     Test that a GithubException for a too-large file is caught and the content fetched
     from the git_blob by sha instead
@@ -136,8 +137,9 @@ def test_get_large_html_from_github(httpretty):
     repo = GithubRepo(
         client=GithubClient(use_cache=False), owner="opensafely", name="test"
     )
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(Report, org=org, repo="test", report_html_file_path="foo.html")
+    report = ReportFactory(
+        org=bennett_org, repo="test", branch="main", report_html_file_path="foo.html"
+    )
     assert report.use_git_blob is False
 
     github_report = GithubReport(report, repo=repo)
@@ -183,7 +185,7 @@ def test_get_large_html_from_github(httpretty):
 
 
 @pytest.mark.django_db
-def test_github_report_get_parent_contents_invalid_folder(httpretty):
+def test_github_report_get_parent_contents_invalid_folder(bennett_org, httpretty):
     # Mock the github request
     httpretty.register_uri(
         httpretty.GET,
@@ -194,9 +196,11 @@ def test_github_report_get_parent_contents_invalid_folder(httpretty):
     repo = GithubRepo(
         client=GithubClient(use_cache=False), owner="opensafely", name="test-repo"
     )
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(
-        Report, org=org, repo="test-repo", report_html_file_path="test-folder/foo.html"
+    report = ReportFactory(
+        org=bennett_org,
+        repo="test-repo",
+        branch="main",
+        report_html_file_path="test-folder/foo.html",
     )
 
     github_report = GithubReport(report, repo=repo)
@@ -205,12 +209,10 @@ def test_github_report_get_parent_contents_invalid_folder(httpretty):
 
 
 @pytest.mark.django_db
-def test_integration():
+def test_integration(bennett_org):
     """Fetch and extract html from a real repo"""
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(
-        Report,
-        org=org,
+    report = ReportFactory(
+        org=bennett_org,
         repo="output-explorer-test-repo",
         branch="master",
         report_html_file_path="test-outputs/output.html",

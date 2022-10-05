@@ -12,7 +12,6 @@ flake8-no-pep420
 httpretty
 ipdb
 isort
-model-bakery
 pip-tools
 pre-commit
 pytest-cov

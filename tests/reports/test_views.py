@@ -3,11 +3,11 @@ from datetime import date, timedelta
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from model_bakery import baker
 
 from reports.models import Category, Report
 from reports.rendering import process_html
 
+from ..factories import CategoryFactory, ReportFactory
 from .utils import assert_html_equal
 
 
@@ -15,9 +15,10 @@ User = get_user_model()
 
 
 @pytest.mark.django_db
-def test_landing_view(client, mock_repo_url):
+def test_landing_view(client, mock_repo_url, bennett_org):
     """Test landing view context"""
     mock_repo_url("https://github.com/opensafely/test-repo")
+
     assert Report.objects.exists() is False
     # By default we have one Category, set up in the migration
     assert Category.objects.count() == 1
@@ -27,31 +28,30 @@ def test_landing_view(client, mock_repo_url):
     assert list(response.context["categories"]) == []
 
     # when Reports exist, their categories are included in the context
-    baker.make_recipe("reports.dummy_report")
-    baker.make_recipe("reports.dummy_report", title="test1")
+    report1 = ReportFactory(org=bennett_org)
+    report2 = ReportFactory(org=bennett_org, title="test1")
     response = client.get(reverse("landing"))
-    assert list(response.context["categories"]) == list(Category.objects.all())
+    assert list(response.context["categories"]) == [report1.category, report2.category]
 
 
 @pytest.mark.django_db
-def test_landing_view_ordering(client, mock_repo_url):
+def test_landing_view_ordering(client, mock_repo_url, bennett_org):
     """Test categories and reports in context are alphabetically ordered"""
     mock_repo_url("https://github.com/opensafely/test-repo")
+
     # By default we have one Category, set up in the migration
     assert Category.objects.count() == 1
     reports_category = Category.objects.first()
     assert reports_category.name == "Reports"
 
     # make another category and add some reports
-    test_category = baker.make(Category, name="Test")
+    test_category = CategoryFactory(name="Test")
 
-    report1 = baker.make_recipe("reports.dummy_report", menu_name="xyz")
-    report2 = baker.make_recipe("reports.dummy_report", menu_name="abc")
-    report3 = baker.make_recipe("reports.dummy_report", menu_name="def")
-    report4 = baker.make_recipe("reports.dummy_report", menu_name="jkl")
-    report5 = baker.make_recipe("reports.dummy_report", menu_name="bcd")
-    test_category.reports.add(report1, report2, report3)
-    reports_category.reports.add(report4, report5)
+    ReportFactory(category=test_category, org=bennett_org, menu_name="xyz")
+    ReportFactory(category=test_category, org=bennett_org, menu_name="abc")
+    ReportFactory(category=test_category, org=bennett_org, menu_name="def")
+    ReportFactory(category=reports_category, org=bennett_org, menu_name="jkl")
+    ReportFactory(category=reports_category, org=bennett_org, menu_name="bcd")
 
     response = client.get(reverse("landing"))
     # Categories are in alphabetical order by name
@@ -92,6 +92,7 @@ def test_landing_view_draft_reports_permissions(
     user_attributes,
     expected_category_names,
     expected_report_names,
+    bennett_org,
 ):
     mock_repo_url("https://github.com/opensafely/test-repo")
     user_selection = {
@@ -107,23 +108,20 @@ def test_landing_view_draft_reports_permissions(
     reports_category = Category.objects.first()
     assert reports_category.name == "Reports"
     # add some draft and published reports
-    report1 = baker.make_recipe("reports.dummy_report", menu_name="report-abc")
-    report2 = baker.make_recipe("reports.dummy_report", menu_name="report-def")
-    report3 = baker.make_recipe(
-        "reports.dummy_report", menu_name="report-ghi", is_draft=True
-    )
+    report1 = ReportFactory(org=bennett_org, menu_name="report-abc")
+    report2 = ReportFactory(org=bennett_org, menu_name="report-def")
+    report3 = ReportFactory(org=bennett_org, menu_name="report-ghi", is_draft=True)
     reports_category.reports.add(report1, report2, report3)
 
     # make another category and add draft reports ONLY.
     # This entire category should be hidden from an anonymous user and a user with no permission
-    draft_category = baker.make(Category, name="Test")
-    report4 = baker.make_recipe(
-        "reports.dummy_report", menu_name="report-jkl", is_draft=True
+    draft_category = CategoryFactory(name="Test")
+    ReportFactory(
+        category=draft_category, org=bennett_org, menu_name="report-jkl", is_draft=True
     )
-    report5 = baker.make_recipe(
-        "reports.dummy_report", menu_name="report-mno", is_draft=True
+    ReportFactory(
+        category=draft_category, org=bennett_org, menu_name="report-mno", is_draft=True
     )
-    draft_category.reports.add(report4, report5)
 
     response = client.get(reverse("landing"))
     assert response.context["categories"].count() == len(expected_category_names)
@@ -210,10 +208,13 @@ def test_landing_view_draft_reports_permissions(
         "Only 10 most recent events are shown",
     ],
 )
-def test_landing_view_recent_activity(client, mock_repo_url, reports, expected):
+def test_landing_view_recent_activity(
+    client, mock_repo_url, bennett_org, reports, expected
+):
     mock_repo_url("https://github.com/opensafely/test-repo")
+
     for menu_name, report_fields in reports.items():
-        baker.make_recipe("reports.dummy_report", menu_name=menu_name, **report_fields)
+        ReportFactory(org=bennett_org, menu_name=menu_name, **report_fields)
 
     response = client.get(reverse("landing"))
     # only reports with dates are shown in recent_activity
@@ -228,19 +229,20 @@ def test_landing_view_recent_activity(client, mock_repo_url, reports, expected):
 
 @pytest.mark.django_db
 def test_landing_view_recent_activity_archived_reports(
-    client, mock_repo_url, user_no_permission
+    client, bennett_org, mock_repo_url
 ):
     """Archived reports do not appear in recent activity unless user is staff"""
     mock_repo_url("https://github.com/opensafely/test-repo")
-    report = baker.make_recipe(
-        "reports.dummy_report", menu_name="test", publication_date="2021-02-01"
+
+    report = ReportFactory(
+        org=bennett_org, menu_name="test", publication_date="2021-02-01"
     )
     # report is not archived, appears in recent activity
     response = client.get(reverse("landing"))
     assert list(response.context["recent_activity"]) == [report]
 
     # archived report
-    category = baker.make(Category, name="Archive")
+    category = CategoryFactory(name="Archive")
     report.category = category
     report.save()
 
@@ -271,10 +273,16 @@ def test_login_post(client):
 
 
 @pytest.mark.django_db
-def test_report_view(client):
+def test_report_view(client, bennett_org):
     """Test a single report page"""
     # report for a real file
-    report = baker.make_recipe("reports.real_report")
+    report = ReportFactory(
+        org=bennett_org,
+        title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
+        report_html_file_path="test-outputs/output.html",
+    )
     response = client.get(report.get_absolute_url())
 
     assert_html_equal(
@@ -287,11 +295,25 @@ def test_report_view(client):
 
 
 @pytest.mark.django_db
-def test_archive_report_view(client):
+def test_archive_report_view(client, bennett_org):
     """Test that an archive report is accessible, but not listed in categories"""
     category = Category.objects.first()
-    baker.make_recipe("reports.real_report", category=category)
-    archive_report = baker.make_recipe("reports.real_report", category__name="Archive")
+    ReportFactory(
+        category=category,
+        org=bennett_org,
+        title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
+        report_html_file_path="test-outputs/output.html",
+    )
+    archive_report = ReportFactory(
+        category=CategoryFactory(name="Archive"),
+        org=bennett_org,
+        title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
+        report_html_file_path="test-outputs/output.html",
+    )
 
     response = client.get(archive_report.get_absolute_url())
     assert response.status_code == 200
@@ -318,13 +340,21 @@ def test_draft_report_view_permissions(
     user_no_permission,
     user_with_permission,
     researcher,
+    bennett_org,
     user_attributes,
     is_draft,
     expected_status,
 ):
     """Test a single report page"""
     # report for a real file
-    report = baker.make_recipe("reports.real_report", is_draft=is_draft)
+    report = ReportFactory(
+        org=bennett_org,
+        title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
+        report_html_file_path="test-outputs/output.html",
+        is_draft=is_draft,
+    )
     user_selection = {
         "no_permission": user_no_permission,
         "has_permission": user_with_permission,
@@ -356,11 +386,17 @@ def assert_last_cache_log(log_entries, expected_log_items):
 
 
 @pytest.mark.django_db
-def test_report_view_cache(client, log_output):
+def test_report_view_cache(client, log_output, bennett_org):
     """
     Test caching a single report page.
     """
-    report = baker.make_recipe("reports.real_report")
+    report = ReportFactory(
+        org=bennett_org,
+        title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
+        report_html_file_path="test-outputs/output.html",
+    )
 
     # fetch report
     response = client.get(report.get_absolute_url())
@@ -384,12 +420,18 @@ def test_report_view_cache(client, log_output):
 
 
 @pytest.mark.django_db
-def test_report_view_last_updated(client, log_output):
+def test_report_view_last_updated(client, log_output, bennett_org):
     """
     Test that the last updated field (which is fetched on page load and stored on the
     model) is displayed properly on the report page.
     """
-    report = baker.make_recipe("reports.real_report")
+    report = ReportFactory(
+        org=bennett_org,
+        title="test",
+        repo="output-explorer-test-repo",
+        branch="master",
+        report_html_file_path="test-outputs/output.html",
+    )
     assert report.last_updated is None
 
     # fetch report

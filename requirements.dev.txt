@@ -8,12 +8,6 @@ appnope==0.1.3 \
     --hash=sha256:02bd91c4de869fbb1e1c50aafc4098827a7a54ab2f39d9dcba6c9547ed920e24 \
     --hash=sha256:265a455292d0bd8a72453494fa24df5a11eb18373a60c7c0430889f22548605e
     # via ipython
-asgiref==3.5.2 \
-    --hash=sha256:1d2880b792ae8757289136f1db2b7b99100ce959b2aa57fd69dab783d05afac4 \
-    --hash=sha256:4a29362a6acebe09bf1d6640db38c1dc3d9217c68e6f9f6204d72667fc19a424
-    # via
-    #   -c requirements.prod.txt
-    #   django
 asttokens==2.0.5 \
     --hash=sha256:0844691e88552595a6f4a4281a9f7f79b8dd45ca4ccea82e5e05b4bbdb76705c \
     --hash=sha256:9a54c114f02c7a9480d56550932546a3f1fe71d8a02f1bc7ccd0ee3ee35cf4d5
@@ -121,12 +115,6 @@ distlib==0.3.4 \
     --hash=sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b \
     --hash=sha256:e4b58818180336dc9c529bfb9a0b58728ffc09ad92027a3f30b7cd91e3458579
     # via virtualenv
-django==4.1.1 \
-    --hash=sha256:a153ffd5143bf26a877bfae2f4ec736ebd8924a46600ca089ad96b54a1d4e28e \
-    --hash=sha256:acb21fac9275f9972d81c7caf5761a89ec3ea25fe74545dd26b8a48cb3a0203e
-    # via
-    #   -c requirements.prod.txt
-    #   model-bakery
 executing==0.8.3 \
     --hash=sha256:c6554e21c6b060590a6d3be4b82fb78f8f0194d809de5ea7df1c093763311501 \
     --hash=sha256:d1eef132db1b83649a3905ca6dd8897f71ac6f8cac79a7e58a1a09cf137546c9
@@ -196,10 +184,6 @@ mccabe==0.6.1 \
     --hash=sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42 \
     --hash=sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f
     # via flake8
-model-bakery==1.7.0 \
-    --hash=sha256:70bc7da3864c28bacfbaaa3f3b0b52020dedc8fec5229a195fc39a4dfa5ec20d \
-    --hash=sha256:9e7e7436174a69892972eb6717a877ac346d70a8a2ada4fd2b583bb3dca2ad7e
-    # via -r requirements.dev.in
 more-itertools==8.12.0 \
     --hash=sha256:43e6dd9942dffd72661a2c4ef383ad7da1e6a3e968a927ad7a6083ab410a688b \
     --hash=sha256:7dc6ad46f05f545f900dd59e8dfb4e84a4827b97b3cfecb175ea0c7d247f6064
@@ -357,12 +341,6 @@ six==1.16.0 \
     #   -c requirements.prod.txt
     #   python-dateutil
     #   virtualenv
-sqlparse==0.4.2 \
-    --hash=sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae \
-    --hash=sha256:48719e356bb8b42991bdbb1e8b83223757b93789c00910a616a071910ca4a64d
-    # via
-    #   -c requirements.prod.txt
-    #   django
 stack-data==0.2.0 \
     --hash=sha256:45692d41bd633a9503a5195552df22b583caf16f0b27c4e58c98d88c8b648e12 \
     --hash=sha256:999762f9c3132308789affa03e9271bbbe947bf78311851f4d485d8402ed858e

@@ -2,15 +2,15 @@ import logging
 from os import environ
 from pathlib import Path
 
-import django.db.models
 import httpretty as _httpretty
 import pytest
 import structlog
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core import management
-from model_bakery import baker
 from structlog.testing import LogCapture
+
+from reports.models import Org
 
 
 User = get_user_model()
@@ -109,7 +109,7 @@ def skip_github_validation(reset_environment_after_test):
     environ["GITHUB_VALIDATION"] = "False"
 
 
-baker.generators.add(
-    "reports.models.AutoPopulatingCharField",
-    baker.generators.default_mapping[django.db.models.CharField],
-)
+@pytest.fixture
+def bennett_org():
+    # we add this in migrations so can rely on it here
+    return Org.objects.get(slug="bennett")
