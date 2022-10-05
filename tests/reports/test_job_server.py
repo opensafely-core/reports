@@ -6,7 +6,7 @@ from django.utils.http import http_date
 from model_bakery import baker
 
 from reports.job_server import JobServerClient, JobServerReport
-from reports.models import Report
+from reports.models import Org, Report
 
 
 @pytest.mark.django_db
@@ -18,7 +18,8 @@ def test_clear_cache_with_non_caching_session(httpretty):
         httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
     )
 
-    report = baker.make(Report, job_server_url=url)
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make(Report, org=org, job_server_url=url)
 
     # check a non-caching version works
     JobServerReport(report, use_cache=False).clear_cache()
@@ -50,7 +51,8 @@ def test_clear_cache_with_caching_session(httpretty):
         ],
     )
 
-    report = baker.make(Report, job_server_url=url)
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make(Report, org=org, job_server_url=url)
 
     wrapper = JobServerReport(report, use_cache=True)
 
@@ -87,7 +89,8 @@ def test_get_html_caches(httpretty):
         ],
     )
 
-    report = baker.make(Report, job_server_url=url)
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make(Report, org=org, job_server_url=url)
     assert len(httpretty.latest_requests()) == 1
 
     job_server_report = JobServerReport(report)
@@ -126,7 +129,8 @@ def test_get_published_html_from_job_server(httpretty):
         ],
     )
 
-    report = baker.make(Report, job_server_url=url)
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make(Report, org=org, job_server_url=url)
     job_server_report = JobServerReport(report)
     assert job_server_report.get_html() == expected_html
 
@@ -175,7 +179,8 @@ def test_last_updated(httpretty):
         ],
     )
 
-    report = baker.make(Report, job_server_url=url)
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make(Report, org=org, job_server_url=url)
     job_server_report = JobServerReport(report)
 
     assert job_server_report.last_updated() == report.last_updated
@@ -210,8 +215,10 @@ def test_report_last_updated_after_fetching(httpretty):
         ],
     )
 
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = baker.make(
         Report,
+        org=org,
         job_server_url=url,
         last_updated=now - timedelta(days=5),
     )

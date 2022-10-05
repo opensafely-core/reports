@@ -186,7 +186,11 @@ class Report(models.Model):
 
     contact_email = models.EmailField(default="team@opensafely.org")
 
-    is_external = models.BooleanField(default=False)
+    external_description = models.TextField(
+        default="",
+        blank=True,
+        help_text="A description of why this report, from an external organisation, is on the OpenSAFELY Reports website.",
+    )
 
     class Meta:
         ordering = ("menu_name",)
@@ -224,6 +228,22 @@ class Report(models.Model):
         if self.doi and self.is_draft:
             raise ValidationError(
                 {"doi": _("DOIs cannot be assigned to draft reports")}
+            )
+
+        if self.external_description and not self.is_external:
+            raise ValidationError(
+                {
+                    "external_description": _(
+                        "An external description should not be set for internal reports."
+                    )
+                }
+            )
+
+        if self.external_description == "" and self.is_external:
+            raise ValidationError(
+                {
+                    "external_description": "An external description must be set for reports from external organisations."
+                }
             )
 
         # A report file must be hosted on GitHub OR job-server, so we need to
@@ -395,6 +415,10 @@ class Report(models.Model):
         be populated when this is used.
         """
         return self.job_server_url == ""
+
+    @property
+    def is_external(self):
+        return self.org.slug != "bennett"
 
 
 class Link(models.Model):

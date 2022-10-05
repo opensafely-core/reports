@@ -7,6 +7,24 @@ from django.utils.translation import ngettext
 from .models import Category, Link, Org, Report
 
 
+class IsExternalFilter(admin.SimpleListFilter):
+    parameter_name = "is_external"
+    title = "is external"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("no", "No"),
+            ("yes", "Yes"),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "no":
+            return queryset.filter(org__slug="bennett")
+
+        if self.value() == "yes":
+            return queryset.exclude(org__slug="bennett")
+
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     fields = ("name",)
@@ -26,8 +44,9 @@ class OrgAdmin(admin.ModelAdmin):
 class ReportAdmin(admin.ModelAdmin):
     inlines = (LinkInline,)
     actions = ["update_cache"]
-    list_filter = ["org", "is_external"]
+    list_filter = ["org", IsExternalFilter]
     fieldsets = (
+        ("Organisation", {"fields": ["org"]}),
         ("Navigation", {"fields": ["menu_name", "category"]}),
         (
             "Report file details (GitHub)",
@@ -79,6 +98,7 @@ class ReportAdmin(admin.ModelAdmin):
             },
         ),
         ("Visibility", {"fields": ["is_draft"]}),
+        ("External", {"fields": ["external_description"]}),
     )
     readonly_fields = ["last_updated", "cache_token", "doi_suffix"]
 

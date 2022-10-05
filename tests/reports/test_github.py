@@ -7,7 +7,7 @@ from model_bakery import baker
 from osgithub import GithubAPIException, GithubClient, GithubRepo
 
 from reports.github import GithubReport
-from reports.models import Report
+from reports.models import Org, Report
 
 
 def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
@@ -61,7 +61,8 @@ def test_get_normal_html_from_github(httpretty):
         commit_dates="2021-04-25T10:00:00Z",
     )
     repo = GithubRepo(GithubClient(use_cache=False), name="test", owner="opensafely")
-    report = baker.make(Report, report_html_file_path="foo.html", repo="test")
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make(Report, org=org, report_html_file_path="foo.html", repo="test")
     github_report = GithubReport(report, repo=repo)
     assert github_report.get_html() == html
 
@@ -135,7 +136,8 @@ def test_get_large_html_from_github(httpretty):
     repo = GithubRepo(
         client=GithubClient(use_cache=False), owner="opensafely", name="test"
     )
-    report = baker.make(Report, repo="test", report_html_file_path="foo.html")
+    org, _ = Org.objects.get_or_create(slug="bennett")
+    report = baker.make(Report, org=org, repo="test", report_html_file_path="foo.html")
     assert report.use_git_blob is False
 
     github_report = GithubReport(report, repo=repo)
@@ -192,8 +194,9 @@ def test_github_report_get_parent_contents_invalid_folder(httpretty):
     repo = GithubRepo(
         client=GithubClient(use_cache=False), owner="opensafely", name="test-repo"
     )
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = baker.make(
-        Report, repo="test-repo", report_html_file_path="test-folder/foo.html"
+        Report, org=org, repo="test-repo", report_html_file_path="test-folder/foo.html"
     )
 
     github_report = GithubReport(report, repo=repo)
@@ -204,8 +207,10 @@ def test_github_report_get_parent_contents_invalid_folder(httpretty):
 @pytest.mark.django_db
 def test_integration():
     """Fetch and extract html from a real repo"""
+    org, _ = Org.objects.get_or_create(slug="bennett")
     report = baker.make(
         Report,
+        org=org,
         repo="output-explorer-test-repo",
         branch="master",
         report_html_file_path="test-outputs/output.html",
