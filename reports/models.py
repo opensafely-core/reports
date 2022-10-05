@@ -31,20 +31,17 @@ def validate_html_filename(value):
 
 class AutoPopulatingCharField(models.CharField):
     def __init__(self, *args, populate_from=None, **kwargs):
-        if populate_from:
-            self._populate_from = populate_from
+        self._populate_from = populate_from
         super().__init__(*args, **kwargs)
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
-        if self._populate_from:
-            kwargs["populate_from"] = self._populate_from
+        kwargs["populate_from"] = self._populate_from
         return name, path, args, kwargs
 
     def clean(self, value, model_instance):
         if not value:
-            if self._populate_from:
-                value = getattr(model_instance, self._populate_from)
+            value = getattr(model_instance, self._populate_from)
         return super().clean(value, model_instance)
 
 
