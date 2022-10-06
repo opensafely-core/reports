@@ -6,7 +6,7 @@
 
 {% block extra_head %}
   {% vite_asset 'assets/src/scripts/notebook.js' %}
-{% endblock %}}
+{% endblock %}
 
 {% block meta %}
   {% with meta_title=report.meta_title meta_description=report.description %}
@@ -21,11 +21,25 @@
     {% cache 86400 report_content report_token %}
       <article class="md:container mx-auto md:px-8">
 
-        <header class="max-w-screen-lg mx-auto md:my-6 bg-white border-b border-gray-200 md:shadow md:rounded-lg">
+        <header class="max-w-screen-lg mx-auto md:my-6 bg-white border-b border-gray-200 overflow-hidden md:shadow md:rounded-lg">
+          {% if report.is_external %}
+            <div class="bg-sky-50 py-8 px-4">
+              <p class="text-center">
+                <span>This is a report produced using the OpenSAFELY by:</span>
+                <a
+                  class="block text-xl font-semibold mt-1 text-oxford-700 underline-offset-2 hover:text-oxford-800 hover:underline"
+                  href="{{ report.org.url }}"
+                >
+                  {{ report.org.name }}
+                </a>
+              </p>
+            </div>
+          {% endif %}
+
           {% if report.title %}
-          <h3 class="py-5 px-4 md:px-6 text-2xl leading-6 font-medium text-gray-900">
+          <h1 class="py-5 px-4 md:px-6 text-2xl leading-6 font-medium text-gray-900">
             {{ report.title }}
-          </h3>
+          </h1>
           {% endif %}
 
           <dl class="border-t border-gray-200 py-5 px-4 lg:px-6 text-gray-900 text-sm">
@@ -109,7 +123,31 @@
           </dl>
         </header>
 
-        <section class="bg-white md:shadow md:rounded-lg max-w-screen-lg mx-auto md:my-6">
+        <section class="bg-white md:shadow md:rounded-lg max-w-screen-lg mx-auto md:my-6 overflow-hidden">
+          {% if report.is_external %}
+            <div class="bg-sky-50 py-8 px-4 md:-mb-6">
+              <div class="flex flex-col md:flex-row mb-8 justify-center items-center gap-8">
+                <img
+                  alt="{{ report.org.name }} logo"
+                  class="max-w-xs rounded overflow-hidden"
+                  src="/uploads/{{ report.org.logo }}"
+                >
+                <p class="text-center md:text-left">
+                  <span>This is a report produced using the OpenSAFELY by:</span>
+                  <a
+                    class="block text-xl font-semibold mt-1 text-oxford-700 underline-offset-2 hover:text-oxford-800 hover:underline"
+                    href="{{ report.org.url }}"
+                  >
+                    {{ report.org.name }}
+                  </a>
+                </p>
+              </div>
+              <div class="prose prose-oxford mx-auto">
+                {{ report.external_description|linebreaks }}
+              </div>
+            </div>
+          {% endif %}
+
           <div class="max-w-4xl mx-auto">
             <div class="prose prose-oxford sm:prose-oxford px-4 md:px-8 sm:max-w-none mx-auto py-4 md:py-8 lg:py-16">
               {% render_html remote %}
