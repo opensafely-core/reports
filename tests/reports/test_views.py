@@ -13,10 +13,8 @@ from .utils import assert_html_equal
 
 
 @pytest.mark.django_db
-def test_landing_view(client, mock_repo_url, bennett_org):
+def test_landing_view(client, bennett_org):
     """Test landing view context"""
-    mock_repo_url("https://github.com/opensafely/test-repo")
-
     assert Report.objects.exists() is False
     # By default we have one Category, set up in the migration
     assert Category.objects.count() == 1
@@ -33,10 +31,8 @@ def test_landing_view(client, mock_repo_url, bennett_org):
 
 
 @pytest.mark.django_db
-def test_landing_view_ordering(client, mock_repo_url, bennett_org):
+def test_landing_view_ordering(client, bennett_org):
     """Test categories and reports in context are alphabetically ordered"""
-    mock_repo_url("https://github.com/opensafely/test-repo")
-
     # By default we have one Category, set up in the migration
     assert Category.objects.count() == 1
     reports_category = Category.objects.first()
@@ -84,14 +80,12 @@ def test_landing_view_ordering(client, mock_repo_url, bennett_org):
 @pytest.mark.django_db
 def test_landing_view_draft_reports_permissions(
     client,
-    mock_repo_url,
     user_with_permission,
     user_attributes,
     expected_category_names,
     expected_report_names,
     bennett_org,
 ):
-    mock_repo_url("https://github.com/opensafely/test-repo")
     user_selection = {
         "no_permission": UserFactory(),
         "has_permission": user_with_permission,
@@ -205,11 +199,7 @@ def test_landing_view_draft_reports_permissions(
         "Only 10 most recent events are shown",
     ],
 )
-def test_landing_view_recent_activity(
-    client, mock_repo_url, bennett_org, reports, expected
-):
-    mock_repo_url("https://github.com/opensafely/test-repo")
-
+def test_landing_view_recent_activity(client, bennett_org, reports, expected):
     for menu_name, report_fields in reports.items():
         ReportFactory(org=bennett_org, menu_name=menu_name, **report_fields)
 
@@ -225,12 +215,8 @@ def test_landing_view_recent_activity(
 
 
 @pytest.mark.django_db
-def test_landing_view_recent_activity_archived_reports(
-    client, bennett_org, mock_repo_url
-):
+def test_landing_view_recent_activity_archived_reports(client, bennett_org):
     """Archived reports do not appear in recent activity unless user is staff"""
-    mock_repo_url("https://github.com/opensafely/test-repo")
-
     report = ReportFactory(
         org=bennett_org, menu_name="test", publication_date="2021-02-01"
     )

@@ -36,9 +36,7 @@ def test_admin_update_cache_action(client, bennett_org, mock_repo_url):
 
 
 @pytest.mark.django_db
-def test_admin_doi_suffix(client, bennett_org, mock_repo_url):
-    mock_repo_url("http://github.com/opensafely/test-repo")
-
+def test_admin_doi_suffix(client, bennett_org):
     report = ReportFactory(org=bennett_org, title="test")
 
     report_admin = ReportAdmin(Report, AdminSite())

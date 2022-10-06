@@ -78,9 +78,7 @@ def test_report_model_validation(
 
 
 @pytest.mark.django_db
-def test_category_manager(bennett_org, mock_repo_url):
-    mock_repo_url("https://github.com/opensafely/test-repo")
-
+def test_category_manager(bennett_org):
     # one category exists already, from the migrations.
     category = Category.objects.first()
     # Create a second category; neither have any associated Reports
@@ -98,9 +96,7 @@ def test_category_manager(bennett_org, mock_repo_url):
 
 
 @pytest.mark.django_db
-def test_category_for_user(bennett_org, user_with_permission, mock_repo_url):
-    mock_repo_url("https://github.com/opensafely/test-repo")
-
+def test_category_for_user(bennett_org, user_with_permission):
     category = CategoryFactory()
     ReportFactory(org=bennett_org, category=category)
     ReportFactory(org=bennett_org, category=CategoryFactory(name="test"), is_draft=True)
@@ -118,9 +114,7 @@ def test_category_for_user(bennett_org, user_with_permission, mock_repo_url):
 
 
 @pytest.mark.django_db
-def test_archive_category_for_user(bennett_org, user_with_permission, mock_repo_url):
-    mock_repo_url("https://github.com/opensafely/test-repo")
-
+def test_archive_category_for_user(bennett_org, user_with_permission):
     # Archive category is never returned in the populated_for_user manager
     category = CategoryFactory()
     ReportFactory(org=bennett_org, category=category)
@@ -318,8 +312,7 @@ def test_cache_refresh_on_report_save(
 
 
 @pytest.mark.django_db
-def test_cache_refresh_on_report_save_with_links(bennett_org, mock_repo_url):
-    mock_repo_url("https://github.com/opensafely/test")
+def test_cache_refresh_on_report_save_with_links(bennett_org):
     report = ReportFactory(
         org=bennett_org,
         title="test",
