@@ -190,21 +190,18 @@ class Report(models.Model):
         help_text="A description of why this report, from an external organisation, is on the OpenSAFELY Reports website.",
     )
 
-    created_at = models.DateTimeField(default=timezone.now, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(
         "gateway.User",
         on_delete=models.PROTECT,
         related_name="reports_created",
-        null=True,
-        blank=True,
     )
 
-    updated_at = models.DateTimeField(null=True)
+    updated_at = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(
         "gateway.User",
         on_delete=models.PROTECT,
         related_name="reports_updated",
-        null=True,
     )
 
     class Meta:

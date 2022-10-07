@@ -1,8 +1,10 @@
 import datetime
 import os
+import sys
 
 from django.core.management.base import BaseCommand
 
+from gateway.models import User
 from reports.models import Category, Org, Report
 
 
@@ -13,6 +15,10 @@ class Command(BaseCommand):
     """  # noqa: A003
 
     def handle(self, *args, **options):
+        user = User.objects.first()
+        if user is None:
+            sys.exit("Please create a user before running this command")
+
         Category.objects.get_or_create(name="Archive")
         category, _ = Category.objects.get_or_create(name="Reports")
 
@@ -27,6 +33,7 @@ class Command(BaseCommand):
         self.ensure_report(
             category,
             bennett,
+            user,
             title="Vaccine Coverage",
             description="Weekly report on COVID-19 vaccination coverage in England",
             repo="output-explorer-test-repo",
@@ -38,6 +45,7 @@ class Command(BaseCommand):
             self.ensure_report(
                 category,
                 bennett,
+                user,
                 title="SRO Measures",
                 description="Changes in key GP measures during the COVID-19 pandemic",
                 repo="SRO-Measures",
@@ -48,6 +56,7 @@ class Command(BaseCommand):
             self.ensure_report(
                 category,
                 bennett,
+                user,
                 title="SRO Measures - Health Inequalities",
                 description="Changes in key GP measures during the pandemic - health inequalities",
                 repo="SRO-Measures",
@@ -55,12 +64,14 @@ class Command(BaseCommand):
                 report_html_file_path="released_outputs/output/sentinel_measures_demographics.html",
             )
 
-    def ensure_report(self, category, org, **kwargs):
+    def ensure_report(self, category, org, user, **kwargs):
         report, created = get_or_create_with_validation(
             Report,
             category=category,
             org=org,
             publication_date=datetime.datetime(year=2021, month=5, day=10),
+            created_by=user,
+            updated_by=user,
             **kwargs,
         )
         if created:

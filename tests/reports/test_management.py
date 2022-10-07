@@ -5,6 +5,8 @@ from django.core import management
 from gateway.models import User
 from reports.models import Link, Report
 
+from ..factories import UserFactory
+
 
 @pytest.mark.django_db
 def test_ensure_superuser():
@@ -31,7 +33,10 @@ def test_ensure_superuser_with_existing_superuser():
 
 
 @pytest.mark.django_db
-def test_populate_reports():
+def test_populate_reports_success():
+    # we need a user for the populate_reports command to work
+    UserFactory()
+
     assert Report.objects.exists() is False
     assert Link.objects.exists() is False
     management.call_command("populate_reports")
@@ -53,6 +58,13 @@ def test_populate_reports():
     management.call_command("populate_reports")
     assert Report.objects.count() == 1
     assert report.links.count() == 1
+
+
+@pytest.mark.django_db
+def test_populate_reports_with_no_user():
+    msg = "Please create a user before running this command"
+    with pytest.raises(SystemExit, match=msg):
+        management.call_command("populate_reports")
 
 
 @pytest.mark.django_db
