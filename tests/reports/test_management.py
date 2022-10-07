@@ -1,12 +1,9 @@
 import pytest
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core import management
 
+from gateway.models import User
 from reports.models import Link, Report
-
-
-User = get_user_model()
 
 
 @pytest.mark.django_db

@@ -62,4 +62,4 @@ services:
       - ../.test.env
     # override entrypoint and command
     entrypoint: /app/docker/entrypoints/test.sh
-    command: python -m pytest --cov=. --cov-report html --cov-report term-missing:skip-covered
+    command: bash -c "coverage run --branch --source=gateway,reports,services,tests --module pytest && coverage report || coverage html"

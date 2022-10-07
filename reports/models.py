@@ -31,20 +31,17 @@ def validate_html_filename(value):
 
 class AutoPopulatingCharField(models.CharField):
     def __init__(self, *args, populate_from=None, **kwargs):
-        if populate_from:
-            self._populate_from = populate_from
+        self._populate_from = populate_from
         super().__init__(*args, **kwargs)
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
-        if self._populate_from:
-            kwargs["populate_from"] = self._populate_from
+        kwargs["populate_from"] = self._populate_from
         return name, path, args, kwargs
 
     def clean(self, value, model_instance):
         if not value:
-            if self._populate_from:
-                value = getattr(model_instance, self._populate_from)
+            value = getattr(model_instance, self._populate_from)
         return super().clean(value, model_instance)
 
 
@@ -441,7 +438,7 @@ class Link(models.Model):
         verbose_name_plural = "Related Links (note that a link to the source code repo will be automatically generated on save)"
 
     def __str__(self):
-        return f"{self.url}"
+        return self.url
 
     def save(self, *args, **kwargs):
         # For links added or edited after a report's initial save, check if the link has changed and refresh the report's
@@ -460,12 +457,12 @@ class Link(models.Model):
         if report_has_links_pre_save:
             initial_report_links = self.report.links.all()
             this_link = initial_report_links.filter(id=self.id)
-            if not this_link.exists():
+            if not this_link.exists():  # pragma: no cover
                 logger.info("Link added to report; refreshing report cache token")
                 self.report.refresh_cache_token()
             else:
                 this_link_from_report = this_link.first()
-                if any(
+                if any(  # pragma: no cover
                     getattr(self, field) != value
                     for field, value in model_to_dict(this_link_from_report).items()
                 ):

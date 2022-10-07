@@ -3,14 +3,14 @@ from datetime import timedelta
 import pytest
 from django.utils import timezone
 from django.utils.http import http_date
-from model_bakery import baker
 
 from reports.job_server import JobServerClient, JobServerReport
-from reports.models import Org, Report
+
+from ..factories import ReportFactory
 
 
 @pytest.mark.django_db
-def test_clear_cache_with_non_caching_session(httpretty):
+def test_clear_cache_with_non_caching_session(httpretty, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
 
     # Mock the job-server file_exists() request
@@ -18,15 +18,20 @@ def test_clear_cache_with_non_caching_session(httpretty):
         httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
     )
 
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(Report, org=org, job_server_url=url)
+    report = ReportFactory(
+        org=bennett_org,
+        job_server_url=url,
+        repo="",
+        branch="",
+        report_html_file_path="",
+    )
 
     # check a non-caching version works
     JobServerReport(report, use_cache=False).clear_cache()
 
 
 @pytest.mark.django_db
-def test_clear_cache_with_caching_session(httpretty):
+def test_clear_cache_with_caching_session(httpretty, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -51,8 +56,13 @@ def test_clear_cache_with_caching_session(httpretty):
         ],
     )
 
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(Report, org=org, job_server_url=url)
+    report = ReportFactory(
+        org=bennett_org,
+        job_server_url=url,
+        repo="",
+        branch="",
+        report_html_file_path="",
+    )
 
     wrapper = JobServerReport(report, use_cache=True)
 
@@ -64,7 +74,7 @@ def test_clear_cache_with_caching_session(httpretty):
 
 
 @pytest.mark.django_db
-def test_get_html_caches(httpretty):
+def test_get_html_caches(httpretty, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -89,8 +99,13 @@ def test_get_html_caches(httpretty):
         ],
     )
 
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(Report, org=org, job_server_url=url)
+    report = ReportFactory(
+        org=bennett_org,
+        job_server_url=url,
+        repo="",
+        branch="",
+        report_html_file_path="",
+    )
     assert len(httpretty.latest_requests()) == 1
 
     job_server_report = JobServerReport(report)
@@ -103,7 +118,7 @@ def test_get_html_caches(httpretty):
 
 
 @pytest.mark.django_db
-def test_get_published_html_from_job_server(httpretty):
+def test_get_published_html_from_job_server(httpretty, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -129,8 +144,13 @@ def test_get_published_html_from_job_server(httpretty):
         ],
     )
 
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(Report, org=org, job_server_url=url)
+    report = ReportFactory(
+        org=bennett_org,
+        job_server_url=url,
+        repo="",
+        branch="",
+        report_html_file_path="",
+    )
     job_server_report = JobServerReport(report)
     assert job_server_report.get_html() == expected_html
 
@@ -154,7 +174,7 @@ def test_get_unpublished_html_from_job_server(httpretty):
 
 
 @pytest.mark.django_db
-def test_last_updated(httpretty):
+def test_last_updated(httpretty, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -179,15 +199,20 @@ def test_last_updated(httpretty):
         ],
     )
 
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(Report, org=org, job_server_url=url)
+    report = ReportFactory(
+        org=bennett_org,
+        job_server_url=url,
+        repo="",
+        branch="",
+        report_html_file_path="",
+    )
     job_server_report = JobServerReport(report)
 
     assert job_server_report.last_updated() == report.last_updated
 
 
 @pytest.mark.django_db
-def test_report_last_updated_after_fetching(httpretty):
+def test_report_last_updated_after_fetching(httpretty, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -215,12 +240,13 @@ def test_report_last_updated_after_fetching(httpretty):
         ],
     )
 
-    org, _ = Org.objects.get_or_create(slug="bennett")
-    report = baker.make(
-        Report,
-        org=org,
+    report = ReportFactory(
+        org=bennett_org,
         job_server_url=url,
         last_updated=now - timedelta(days=5),
+        repo="",
+        branch="",
+        report_html_file_path="",
     )
 
     JobServerReport(report).get_html()
