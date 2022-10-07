@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.models import model_to_dict
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
@@ -187,6 +188,23 @@ class Report(models.Model):
         default="",
         blank=True,
         help_text="A description of why this report, from an external organisation, is on the OpenSAFELY Reports website.",
+    )
+
+    created_at = models.DateTimeField(default=timezone.now, null=True)
+    created_by = models.ForeignKey(
+        "gateway.User",
+        on_delete=models.PROTECT,
+        related_name="reports_created",
+        null=True,
+        blank=True,
+    )
+
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.ForeignKey(
+        "gateway.User",
+        on_delete=models.PROTECT,
+        related_name="reports_updated",
+        null=True,
     )
 
     class Meta:
