@@ -44,7 +44,8 @@ class OrgAdmin(admin.ModelAdmin):
 class ReportAdmin(admin.ModelAdmin):
     inlines = (LinkInline,)
     actions = ["update_cache"]
-    list_filter = ["org", IsExternalFilter]
+    list_display = ("__str__", "updated_at", "updated_by")
+    list_filter = ["org", IsExternalFilter, "created_by", "updated_by"]
     fieldsets = (
         ("Organisation", {"fields": ["org"]}),
         ("Navigation", {"fields": ["menu_name", "category"]}),
@@ -99,8 +100,20 @@ class ReportAdmin(admin.ModelAdmin):
         ),
         ("Visibility", {"fields": ["is_draft"]}),
         ("External", {"fields": ["external_description"]}),
+        (
+            "Auditing",
+            {"fields": ["created_at", "created_by", "updated_at", "updated_by"]},
+        ),
     )
-    readonly_fields = ["last_updated", "cache_token", "doi_suffix"]
+    readonly_fields = [
+        "cache_token",
+        "created_at",
+        "created_by",
+        "doi_suffix",
+        "last_updated",
+        "updated_at",
+        "updated_by",
+    ]
 
     @admin.action(description="Force a cache update")
     def update_cache(self, request, queryset):
