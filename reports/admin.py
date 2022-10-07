@@ -140,4 +140,13 @@ class ReportAdmin(admin.ModelAdmin):
         else:
             return "Save to generate DOI suffix"
 
+    def save_model(self, request, obj, form, change):
+        if obj.created_by_id is None:
+            obj.created_by = request.user
+
+        # ensure updated_by is both set on model creation _and_ update
+        obj.updated_by = request.user
+
+        super().save_model(request, obj, form, change)
+
     doi_suffix.short_description = "Generated DOI suffix"
