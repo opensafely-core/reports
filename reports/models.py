@@ -450,7 +450,7 @@ class Link(models.Model):
     url = models.URLField()
 
     class Meta:
-        verbose_name_plural = "Related Links (note that a link to the source code repo will be automatically generated on save)"
+        verbose_name_plural = "Related Links"
 
     def __str__(self):
         return self.url
