@@ -178,7 +178,7 @@ class Report(models.Model):
     # to avoid re-calling the contents endpoint if we know it will fail
     use_git_blob = models.BooleanField(default=False)
     is_draft = models.BooleanField(
-        default=False,
+        default=True,
         help_text="Draft reports are only visible by a logged in user with relevant permissions",
     )
 
