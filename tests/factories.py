@@ -31,7 +31,9 @@ class ReportFactory(factory.django.DjangoModelFactory):
         model = Report
 
     category = factory.SubFactory("tests.factories.CategoryFactory")
+    created_by = factory.SubFactory("tests.factories.UserFactory")
     org = factory.SubFactory("tests.factories.OrgFactory")
+    updated_by = factory.SubFactory("tests.factories.UserFactory")
 
     title = factory.Sequence(lambda n: f"report-{n}")
     description = factory.Sequence(lambda n: f"report-{n}")

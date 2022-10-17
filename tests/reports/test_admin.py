@@ -3,11 +3,12 @@ from hashlib import shake_256
 import pytest
 from django.contrib.admin import AdminSite
 from django.urls import reverse
+from django.utils import timezone
 
 from reports.admin import IsExternalFilter, ReportAdmin
 from reports.models import Report
 
-from ..factories import ReportFactory, UserFactory
+from ..factories import CategoryFactory, ReportFactory, UserFactory
 
 
 @pytest.mark.django_db
@@ -49,6 +50,44 @@ def test_admin_doi_suffix(client, bennett_org):
     report1 = ReportFactory(org=bennett_org, title="test")
     assert report1.slug != report.slug
     assert report_admin.doi_suffix(report) != report_admin.doi_suffix(report1)
+
+
+@pytest.mark.django_db
+def test_reportadmin_save_model(rf, bennett_org):
+    report_admin = ReportAdmin(Report, AdminSite())
+
+    # use a Report instance here so we don't save it at first
+    report = Report(
+        category=CategoryFactory(),
+        org=bennett_org,
+        title="testing-report",
+        description="test",
+        publication_date=timezone.now(),
+        repo="test-repo",
+        branch="main",
+        report_html_file_path="report.html",
+        updated_by=UserFactory(),
+    )
+
+    request = rf.get("/")
+
+    # create a report
+    request.user = UserFactory()
+    report_admin.save_model(request, report, None, False)
+
+    assert report.created_by
+    assert report.updated_by
+
+    first_created_by = report.created_by
+    first_updated_by = report.updated_by
+
+    # update a report
+    request.user = UserFactory()
+    report_admin.save_model(request, report, None, True)
+
+    # the creator should stay the same, but the updater should change
+    assert report.created_by == first_created_by
+    assert report.updated_by != first_updated_by
 
 
 @pytest.mark.django_db
