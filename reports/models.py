@@ -178,7 +178,7 @@ class Report(models.Model):
     # to avoid re-calling the contents endpoint if we know it will fail
     use_git_blob = models.BooleanField(default=False)
     is_draft = models.BooleanField(
-        default=False,
+        default=True,
         help_text="Draft reports are only visible by a logged in user with relevant permissions",
     )
 
@@ -450,7 +450,7 @@ class Link(models.Model):
     url = models.URLField()
 
     class Meta:
-        verbose_name_plural = "Related Links (note that a link to the source code repo will be automatically generated on save)"
+        verbose_name_plural = "Related Links"
 
     def __str__(self):
         return self.url

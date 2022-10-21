@@ -41,6 +41,8 @@ class ReportFactory(factory.django.DjangoModelFactory):
     repo = "test-repo"
     report_html_file_path = "report.html"
 
+    is_draft = False
+
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:

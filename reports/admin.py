@@ -48,7 +48,7 @@ class ReportAdmin(admin.ModelAdmin):
     list_filter = ["org", IsExternalFilter, "created_by", "updated_by"]
     fieldsets = (
         ("Organisation", {"fields": ["org"]}),
-        ("Navigation", {"fields": ["menu_name", "category"]}),
+        ("Navigation", {"fields": ["category", "menu_name"]}),
         (
             "Report file details (GitHub)",
             {
