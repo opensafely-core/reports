@@ -154,7 +154,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # User uploaded files
 # https://docs.djangoproject.com/en/4.1/topics/files/
-MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_ROOT = Path(env.str("MEDIA_STORAGE", default="uploads"))
 MEDIA_URL = "/uploads/"
 
 
