@@ -127,3 +127,14 @@ Run a command in the dev docker containter
 ```sh
 just docker-run <command>
 ```
+
+
+## Rotating the GitHub token
+1. Log into the `opensafely-readonly` GitHub account (credentials are in Bitwarden).
+1. Got to the [Personal access tokens (classic) page](https://github.com/settings/tokens).
+1. Click on `reports-private-repo-token`.
+1. Click "Regenerate token".
+1. Set the expiry to 90 days.
+1. Copy the new token.
+1. ssh into `dokku3.ebmdatalab.net`
+1. Run: `dokku config:set reports GITHUB_TOKEN=<the new token>`
