@@ -4,10 +4,6 @@
 #
 #    pip-compile --generate-hashes --output-file=requirements.prod.txt requirements.prod.in
 #
-appdirs==1.4.4 \
-    --hash=sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41 \
-    --hash=sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128
-    # via requests-cache
 asgiref==3.6.0 \
     --hash=sha256:71e68008da809b957b7ee4b43dbccff33d1b23519fb8344e33f049897077afac \
     --hash=sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506
@@ -91,9 +87,9 @@ brotli==1.0.9 \
 bs4==0.0.1 \
     --hash=sha256:36ecea1fd7cc5c0c6e4a1ff075df26d50da647b75376626cc186e2212886dd3a
     # via -r requirements.prod.in
-cattrs==1.10.0 \
-    --hash=sha256:211800f725cdecedcbcf4c753bbd22d248312b37d130f06045434acb7d9b34e1 \
-    --hash=sha256:35dd9063244263e63bd0bd24ea61e3015b00272cead084b2c40d788b0f857c46
+cattrs==22.2.0 \
+    --hash=sha256:bc12b1f0d000b9f9bee83335887d532a1d3e99a833d1bf0882151c97d3e68c21 \
+    --hash=sha256:f0eed5642399423cf656e7b66ce92cdc5b963ecafd041d1b24d136fdde7acf6d
     # via requests-cache
 certifi==2021.10.8 \
     --hash=sha256:78884e7c1d4b00ce3cea67b44566851c4343c120abd683433ce934a68ea58872 \
@@ -253,6 +249,10 @@ osgithub==0.3.3 \
     --hash=sha256:6e4d2367e14b87d415e2c96e4d47331a440dc7a72ef2ab364320072c16e837ea \
     --hash=sha256:99e7a46529664928006c98a4129e1430f0b6aba20106d278b88a8c17cdc76ff9
     # via -r requirements.prod.in
+platformdirs==3.2.0 \
+    --hash=sha256:d5b638ca397f25f979350ff789db335903d7ea010ab28903f57b27e1b16c2b08 \
+    --hash=sha256:ebe11c0d7a805086e99506aa331612429a72ca7cd52a1f0d277dc4adc20cb10e
+    # via requests-cache
 python-dotenv==0.19.2 \
     --hash=sha256:32b2bdc1873fd3a3c346da1c6db83d0053c3c62f28f1f38516070c4c8971b1d3 \
     --hash=sha256:a5de49a31e953b45ff2d2fd434bbc2670e8db5273606c1e737cc6b93eff3655f
@@ -263,9 +263,9 @@ requests==2.27.1 \
     # via
     #   osgithub
     #   requests-cache
-requests-cache==0.9.6 \
-    --hash=sha256:7397c0effb7e824c21e3f9fca8293cad01eb40152be67e53093f5399acd2d251 \
-    --hash=sha256:b1672c99ccce9ee53b49504c9f6a6d6de5cf6a9956bda46cf7dda0a4a5fc1bb5
+requests-cache==1.0.1 \
+    --hash=sha256:55c5765c26fd98a38c633d6e3931a507b7708cdd07c0afb48773d0718ac15969 \
+    --hash=sha256:d42e6c2f11de54e6a134c9a00c5ca2a3c8edde3c3f2bdfd942586fafa8990e14
     # via
     #   -r requirements.prod.in
     #   osgithub
