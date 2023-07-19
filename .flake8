@@ -1,10 +1,11 @@
 [flake8]
 exclude = .direnv,.venv,venv
-ignore = \
-    E501 \ # line too long (black fixes long lines, except for long strings which may benefit from being long (eg URLs))
-    W503   # line break before binary operator (black disagrees)
+ignore =
+    # line too long (black fixes long lines, except for long strings which may benefit from being long (eg URLs))
+    E501
+    # line break before binary operator (black disagrees)
+    W503
 max-line-length = 88
-
 per-file-ignores =
-  manage.py:INP001
-  gunicorn.conf.py:INP001
+    gunicorn.conf.py:INP001
+    manage.py:INP001
