@@ -15,7 +15,6 @@ def add_default_category(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0005_category"),
     ]

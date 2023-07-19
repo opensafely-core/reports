@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0032_require_created_and_updated_fields"),
     ]

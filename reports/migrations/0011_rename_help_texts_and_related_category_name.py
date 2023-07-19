@@ -7,7 +7,6 @@ import reports.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0010_rename_ouput_html_file_path_report_html_file_path"),
     ]

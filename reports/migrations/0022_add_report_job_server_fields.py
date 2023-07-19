@@ -6,7 +6,6 @@ import reports.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0021_report_doi_verbose_name"),
     ]

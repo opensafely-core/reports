@@ -60,7 +60,6 @@ def remove_audit_data_from_reports(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0030_add_created_and_updated_fields"),
     ]

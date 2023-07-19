@@ -14,7 +14,6 @@ def populate_title_from_menu_name(apps, _):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0015_report_contact_email"),
     ]
