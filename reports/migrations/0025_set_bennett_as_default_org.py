@@ -22,7 +22,6 @@ def remove_bennett_org(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0024_add_org_model_and_link_to_reports"),
     ]
