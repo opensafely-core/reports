@@ -147,6 +147,7 @@ STATIC_URL = "/static/"
 DJANGO_VITE_ASSETS_PATH = "/static/"
 DJANGO_VITE_DEV_MODE = env.bool("DJANGO_VITE_DEV_MODE", default=False)
 DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "staticfiles" / "manifest.json"
+DJANGO_VITE_DEV_SERVER_PORT = 5173
 
 # Insert Whitenoise Middleware.
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -202,8 +203,8 @@ CSP_MANIFEST_SRC = ["'self'"]
 
 # configure django-csp to work with Vite when using it in dev mode
 if DJANGO_VITE_DEV_MODE:
-    CSP_CONNECT_SRC = ["ws://localhost:3000/static/"]
-    CSP_SCRIPT_SRC_ELEM = ["'self'", "http://localhost:3000"]
+    CSP_CONNECT_SRC = ["ws://localhost:5173/static/"]
+    CSP_SCRIPT_SRC_ELEM = ["'self'", "http://localhost:5173"]
     CSP_STYLE_SRC_ELEM = ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"]
 
 
