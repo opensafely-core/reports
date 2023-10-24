@@ -266,9 +266,9 @@ pygments==2.11.2 \
     --hash=sha256:44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65 \
     --hash=sha256:4e426f72023d88d03b2fa258de560726ce890ff3b630f88c21cbb8b2503b8c6a
     # via ipython
-pytest==7.4.0 \
-    --hash=sha256:78bf16451a2eb8c7a2ea98e32dc119fd2aa758f1d5d66dbf0a59d69a3969df32 \
-    --hash=sha256:b4bf8c45bd59934ed84001ad51e11b4ee40d40a1229d2c79f9c592b0a3f6bd8a
+pytest==7.4.2 \
+    --hash=sha256:1d881c6124e08ff0a1bb75ba3ec0bfd8b5354a01c194ddd5a0a870a48d99b002 \
+    --hash=sha256:a766259cfab564a2ad52cb1aae1b881a75c3eb7e34ca3779697c23ed47c47069
     # via
     #   pytest-django
     #   pytest-env
@@ -278,9 +278,9 @@ pytest-django==4.5.2 \
     --hash=sha256:c60834861933773109334fe5a53e83d1ef4828f2203a1d6a0fa9972f4f75ab3e \
     --hash=sha256:d9076f759bb7c36939dbdd5ae6633c18edfc2902d1a69fdbefd2426b970ce6c2
     # via -r requirements.dev.in
-pytest-env==1.0.1 \
-    --hash=sha256:603fe216e8e03a5d134989cb41317c59aabef013d2250c71b864ab0798fbe6f6 \
-    --hash=sha256:e8faf927c6fcdbbc8fe3317506acc116713c9708d01652a0fd945f9ae27b71aa
+pytest-env==1.1.0 \
+    --hash=sha256:33a630a3db07068528c16f061350664d0146519824bd8c87b4cb120fff202ad9 \
+    --hash=sha256:86f2dbc05a78cfbb42a4be19e04fd7b4ef364127d0118af2f59b4dcccfd773bf
     # via -r requirements.dev.in
 pytest-freezegun==0.4.2 \
     --hash=sha256:19c82d5633751bf3ec92caa481fb5cffaac1787bd485f0df6436fd6242176949 \
@@ -354,6 +354,7 @@ tomli==2.0.1 \
     #   pep517
     #   pip-tools
     #   pytest
+    #   pytest-env
 traitlets==5.1.1 \
     --hash=sha256:059f456c5a7c1c82b98c2e8c799f39c9b8128f6d0d46941ee118daace9eb70c7 \
     --hash=sha256:2d313cc50a42cd6c277e7d7dc8d4d7fedd06a2c215f78766ae7b1a66277e0033
