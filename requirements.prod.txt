@@ -147,9 +147,9 @@ django-structlog==6.0.0 \
     --hash=sha256:07d9b35cdc3aca6de1daacb0ad7a7c58e0506a858687844ff770eb4bde5d0236 \
     --hash=sha256:233a5cc81981c547a702e141d1ece89a02a47e8127a8d0c80c8d9add4324dea2
     # via -r requirements.prod.in
-django-vite==3.0.0 \
-    --hash=sha256:01407f806590872735f4ed87c79684e063942dba51838fc13f9056ebff10940c \
-    --hash=sha256:a2326f14d7aeba29e2db5ac4bcf27b0437810590d25f1b99a7fd20c5d1d312a2
+django-vite==3.0.1 \
+    --hash=sha256:60fbc743ce8187c545053afec0b8fe7f8e1633619c4e0433ebc4dd4f65d0d038 \
+    --hash=sha256:698977de63124305b0e3cf4afae5f0ffaa5ef041a336b1586b19579787dacb63
     # via -r requirements.prod.in
 environs[django]==9.5.0 \
     --hash=sha256:1e549569a3de49c05f856f40bce86979e7d5ffbbc4398e7f338574c220189124 \
