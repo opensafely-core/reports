@@ -1,5 +1,5 @@
-export DOCKER_USERID := `id -u`
-export DOCKER_GROUPID := `id -g`
+export DEV_USERID := `id -u`
+export DEV_GROUPID := `id -g`
 
 # Load .env files by default
 set dotenv-load := true
