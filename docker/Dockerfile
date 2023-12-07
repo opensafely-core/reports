@@ -150,6 +150,12 @@ LABEL org.opencontainers.image.created=$BUILD_DATE
 ARG GITREF=unknown
 LABEL org.opencontainers.image.revision=$GITREF
 
+# 10001 is jobrunner (used by job-server on the opensafely dokku server).
+# Although this runs on the bennett dokku server, choose 10002 to avoid
+# accidents in the future.
+ARG USERID=10002
+ARG GROUPID=10002
+USER ${USERID}:${GROUPID}
 
 ##################################################
 #
@@ -169,3 +175,8 @@ RUN --mount=type=cache,target=/root/.cache \
 
 # Override ENTRYPOINT rather than CMD so we can pass arbitrary commands to the entrypoint script
 ENTRYPOINT ["/app/docker/entrypoints/dev.sh"]
+
+# Run as non root user. Required when building image.
+ARG USERID
+ARG GROUPID
+USER ${USERID}:${GROUPID}
