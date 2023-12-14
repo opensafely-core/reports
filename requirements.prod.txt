@@ -135,17 +135,17 @@ django-extensions==3.2.3 \
     --hash=sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a \
     --hash=sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401
     # via -r requirements.prod.in
-django-ipware==4.0.2 \
-    --hash=sha256:602a58325a4808bd19197fef2676a0b2da2df40d0ecf21be414b2ff48c72ad05 \
-    --hash=sha256:878dbb06a87e25550798e9ef3204ed70a200dd8b15e47dcef848cf08244f04c9
+django-ipware==6.0.3 \
+    --hash=sha256:0f682dd4f3afef7909bb3dd396949c355982539bd4392d4e9df0b0b31604484d \
+    --hash=sha256:e54b6050af037406f05327890e742f99451dce96951223dea9cdd824e95859b6
     # via django-structlog
 django-permissions-policy==4.18.0 \
     --hash=sha256:36aeb2ab7e694b8db5a60780c0325608014bbfd10df16cd51ef3b1522f922d23 \
     --hash=sha256:a6bfd94910f95c0b1c911dbeda6ad340902d3c9caac78d1c20c76f9a4b27929f
     # via -r requirements.prod.in
-django-structlog==6.0.1 \
-    --hash=sha256:75ec2385b817d10fffaccc4f4280193ae364b6839f4dda1f6639b3f0c13435ea \
-    --hash=sha256:ce52d54b952a7a56c185141409f618e0aa6775653e4c947213bca3e7911dd5f0
+django-structlog==7.0.0 \
+    --hash=sha256:14c393d35224c1ce5e9d5890a177067afbb9be089bb053e5d3c9b970b071900a \
+    --hash=sha256:64ad349b17089799f96ed2ac3cf44a045105e8e1453e7113485f9e0c6d8af7b8
     # via -r requirements.prod.in
 django-vite==3.0.1 \
     --hash=sha256:60fbc743ce8187c545053afec0b8fe7f8e1633619c4e0433ebc4dd4f65d0d038 \
@@ -272,6 +272,10 @@ python-dotenv==0.19.2 \
     --hash=sha256:32b2bdc1873fd3a3c346da1c6db83d0053c3c62f28f1f38516070c4c8971b1d3 \
     --hash=sha256:a5de49a31e953b45ff2d2fd434bbc2670e8db5273606c1e737cc6b93eff3655f
     # via environs
+python-ipware==2.0.1 \
+    --hash=sha256:1992920ef553165dfa35e6ea5a90762f64f3b943cc22ee6b4ec02e2c86d31178 \
+    --hash=sha256:9ba4805152ebb85ad5b53797185cd1ce6231e1db60155834f326c8cd61e8af34
+    # via django-ipware
 requests==2.27.1 \
     --hash=sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61 \
     --hash=sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d
