@@ -321,6 +321,14 @@ class Report(models.Model):
 
         # confirm the file exists at the given location
         if not empty_job_server_url:
+            # ensure job-server URLs end in a slash.  We're following redirects
+            # inside JobServerClient.get_file(), and requests-cache keys the
+            # responses it caches to the URL used in the final request.
+            # job-server is configured to redirect to URLs with a trailing
+            # slash, so lets ensure we always use those.
+            if not self.job_server_url.endswith("/"):
+                self.job_server_url += "/"
+
             job_server_report = JobServerReport(self, use_cache=False)
             if not job_server_report.file_exists():
                 raise ValidationError(
