@@ -11,7 +11,7 @@ from ..factories import ReportFactory
 
 @pytest.mark.django_db
 def test_clear_cache_with_non_caching_session(httpretty, bennett_org):
-    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
     httpretty.register_uri(
@@ -37,7 +37,7 @@ def test_clear_cache_with_caching_session(httpretty, bennett_org):
         <body><p>foo</p></body>
     </html>
     """
-    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
     httpretty.register_uri(
@@ -80,7 +80,7 @@ def test_get_html_caches(httpretty, bennett_org):
         <body><p>foo</p></body>
     </html>
     """
-    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
     httpretty.register_uri(
@@ -124,7 +124,7 @@ def test_get_published_html_from_job_server(httpretty, bennett_org):
         <body><p>foo</p></body>
     </html>
     """
-    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
     httpretty.register_uri(
@@ -180,7 +180,7 @@ def test_last_updated(httpretty, bennett_org):
         <body><p>foo</p></body>
     </html>
     """
-    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
     httpretty.register_uri(
@@ -218,7 +218,7 @@ def test_report_last_updated_after_fetching(httpretty, bennett_org):
         <body><p>foo</p></body>
     </html>
     """
-    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id"
+    url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
     httpretty.register_uri(
