@@ -24,6 +24,8 @@ class IsExternalFilter(admin.SimpleListFilter):
         if self.value() == "yes":
             return queryset.exclude(org__slug="bennett")
 
+        return queryset
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
