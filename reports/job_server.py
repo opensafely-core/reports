@@ -78,7 +78,6 @@ class JobServerReport:
     def __init__(self, report, use_cache=True):
         self.client = JobServerClient(use_cache=use_cache)
         self.report = report
-        self._fetched_html = None
 
     def clear_cache(self):
         """Clear the cache for the Report's job-server URL"""
@@ -93,20 +92,16 @@ class JobServerReport:
         Fetches a report html file (an exported jupyter notebook) from a
         job-server output URL based on `report`, a Report model instance.
         """
-        if self._fetched_html is not None:
-            return self._fetched_html
+        content, last_updated = self.client.get_file(self.report.job_server_url)
 
-        file, last_updated = self.client.get_file(self.report.job_server_url)
-
-        # convert to a date for Report.last_updated
+        # update Report.last_updated (a datetime.date) if the file on
+        # job-server has been updated
         job_server_last_updated = last_updated.date()
         if self.report.last_updated != job_server_last_updated:
             self.report.last_updated = job_server_last_updated
             self.report.save()
 
-        self._fetched_html = file
-
-        return self._fetched_html
+        return content
 
     @property
     def is_published(self):
