@@ -7,6 +7,26 @@ from django.utils.translation import ngettext
 from .models import Category, Link, Org, Report
 
 
+class HostingFilter(admin.SimpleListFilter):
+    parameter_name = "hosted_on"
+    title = "hosting location"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("github", "GitHub"),
+            ("job-server", "Job Server"),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "github":
+            return queryset.filter(job_server_url="")
+
+        if self.value() == "job-server":
+            return queryset.exclude(job_server_url="")
+
+        return queryset
+
+
 class IsExternalFilter(admin.SimpleListFilter):
     parameter_name = "is_external"
     title = "is external"
@@ -23,6 +43,8 @@ class IsExternalFilter(admin.SimpleListFilter):
 
         if self.value() == "yes":
             return queryset.exclude(org__slug="bennett")
+
+        return queryset
 
 
 @admin.register(Category)
@@ -45,7 +67,7 @@ class ReportAdmin(admin.ModelAdmin):
     inlines = (LinkInline,)
     actions = ["update_cache"]
     list_display = ("__str__", "updated_at", "updated_by")
-    list_filter = ["org", IsExternalFilter, "created_by", "updated_by"]
+    list_filter = ["org", IsExternalFilter, HostingFilter, "created_by", "updated_by"]
     fieldsets = (
         ("Organisation", {"fields": ["org"]}),
         ("Navigation", {"fields": ["category", "menu_name"]}),

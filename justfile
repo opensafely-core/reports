@@ -159,8 +159,8 @@ dev-setup: devenv
 
 
 # Run the dev project
-run: _dev-config assets
-    $BIN/python manage.py runserver localhost:8000
+run port="8000": _dev-config assets
+    $BIN/python manage.py runserver localhost:{{ port }}
 
 
 # blow away the local database and repopulate it

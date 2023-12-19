@@ -5,7 +5,7 @@ from django.contrib.admin import AdminSite
 from django.urls import reverse
 from django.utils import timezone
 
-from reports.admin import IsExternalFilter, ReportAdmin
+from reports.admin import HostingFilter, IsExternalFilter, ReportAdmin
 from reports.models import Report
 
 from ..factories import CategoryFactory, ReportFactory, UserFactory
@@ -88,6 +88,36 @@ def test_reportadmin_save_model(rf, bennett_org):
     # the creator should stay the same, but the updater should change
     assert report.created_by == first_created_by
     assert report.updated_by != first_updated_by
+
+
+@pytest.mark.django_db
+def test_hostingfilter(rf, bennett_org):
+    report1 = ReportFactory(
+        org=bennett_org,
+        repo="test-repo",
+        branch="main",
+        report_html_file_path="report.html",
+    )
+    report2 = ReportFactory(
+        org=bennett_org,
+        is_draft=True,
+        job_server_url="http://example.com",
+        repo="",
+        report_html_file_path="",
+    )
+
+    request = rf.get("/")
+    report_admin = ReportAdmin(Report, AdminSite())
+
+    qs = Report.objects.all()
+
+    # github
+    f = HostingFilter(request, {"hosted_on": "github"}, Report, report_admin)
+    assert list(f.queryset(request, qs)) == [report1]
+
+    # job-server
+    f = HostingFilter(request, {"hosted_on": "job-server"}, Report, report_admin)
+    assert list(f.queryset(request, qs)) == [report2]
 
 
 @pytest.mark.django_db
