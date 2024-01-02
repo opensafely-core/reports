@@ -262,6 +262,57 @@ def test_report_with_unpublished_output_and_published(bennett_org, httpretty):
         )
 
 
+@pytest.mark.django_db
+def test_report_with_published_job_server_url_adds_trailing_slash(
+    bennett_org, httpretty
+):
+    httpretty.register_uri(
+        httpretty.HEAD, "http://example.com/published/foo", status=200
+    )
+    httpretty.register_uri(
+        httpretty.HEAD, "http://example.com/published/foo/", status=200
+    )
+
+    report = ReportFactory(
+        org=bennett_org,
+        is_draft=False,
+        repo="",
+        branch="",
+        report_html_file_path="",
+        job_server_url="http://example.com/published/foo",
+    )
+    assert report.job_server_url.endswith("/")
+
+    report = ReportFactory(
+        org=bennett_org,
+        is_draft=False,
+        repo="",
+        branch="",
+        report_html_file_path="",
+        job_server_url="http://example.com/published/foo/",
+    )
+    assert report.job_server_url.endswith("/")
+
+
+@pytest.mark.django_db
+def test_report_with_unpublished_job_server_url_does_not_add_trailing_slash(
+    bennett_org, httpretty
+):
+    httpretty.register_uri(
+        httpretty.HEAD, "http://example.com/api/v2/releases/file/foo", status=200
+    )
+
+    report = ReportFactory(
+        org=bennett_org,
+        is_draft=True,
+        repo="",
+        branch="",
+        report_html_file_path="",
+        job_server_url="http://example.com/api/v2/releases/file/foo",
+    )
+    assert not report.job_server_url.endswith("/")
+
+
 @pytest.mark.parametrize(
     "update_fields,cache_token_changed",
     [
