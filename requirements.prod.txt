@@ -151,9 +151,9 @@ django-vite==3.0.2 \
     --hash=sha256:368f9e65f95abef05c5b95dde78a6597dfeefdb4be9c43167227b8ed1fd2c586 \
     --hash=sha256:635a3d6b68fccd5c2ff9bdea195dd002bce509c90e18b3a9e71ece5e9514cc39
     # via -r requirements.prod.in
-environs[django]==10.2.0 \
-    --hash=sha256:579dddb252ef4bb83a302df82a99c98f6f3db30f043d1b7acff36264b0bfdc69 \
-    --hash=sha256:9513dd388c1eeb8e82f1ea5a701356abfb7a3d79925bff937ade67fe096e420d
+environs[django]==10.3.0 \
+    --hash=sha256:cc421ddb143fa30183568164755aa113a160e555cd19e97e664c478662032c24 \
+    --hash=sha256:feeaf28f17fd0499f9cd7c0fcf408c6d82c308e69e335eb92d09322fc9ed8138
     # via
     #   -r requirements.prod.in
     #   environs
