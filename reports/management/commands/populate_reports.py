@@ -49,19 +49,8 @@ class Command(BaseCommand):
                 title="SRO Measures",
                 description="Changes in key GP measures during the COVID-19 pandemic",
                 repo="SRO-Measures",
-                branch="master",
-                report_html_file_path="released_outputs/output/sentinel_measures.html",
-            )
-
-            self.ensure_report(
-                category,
-                bennett,
-                user,
-                title="SRO Measures - Health Inequalities",
-                description="Changes in key GP measures during the pandemic - health inequalities",
-                repo="SRO-Measures",
-                branch="master",
-                report_html_file_path="released_outputs/output/sentinel_measures_demographics.html",
+                branch="main",
+                report_html_file_path="released_outputs/output/sentinel_measures_combined.html",
             )
 
     def ensure_report(self, category, org, user, **kwargs):
