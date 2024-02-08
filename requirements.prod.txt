@@ -8,9 +8,9 @@ appdirs==1.4.4 \
     --hash=sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41 \
     --hash=sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128
     # via requests-cache
-asgiref==3.6.0 \
-    --hash=sha256:71e68008da809b957b7ee4b43dbccff33d1b23519fb8344e33f049897077afac \
-    --hash=sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506
+asgiref==3.7.2 \
+    --hash=sha256:89b2ef2247e3b562a16eef663bc0e2e703ec6468e2fa8a5cd61cd449786d4f6e \
+    --hash=sha256:9e0ce3aa93a819ba5b45120216b23878cf6e8525eb3848653452b4192b92afed
     # via
     #   django
     #   django-permissions-policy
@@ -115,9 +115,9 @@ dj-email-url==1.0.5 \
     --hash=sha256:64257c4f9d8139a4af8e5267229d32260e433fbf257b0cf8fc855bb0cc39ca7d \
     --hash=sha256:ef36f8a324ec57cf3be5c7a7ef44ed6900ca0208624a918ab33adc1cf6427b39
     # via environs
-django==4.2.7 \
-    --hash=sha256:8e0f1c2c2786b5c0e39fe1afce24c926040fad47c8ea8ad30aaf1188df29fc41 \
-    --hash=sha256:e1d37c51ad26186de355cbcec16613ebdabfa9689bbade9c538835205a8abbe9
+django==5.0.2 \
+    --hash=sha256:56ab63a105e8bb06ee67381d7b65fe6774f057e41a8bab06c8020c8882d8ecd4 \
+    --hash=sha256:b5bb1d11b2518a5f91372a282f24662f58f66749666b0a286ab057029f728080
     # via
     #   -r requirements.prod.in
     #   django-csp
@@ -306,6 +306,10 @@ structlog==21.5.0 \
     --hash=sha256:68c4c29c003714fe86834f347cb107452847ba52414390a7ee583472bde00fc9 \
     --hash=sha256:fd7922e195262b337da85c2a91c84be94ccab1f8fd1957bd6986f6904e3761c8
     # via django-structlog
+typing-extensions==4.9.0 \
+    --hash=sha256:23478f88c37f27d76ac8aee6c905017a143b0b1b886c3c9f66bc2fd94f9f5783 \
+    --hash=sha256:af72aea155e91adfc61c3ae9e0e342dbc0cba726d6cba4b6c72c1f34e47291cd
+    # via asgiref
 url-normalize==1.4.3 \
     --hash=sha256:d23d3a070ac52a67b83a1c59a0e68f8608d1cd538783b401bc9de2c0fac999b2 \
     --hash=sha256:ec3c301f04e5bb676d333a7fa162fa977ad2ca04b7e652bfc9fac4e405728eed
