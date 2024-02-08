@@ -78,8 +78,7 @@ class MockRepo:
     def __init__(self, url):
         self.url = url
 
-    def clear_cache(self):
-        ...
+    def clear_cache(self): ...
 
 
 @pytest.fixture
