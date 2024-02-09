@@ -31,7 +31,7 @@ DJANGO_SETTINGS_MODULE = "reports.settings"
 env = [
   "SECRET_KEY=12345",
   "REQUESTS_CACHE_NAME=test_cache",
-  "DJANGO_VITE_DEV_MODE=True",
+  "ASSETS_DEV_MODE=True",
 ]
 filterwarnings = [
     "ignore:distutils Version classes are deprecated:DeprecationWarning:marshmallow",

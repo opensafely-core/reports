@@ -11,7 +11,7 @@ It is deployed to our `dokku3` instance (see [dokku docs](https://bennettinstitu
 
 - **Python v3.10.x**
 - **Pip**
-- **Node.js v16.x** ([fnm](https://github.com/Schniz/fnm#installation) is recommended)
+- **Node.js v20.x** ([fnm](https://github.com/Schniz/fnm#installation) is recommended)
 - **[Just](#install-just)**
 
 ### Install just
@@ -86,7 +86,7 @@ Vite has a built-in development server which will serve the assets and reload th
 
 To run the Vite server locally, after completing the local dev env setup:
 
-1. Set `DJANGO_VITE_DEV_MODE = True` in `reports/settings.py`
+1. Set `ASSETS_DEV_MODE = True` in `reports/settings.py`
 2. Open a terminal and run Django with `just run`
 3. Open a new terminal tab or window
 4. Run `npm run dev` to start the vite server
@@ -98,7 +98,7 @@ This will start the Vite dev server at [localhost:3000](http://localhost:3000/) 
 
 To view the compiled assets:
 
-1. Update the `.env` file to `DJANGO_VITE_DEV_MODE=False`
+1. Update the `.env` file to `ASSETS_DEV_MODE=False`
 2. Run `just assets-rebuild`
 
 Vite builds the assets and outputs them to the `assets/dist` folder.
