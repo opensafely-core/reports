@@ -1,14 +1,14 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
+import { fontFamily } from "tailwindcss/defaultTheme";
+import tailwindTypography from "@tailwindcss/typography";
+import tailwindForms from "@tailwindcss/forms";
 
-module.exports = {
-  content: [
-    "./templates/**/*.html",
-    "./assets/src/scripts/**/*.js"
-  ],
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./templates/**/*.html", "./assets/src/scripts/**/*.js"],
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Public Sans", ...defaultTheme.fontFamily.sans],
+        sans: ["Public Sans", ...fontFamily.sans],
       },
       colors: {
         oxford: {
@@ -27,5 +27,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
+  plugins: [tailwindTypography, tailwindForms],
 };
