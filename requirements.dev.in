@@ -6,10 +6,6 @@
 black
 coverage[toml]
 factory_boy
-flake8
-flake8-builtins
-flake8-implicit-str-concat
-flake8-no-pep420
 httpretty
 ipdb
 isort
@@ -19,3 +15,4 @@ pytest-django
 pytest-env
 pytest-freezegun
 pytest-mock
+ruff
