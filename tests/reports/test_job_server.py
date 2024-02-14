@@ -67,10 +67,10 @@ def test_clear_cache_with_caching_session(httpretty, bennett_org):
     wrapper = JobServerReport(report, use_cache=True)
 
     wrapper.get_html()
-    assert url in list(wrapper.client.session.cache.urls)
+    assert url in wrapper.client.session.cache.urls()
 
     wrapper.clear_cache()
-    assert url not in list(wrapper.client.session.cache.urls)
+    assert url not in wrapper.client.session.cache.urls()
 
 
 @pytest.mark.django_db
