@@ -112,11 +112,29 @@ def test_hostingfilter(rf, bennett_org):
     qs = Report.objects.all()
 
     # github
-    f = HostingFilter(request, {"hosted_on": "github"}, Report, report_admin)
+    f = HostingFilter(
+        request,
+        {
+            "hosted_on": [
+                "github",
+            ]
+        },
+        Report,
+        report_admin,
+    )
     assert list(f.queryset(request, qs)) == [report1]
 
     # job-server
-    f = HostingFilter(request, {"hosted_on": "job-server"}, Report, report_admin)
+    f = HostingFilter(
+        request,
+        {
+            "hosted_on": [
+                "job-server",
+            ]
+        },
+        Report,
+        report_admin,
+    )
     assert list(f.queryset(request, qs)) == [report2]
 
 
@@ -131,9 +149,27 @@ def test_isexternalfilter(rf, bennett_org):
     qs = Report.objects.all()
 
     # no
-    f = IsExternalFilter(request, {"is_external": "no"}, Report, report_admin)
+    f = IsExternalFilter(
+        request,
+        {
+            "is_external": [
+                "no",
+            ]
+        },
+        Report,
+        report_admin,
+    )
     assert list(f.queryset(request, qs)) == [report1]
 
     # yes
-    f = IsExternalFilter(request, {"is_external": "yes"}, Report, report_admin)
+    f = IsExternalFilter(
+        request,
+        {
+            "is_external": [
+                "yes",
+            ]
+        },
+        Report,
+        report_admin,
+    )
     assert list(f.queryset(request, qs)) == [report2]
