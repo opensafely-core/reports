@@ -82,7 +82,7 @@ class JobServerReport:
     def clear_cache(self):
         """Clear the cache for the Report's job-server URL"""
         if hasattr(self.client.session, "cache"):
-            self.client.session.cache.delete_url(self.report.job_server_url)
+            self.client.session.cache.delete(urls=[self.report.job_server_url])
 
     def file_exists(self):
         return self.client.file_exists(self.report.job_server_url)
