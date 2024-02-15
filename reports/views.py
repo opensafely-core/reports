@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import structlog
 from django.db.models import F, Q, Value
@@ -53,7 +53,7 @@ def landing(request):
     )[:10]
     context = {
         "recent_activity": recent_activity,
-        "today": datetime.utcnow().date(),
+        "today": datetime.datetime.now(datetime.UTC).date(),
     }
     return render(request, "landing.html", context)
 
