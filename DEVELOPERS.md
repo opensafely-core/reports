@@ -9,7 +9,7 @@ It is deployed to our `dokku3` instance (see [dokku docs](https://bennettinstitu
 
 ### Prerequisites:
 
-- **Python v3.10.x**
+- **Python v3.12.x**
 - **Pip**
 - **Node.js v20.x** ([fnm](https://github.com/Schniz/fnm#installation) is recommended)
 - **[Just](#install-just)**

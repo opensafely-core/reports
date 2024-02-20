@@ -167,8 +167,11 @@ def immutable_file_test(path, url):
 WHITENOISE_IMMUTABLE_FILE_TEST = immutable_file_test
 
 # Insert Whitenoise Middleware.
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # User uploaded files
 # https://docs.djangoproject.com/en/4.1/topics/files/
