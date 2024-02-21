@@ -168,6 +168,9 @@ WHITENOISE_IMMUTABLE_FILE_TEST = immutable_file_test
 
 # Insert Whitenoise Middleware.
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
