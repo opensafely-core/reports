@@ -3,14 +3,11 @@
 @tailwind utilities;
 
 /*! purgecss start ignore */
-[x-cloak] {
-  display: none !important;
-}
-
 :root {
   --animation-duration: 1s;
   --transiton-duration: 0.5s;
 }
+
 html {
   scroll-behavior: smooth;
 }
