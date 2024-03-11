@@ -1,119 +1,14 @@
-{% load reports_tags %}
+<details class="group/sidebar lg:hidden" data-details>
+  <summary class="fixed top-0 left-0 z-50 h-16 w-16 border-r border-gray-200 flex items-center justify-center cursor-pointer group-open/sidebar:bg-gray-100">
+    <span class="sr-only">Open sidebar</span>
+    {% include "icons/outline/menu-alt-2.svg" with htmlClass="h-6 w-6" %}
+  </summary>
 
-<header
-  class="fixed inset-0 z-30 lg:relative lg:flex w-64 lg:bg-oxford-800 lg:flex-shrink-0"
-  x-bind="sidebarOpenOrLargeScreen"
->
-  <div
-    aria-hidden="true"
-    class="fixed inset-0 z-20 bg-gray-600 bg-opacity-75"
-    x-cloak
-    x-on:click="hideSidebar"
-    x-bind="sidebarOpenAndSmallScreen"
-    x-transition:enter-end="opacity-100"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter="transition-opacity ease-linear duration-300"
-    x-transition:leave-end="opacity-0"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave="transition-opacity ease-linear duration-300"
-    ></div>
-  {# Mobile-only: Close button #}
-  <div
-    class="absolute top-0 -right-12 z-50 pt-2 lg:hidden"
-    x-cloak
-    x-show="isSidebarVisible"
-    x-transition:enter-end="opacity-100"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter="ease-in-out duration-300"
-    x-transition:leave-end="opacity-0"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave="ease-in-out duration-300"
-  >
-    <button
-      class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-      type="button"
-      x-on:click="hideSidebar"
-    >
-      <span class="sr-only">Close sidebar</span>
-      {% include "icons/outline/x.svg" with htmlClass="h-6 w-6 text-white" attrs="aria-hidden='true'" %}
-    </button>
-  </div>
-  <div
-    class="fixed h-screen overflow-y-scroll w-64 z-40 bg-oxford-800"
-    x-bind="sidebarOpenOrLargeScreen"
-    x-transition:enter-end="translate-x-0"
-    x-transition:enter-start="-translate-x-full"
-    x-transition:enter="transition ease-in-out duration-300 transform"
-    x-transition:leave-end="-translate-x-full"
-    x-transition:leave-start="translate-x-0"
-    x-transition:leave="transition ease-in-out duration-300 transform"
-  >
-    <div class="flex items-center h-16 flex-shrink-0 px-4 bg-oxford-900">
-      <span class="text-xl text-white font-semibold">OpenSAFELY</span>
-    </div>
-    <nav class="flex-1 px-2 py-4 bg-oxford-800">
-      <div class="space-y-1">
-        <a href="/" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900">
-          {% include "icons/outline/home.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
-          Home
-        </a>
-        <a href="mailto:team@opensafely.org" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900">
-          {% include "icons/outline/mail-open.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
-          Contact
-        </a>
-      </div>
-      <div class="mt-10">
-        <h2 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          Reports
-        </h2>
-        <div class="mt-2 space-y-1">
-          <nav class="flex-1 px-2 space-y-1 bg-oxford-800" aria-label="Sidebar">
-            <ul>
-              {% for category in categories %}
-              <li
-                {% if report.category.id == category.id %}data-active="true"{% endif %}"
-                class="space-y-1"
-                x-data="subnav"
-              >
-                <button
-                  aria-controls="desktop-sidebar-{{ forloop.counter }}"
-                  aria-expanded="false"
-                  class="text-white hover:bg-oxford-900 hover:text-gray-50 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-oxford-400"
-                  type="button"
-                  x-bind="subnavAriaExpanded"
-                  x-on:click="toggleSubnav"
-                >
-                  {% include "icons/outline/chevron-right.svg" with htmlClass="text-gray-300 mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150" attrs="x-bind='subnavArrowStyles'" %}
-                  {{ category.name }}
-                </button>
-                <ul
-                  class="space-y-1"
-                  id="desktop-sidebar-{{ forloop.counter }}"
-                  x-cloak
-                  x-show="isSubmenuVisible"
-                >
-                  {% category_reports_for_user category as category_reports %}
-                  {% for single_report in category_reports %}
-                  <li>
-                    <a
-                      href="{{ single_report.get_absolute_url }}"
-                      class="
-                        group w-full flex items-center pl-8 pr-2 py-2 text-sm font-medium text-white hover:bg-oxford-900 hover:text-gray-50 rounded-md
-                        {% if single_report.id == report.id %}
-                          bg-oxford-700 bg-opacity-50
-                        {% endif %}
-                      ">
-                      {{ single_report.menu_name }} {% if single_report.is_draft %}(Draft){% endif %}
-                    </a>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </li>
-              {% endfor %}
-            </ul>
-          </nav>
-        </div>
-      </div>
-    </nav>
-  </div>
+  <header class="hidden group-open/sidebar:flex fixed z-30 top-16 left-0 w-64 bg-oxford-800 flex-shrink-0 lg:!flex lg:!relative">
+    {% include "partials/nav.html" %}
+  </header>
+</details>
+
+<header class="hidden lg:flex z-30 relative w-64 bg-oxford-800 flex-shrink-0" data-details>
+  {% include "partials/nav.html" %}
 </header>

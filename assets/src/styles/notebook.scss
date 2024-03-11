@@ -80,24 +80,26 @@ h6:hover .anchor-link {
 }
 
 // Custom <details /> element
-details {
-  @apply block my-2 border border-oxford-400 bg-oxford-50 rounded-lg overflow-hidden;
+#content {
+  details {
+    @apply block my-2 border border-oxford-400 bg-oxford-50 rounded-lg overflow-hidden;
 
-  &:not([open]) {
-    summary {
-      @apply hover:bg-oxford-100 hover:text-oxford-900;
+    &:not([open]) {
+      summary {
+        @apply hover:bg-oxford-100 hover:text-oxford-900;
+      }
     }
-  }
 
-  summary {
-    @apply py-2 px-4 cursor-pointer text-lg font-semibold text-oxford-600;
-  }
+    summary {
+      @apply py-2 px-4 cursor-pointer text-lg font-semibold text-oxford-600;
+    }
 
-  .details__wrapper {
-    @apply px-8 m-0;
+    .details__wrapper {
+      @apply px-8 m-0;
 
-    > *:first-child {
-      @apply mt-0;
+      > *:first-child {
+        @apply mt-0;
+      }
     }
   }
 }
