@@ -1,13 +1,15 @@
-<details class="group/sidebar lg:hidden" data-details>
-  <summary class="fixed top-0 left-0 z-50 h-16 w-16 border-r border-gray-200 flex items-center justify-center cursor-pointer group-open/sidebar:bg-gray-100">
-    <span class="sr-only">Open sidebar</span>
-    {% include "icons/outline/menu-alt-2.svg" with htmlClass="h-6 w-6" %}
-  </summary>
+<details-utils close-click-outside close-esc>
+  <details class="group/sidebar lg:hidden" data-details>
+    <summary class="fixed top-0 left-0 z-50 h-16 w-16 border-r border-gray-200 flex items-center justify-center cursor-pointer group-open/sidebar:bg-gray-100">
+      <span class="sr-only">Open sidebar</span>
+      {% include "icons/outline/menu-alt-2.svg" with htmlClass="h-6 w-6" %}
+    </summary>
 
-  <header class="hidden group-open/sidebar:flex fixed z-30 top-16 left-0 w-64 bg-oxford-800 flex-shrink-0 lg:!flex lg:!relative">
-    {% include "partials/nav.html" %}
-  </header>
-</details>
+    <header class="hidden group-open/sidebar:flex fixed z-30 top-16 left-0 w-64 bg-oxford-800 flex-shrink-0 lg:!flex lg:!relative">
+      {% include "partials/nav.html" %}
+    </header>
+  </details>
+</details-utils>
 
 <header class="hidden lg:flex z-30 relative w-64 bg-oxford-800 flex-shrink-0" data-details>
   {% include "partials/nav.html" %}
