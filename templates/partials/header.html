@@ -1,16 +1,7 @@
 <div class="fixed top-0 min-w-full lg:relative z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200">
-  <button
-    class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-oxford-700 lg:hidden"
-    type="button"
-    x-on:click="showSidebar"
-  >
-    <span class="sr-only">Open sidebar</span>
-    {% include "icons/outline/menu-alt-2.svg" with htmlClass="h-6 w-6" %}
-  </button>
-
   <div class="flex-1 px-4 flex justify-between">
-    <div class="flex-1 flex">
-      <div class="w-full flex lg:ml-0">
+    <div class="flex-1 flex ml-16 lg:ml-0">
+      <div class="w-full flex">
         <div class="relative w-full flex items-center">
           <span class="text-base md:text-xl font-semibold">Reports</span>
         </div>
@@ -18,38 +9,16 @@
     </div>
 
     <div class="ml-4 flex items-center lg:ml-6">
-        {% if user.is_authenticated %}
-          <div class="relative inline-block text-left" x-data="userMenu">
-            <div>
-              <button
-                aria-haspopup="true"
-                class="inline-flex justify-center w-full rounded-md px-1 py-1 overflow-hidden bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-oxford-700"
-                id="menu-button"
-                type="button"
-                x-bind="userNavAriaExpanded"
-                x-on:click="showUserNav"
-              >
-                <span class="sr-only">Options</span>
-                <span class="inline-block h-10 w-10 rounded-full overflow-hidden bg-gray-100">
-                  {% include "icons/solid/user.svg" with htmlClass="h-full w-full text-gray-300 relative -bottom-1" %}
-                </span>
-              </button>
-            </div>
-            <div
-              aria-labelledby="menu-button"
-              aria-orientation="vertical"
-              class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
-              role="menu"
-              x-cloak
-              x-on:click.away="hideUserNav"
-              x-show="isUserNavOpen"
-              x-transition:enter-end="transform opacity-100 scale-100"
-              x-transition:enter-start="transform opacity-0 scale-95"
-              x-transition:enter="transition ease-out duration-100"
-              x-transition:leave-end="transform opacity-0 scale-95"
-              x-transition:leave-start="transform opacity-100 scale-100"
-              x-transition:leave="transition ease-in duration-75"
-            >
+      {% if user.is_authenticated %}
+        <details-utils close-click-outside close-esc>
+          <details class="group/account" data-details>
+            <summary class="inline-flex justify-center w-full rounded-md px-1 py-1 overflow-hidden bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-oxford-700">
+              <span class="sr-only">Options</span>
+              <span class="inline-block h-10 w-10 rounded-full overflow-hidden bg-gray-100">
+                {% include "icons/solid/user.svg" with htmlClass="h-full w-full text-gray-300 relative -bottom-1" %}
+              </span>
+            </summary>
+            <div class="origin-top-right absolute right-0.5 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
               <div class="px-4 py-3">
                 <p class="text-sm">
                   Logged in as
@@ -71,14 +40,15 @@
                 </a>
               </div>
             </div>
-          </div>
-        {% else %}
-          {% if show_login %}
-            <a href="{% url 'login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-oxford-600 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-700">
-              Login
-            </a>
-          {% endif %}
+          </details>
+        </details-utils>
+      {% else %}
+        {% if show_login %}
+          <a href="{% url 'login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-oxford-600 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-700">
+            Login
+          </a>
         {% endif %}
+      {% endif %}
     </div>
   </div>
 </div>
