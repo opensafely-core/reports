@@ -12,7 +12,7 @@ django-vite
 environs[django]
 furl
 gunicorn
-lxml
+lxml[html_clean]
 osgithub
 requests-cache
 sentry-sdk
