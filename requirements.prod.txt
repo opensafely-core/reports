@@ -192,7 +192,7 @@ idna==3.3 \
     --hash=sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff \
     --hash=sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d
     # via requests
-lxml==5.2.0 \
+lxml[html-clean,html_clean]==5.2.0 \
     --hash=sha256:0382e6a3eefa3f6699b14fa77c2eb32af2ada261b75120eaf4fc028a20394975 \
     --hash=sha256:03e3962d6ad13a862dacd5b3a3ea60b4d092a550f36465234b8639311fd60989 \
     --hash=sha256:05fc3720250d221792b6e0d150afc92d20cb10c9cdaa8c8f93c2a00fbdd16015 \
@@ -306,7 +306,13 @@ lxml==5.2.0 \
     --hash=sha256:f90c36ca95a44d2636bbf55a51ca30583b59b71b6547b88d954e029598043551 \
     --hash=sha256:f9e27841cddfaebc4e3ffbe5dbdff42891051acf5befc9f5323944b2c61cef16 \
     --hash=sha256:fadda215e32fe375d65e560b7f7e2a37c7f9c4ecee5315bb1225ca6ac9bf5838
-    # via -r requirements.prod.in
+    # via
+    #   -r requirements.prod.in
+    #   lxml-html-clean
+lxml-html-clean==0.1.0 \
+    --hash=sha256:003b61437129b2df4f6f6455e20f5f57707828e2067bc5524d0142e240bb4cd1 \
+    --hash=sha256:f21a33d279eb3bddd336ebfa0c73d3d5b359dbfa8113014f7d1f2d8738fdc305
+    # via lxml
 marshmallow==3.14.1 \
     --hash=sha256:04438610bc6dadbdddb22a4a55bcc7f6f8099e69580b2e67f5a681933a1f4400 \
     --hash=sha256:4c05c1684e0e97fe779c62b91878f173b937fe097b356cd82f793464f5bc6138
