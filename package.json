@@ -7,15 +7,15 @@
     "serve": "vite preview"
   },
   "devDependencies": {
-    "@vitejs/plugin-legacy": "^5.4.1",
+    "@vitejs/plugin-legacy": "^5.4.2",
     "autoprefixer": "^10.4.20",
     "sass": "^1.77.8",
-    "vite": "^5.3.5"
+    "vite": "^5.4.1"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.14",
     "@zachleat/details-utils": "^2.0.2",
-    "tailwindcss": "^3.4.7"
+    "tailwindcss": "^3.4.10"
   }
 }
