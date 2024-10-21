@@ -10,8 +10,17 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    allow:
-      - dependency-type: "production"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/London"
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+    reviewers:
+      - "tomodwyer"
+    open-pull-requests-limit: 20
 
   - package-ecosystem: "github-actions"
     directory: "/"
