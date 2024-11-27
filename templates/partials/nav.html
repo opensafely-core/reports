@@ -1,8 +1,9 @@
 {% load reports_tags %}
+{% load static %}
 
-<div class="fixed h-screen overflow-y-scroll w-64 z-40 bg-oxford-800">
-  <div class="flex items-center h-16 flex-shrink-0 px-4 bg-oxford-900">
-    <span class="text-xl text-white font-semibold">OpenSAFELY</span>
+<div class="fixed h-screen overflow-y-auto w-64 z-40 bg-oxford-800">
+  <div class="flex items-center h-[63px] flex-shrink-0 px-4 bg-white border-b border-r border-gray-200">
+    <img class="inline-block w-auto h-12 mr-auto" src="{% static 'logo.svg' %}">
   </div>
   <nav class="flex-1 px-2 py-4 bg-oxford-800">
     <div class="space-y-1">
