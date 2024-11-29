@@ -1,3 +1,14 @@
+[project]
+name = "reports"
+description = "reports"
+readme = "README.md"
+authors = [{name = "OpenSAFELY", email = "tech@opensafely.org"}]
+license = {file = "LICENSE"}
+classifiers = [
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
+]
+requires-python = ">=3.12"
+
 [tool.coverage.run]
 branch = true
 dynamic_context = "test_function"
