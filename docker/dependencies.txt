@@ -1,1 +1,5 @@
 # list ubuntu packages needed in production, one per line
+python3.12
+python3.12-venv
+tzdata
+ca-certificates

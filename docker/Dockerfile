@@ -18,8 +18,7 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean
 # use space efficient utility from base image
 RUN --mount=type=cache,target=/var/cache/apt \
     echo "deb https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main" > /etc/apt/sources.list.d/deadsnakes-ppa.list &&\
-    /usr/lib/apt/apt-helper download-file 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf23c5a6cf475977595c89f51ba6932366a755776' /etc/apt/trusted.gpg.d/deadsnakes.asc &&\
-    root/docker-apt-install.sh python3.12 python3.12-venv python3.12-distutils tzdata ca-certificates
+    /usr/lib/apt/apt-helper download-file 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf23c5a6cf475977595c89f51ba6932366a755776' /etc/apt/trusted.gpg.d/deadsnakes.asc
 
 RUN ls usr/bin
 # install any additional system dependencies
