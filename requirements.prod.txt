@@ -170,9 +170,9 @@ django-vite==3.0.6 \
     --hash=sha256:363ca9fd774eb228b27f710a9179c68f61e27bb95b41b1f790ee5a0a0e215b14 \
     --hash=sha256:3ad3716e2afe4569353cda8080f557bac37a5b29ab7a5826d5defd67bfbe8e72
     # via -r requirements.prod.in
-environs[django]==11.2.1 \
-    --hash=sha256:9d2080cf25807a26fc0d4301e2d7b62c64fbf547540f21e3a30cc02bc5fbe948 \
-    --hash=sha256:e068ae3174cef52ba4b95ead22e639056a02465f616e62323e04ae08e86a75a4
+environs[django]==14.1.0 \
+    --hash=sha256:a5f2afe9d5a21b468e74a3cceacf5d2371fd67dbb9a7e54fe62290c75a09cdfa \
+    --hash=sha256:a7edda1668ddf1fbfcb7662bdc242dac25648eff2c7fdbaa5d959693afed7a3e
     # via -r requirements.prod.in
 furl==2.1.3 \
     --hash=sha256:5a6188fe2666c484a12159c18be97a1977a71d632ef5bb867ef15f54af39cc4e \
@@ -309,9 +309,9 @@ lxml-html-clean==0.1.0 \
     --hash=sha256:003b61437129b2df4f6f6455e20f5f57707828e2067bc5524d0142e240bb4cd1 \
     --hash=sha256:f21a33d279eb3bddd336ebfa0c73d3d5b359dbfa8113014f7d1f2d8738fdc305
     # via lxml
-marshmallow==3.14.1 \
-    --hash=sha256:04438610bc6dadbdddb22a4a55bcc7f6f8099e69580b2e67f5a681933a1f4400 \
-    --hash=sha256:4c05c1684e0e97fe779c62b91878f173b937fe097b356cd82f793464f5bc6138
+marshmallow==3.25.1 \
+    --hash=sha256:ec5d00d873ce473b7f2ffcb7104286a376c354cab0c2fa12f5573dab03e87210 \
+    --hash=sha256:f4debda3bb11153d81ac34b0d582bf23053055ee11e791b54b4b35493468040a
     # via environs
 orderedmultidict==1.0.1 \
     --hash=sha256:04070bbb5e87291cc9bfa51df413677faf2141c73c61d2a5f7b26bea3cd882ad \
@@ -324,7 +324,9 @@ osgithub==0.3.5 \
 packaging==23.1 \
     --hash=sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61 \
     --hash=sha256:a392980d2b6cffa644431898be54b0045151319d1e7ec34f0cfed48767dd334f
-    # via gunicorn
+    # via
+    #   gunicorn
+    #   marshmallow
 platformdirs==4.2.0 \
     --hash=sha256:0614df2a2f37e1a662acbd8e2b25b92ccf8632929bc6d43467e17fe89c75e068 \
     --hash=sha256:ef0cc731df711022c174543cb70a9b5bd22e5a9337c8624ef2c2ceb8ddad8768
