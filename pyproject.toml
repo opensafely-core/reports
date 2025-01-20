@@ -67,8 +67,8 @@ lint.extend-select = [
   "W",  # pycodestyle warning
 ]
 lint.extend-ignore = [
-  "E501",
-  "E731",
+  "A005", # ignore stdlib-module-shadowing. Would need to re-name services.logging.
+  "E501", # ignore line-length. We judge case-by-case.
 ]
 
 [tool.ruff.lint.isort]
