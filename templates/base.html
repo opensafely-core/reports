@@ -21,6 +21,8 @@
   {# Modern browsers #}
   {% vite_asset 'assets/src/scripts/main.js' %}
 
+  <script defer data-domain="reports.opensafely.org" src="https://plausible.io/js/script.js"></script>
+
   {% block extra_head %}{% endblock %}
 
   {% include "partials/fonts.html" %}
