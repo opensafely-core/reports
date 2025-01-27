@@ -18,13 +18,13 @@
       </div>
 
       <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div class="bg-white py-8 px-4 shadow-sm sm:rounded-lg sm:px-10">
           <form class="space-y-6" method="POST">
             {% csrf_token %}
             {% if form.non_field_errors %}
               <div class="rounded-md bg-red-50 p-4">
                 <div class="flex">
-                  <div class="flex-shrink-0">
+                  <div class="shrink-0">
                     {% include "icons/solid/x-circle.svg" with htmlClass="h-5 w-5 text-red-400" %}
                   </div>
                   <div class="ml-3">
@@ -72,7 +72,7 @@
             </div>
 
             <div>
-              <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-oxford-600 hover:bg-oxford-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500">
+              <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-xs text-sm font-medium text-white bg-oxford-600 hover:bg-oxford-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500">
                 Log in
               </button>
             </div>
@@ -94,7 +94,7 @@
 
               <div class="mt-6">
                 <div>
-                    <a href="{% url "social:begin" "nhsid"  %}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-oxford-600 hover:bg-oxford-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500">
+                    <a href="{% url "social:begin" "nhsid"  %}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-xs text-sm font-medium text-white bg-oxford-600 hover:bg-oxford-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500">
                       NHS Identity Login
                     </a>
                 </div>
@@ -106,7 +106,7 @@
     </div>
   {% else %}
     <div class="container max-w-lg mt-8 mx-auto px-4 md:px-8">
-      <div class="bg-white shadow sm:rounded-lg">
+      <div class="bg-white shadow-sm sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
           <h1 class="text-lg leading-6 font-medium text-gray-900">
             Log in
