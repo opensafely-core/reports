@@ -34,7 +34,7 @@ REAL_REPO_DETAILS = {
         (
             {"report_html_file_path": "dummy-reports/report.html"},
             False,
-            "Error fetching report file: Not Found",
+            "Error fetching report file: No object found for the path dummy-reports",
         ),
         (
             {"branch": "non-existent-branch"},
