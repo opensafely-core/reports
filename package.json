@@ -8,7 +8,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
-    "sass": "^1.83.4",
     "vite": "^6.0.11"
   },
   "dependencies": {
