@@ -6,6 +6,22 @@
 :root {
   --animation-duration: 1s;
   --transiton-duration: 0.5s;
+
+  --color-oxford: #002147;
+  --color-oxford-50: #f1f7ff;
+  --color-oxford-100: #cfe5ff;
+  --color-oxford-200: #9ccaff;
+  --color-oxford-300: #69afff;
+  --color-oxford-400: #3693ff;
+  --color-oxford-500: #0378ff;
+  --color-oxford-600: #0058be;
+  --color-oxford-700: #00397a;
+  --color-oxford-800: #002147;
+  --color-oxford-900: #001936;
+
+  --color-gray-50: #f9fafb;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
 }
 
 html {
@@ -30,104 +46,215 @@ html {
 }
 
 #skip-link {
-  @apply absolute z-50 top-4 left-4 px-8 py-4 rounded-lg bg-oxford-200 border-2 border-oxford-700 font-semibold text-oxford-800 hover:bg-oxford-50 hover:text-oxford-900 hover:border-oxford-600 focus:bg-oxford-50 focus:text-oxford-900 focus:border-oxford-600;
+  /** @apply absolute z-50 top-4 left-4 px-8 py-4 rounded-lg bg-oxford-200 border-2 border-oxford-700 font-semibold text-oxford-800 hover:bg-oxford-50 hover:text-oxford-900 hover:border-oxford-600 focus:bg-oxford-50 focus:text-oxford-900 focus:border-oxford-600; */
+  background-color: var(--color-oxford-200);
+  border-color: var(--color-oxford-700);
+  border-radius: 0.5rem;
+  border-width: 2px;
+  color: var(--color-oxford-800);
+  font-weight: 600;
+  left: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1rem;
+  position: absolute;
+  top: 1rem;
+  z-index: 50;
+}
+
+#skip-link:hover,
+#skip-link:focus {
+  background-color: var(--color-oxford-50);
+  border-color: var(--color-oxford-600);
+  color: var(--color-oxford-900);
 }
 
 #docNav,
 .docNav {
-  @apply m-0 p-0 list-none bg-oxford-50 pt-14 pb-4 px-5 rounded-lg relative overflow-hidden;
+  /** @apply m-0 p-0 list-none bg-oxford-50 pt-14 pb-4 px-5 rounded-lg relative overflow-hidden; */
+  background-color: var(--color-oxford-50);
+  border-radius: 0.5rem;
+  list-style-type: none;
+  margin: 0px;
+  overflow: hidden;
+  padding-bottom: 1rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+  padding-top: 3.5rem !important;
+  padding: 0px;
+  position: relative;
+}
 
-  &::before {
-    @apply absolute top-0 left-0 z-10 w-auto h-auto py-2 px-4 bg-oxford-900 text-white rounded-br-md font-semibold text-lg;
-    content: "Menu";
-  }
+#docNav::before,
+.docNav::before {
+  /** @apply absolute top-0 left-0 z-10 w-auto h-auto py-2 px-4 bg-oxford-900 text-white rounded-br-md font-semibold text-lg; */
+  background-color: var(--color-oxford-900);
+  border-bottom-right-radius: 0.375rem;
+  color: white;
+  content: "Menu";
+  font-size: 1.125rem;
+  font-weight: 600;
+  height: auto;
+  left: 0px;
+  line-height: 1.75rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  position: absolute;
+  top: 0px;
+  width: auto;
+  z-index: 10;
+}
 
-  li {
-    @apply my-1;
+#docNav li,
+.docNav li {
+  /** @apply my-1; */
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
 
-    a {
-      @apply text-lg;
-    }
-  }
+#docNav li a,
+.docNav li a {
+  /** @apply text-lg; */
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 
 #menuBtn {
-  @apply absolute bottom-0 right-8 px-4 py-2 border border-transparent text-base font-medium rounded-t-md text-white bg-oxford-700 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500;
+  /** @apply absolute bottom-0 right-8 px-4 py-2 border border-transparent text-base font-medium rounded-t-md text-white bg-oxford-700 hover:bg-oxford-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oxford-500; */
+  background-color: var(--color-oxford-700);
+  border-color: transparent;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+  border-width: 1px;
+  bottom: 0;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+  padding: 0.5rem 1rem;
+  position: absolute;
+  right: 2rem;
 }
 
-#content {
-  details {
-    @apply block my-2 border border-oxford-400 bg-oxford-50 rounded-lg overflow-hidden;
-
-    &:not([open]) {
-      summary {
-        @apply hover:bg-oxford-100 hover:text-oxford-900;
-      }
-    }
-
-    summary {
-      @apply py-2 px-4 cursor-pointer text-lg font-semibold text-oxford-600;
-    }
-
-    .details__wrapper {
-      @apply px-8 m-0;
-
-      > *:first-child {
-        @apply mt-0;
-      }
-    }
-  }
+#menuBtn:hover {
+  background-color: var(--color-oxford-800);
 }
 
-/**
- * Oxford Prose
- */
+#menuBtn:focus {
+  --tw-ring-color: var(--color-oxford-500);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
+    var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-offset-width: 2px;
+  --tw-ring-opacity: 1;
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0
+    calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow, 0 0 #000 0);
+  outline-offset: 2px;
+  outline: 2px solid transparent;
+}
+
+#content details {
+  /** @apply block my-2 border border-oxford-400 bg-oxford-50 rounded-lg overflow-hidden; */
+  background-color: var(--color-oxford-50);
+  border-color: var(--color-oxford-400);
+  border-radius: 0.5rem;
+  border-width: 1px;
+  display: block;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+#content details:not([open]) summary:hover {
+  /** @apply hover:bg-oxford-100 hover:text-oxford-900; */
+  background-color: var(--color-oxford-100);
+  color: var(--color-oxford-900);
+}
+
+#content details summary {
+  /** @apply py-2 px-4 cursor-pointer text-lg font-semibold text-oxford-600; */
+  color: var(--color-oxford-600);
+  cursor: pointer;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  padding: 0.5rem 1rem;
+}
+
+#content details .details__wrapper {
+  /** @apply px-8 m-0; */
+  margin: 0;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+#content details .details__wrapper > *:first-child {
+  /** @apply mt-0; */
+  margin-top: 0;
+}
+
+/** Oxford Prose */
 .prose-oxford {
-  @apply text-gray-800;
+  /** @apply text-gray-800; */
+  color: var(--color-gray-800);
+}
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply text-gray-800;
-  }
+.prose-oxford h1,
+.prose-oxford h2,
+.prose-oxford h3,
+.prose-oxford h4,
+.prose-oxford h5,
+.prose-oxford h6 {
+  /** @apply text-gray-800; */
+  color: var(--color-gray-800);
+}
 
-  ul > li::before {
-    @apply bg-gray-800;
-  }
+.prose-oxford ul > li::before {
+  /** @apply bg-gray-800; */
+  background-color: var(--color-gray-800);
+}
 
-  pre {
-    @apply bg-gray-50 text-gray-700;
-  }
+.prose-oxford pre {
+  /** @apply bg-gray-50 text-gray-700; */
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-700);
+}
 
-  thead th {
-    @apply text-left;
-  }
+.prose-oxford thead th {
+  /** @apply text-left; */
+  text-align: left;
+}
 
-  code::before,
-  code::after {
-    content: "";
-  }
+.prose-oxford code::before,
+.prose-oxford code::after {
+  content: "";
+}
 
-  a,
-  a strong {
-    @apply text-oxford-600 font-semibold;
-  }
+.prose-oxford a,
+.prose-oxford a strong {
+  /** text-oxford-600 font-semibold; */
+  font-weight: 600;
+  color: var(--color-oxford-600);
+}
 
-  a:hover,
-  a:hover strong {
-    @apply text-oxford underline;
-  }
+.prose-oxford a:hover,
+.prose-oxford a:hover strong {
+  /** @apply text-oxford underline; */
+  color: var(--color-oxford);
+  text-decoration-line: underline;
 }
 
 [data-details] summary {
   -webkit-appearance: none;
   display: flex;
-
-  &::-webkit-details-marker {
-    display: none;
-  }
 }
+
+[data-details] summary::-webkit-details-marker {
+  display: none;
+}
+
 /*! purgecss end ignore */
