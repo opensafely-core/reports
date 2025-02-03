@@ -131,20 +131,20 @@ test *args: assets
     $BIN/coverage report || $BIN/coverage html
 
 
-black *args=".": devenv
-    $BIN/black --check {{ args }}
+format *args=".": devenv
+    $BIN/ruff format --check {{ args }}
 
-ruff *args=".": devenv
-    $BIN/ruff check {{ args }}
+lint *args=".": devenv
+    $BIN/ruff check --output-format=full {{ args }}
 
 # run the various dev checks but does not change any files
-check: black ruff
+check: format lint
 
 
 # fix formatting and import sort ordering
 fix: devenv
-    $BIN/black .
-    $BIN/ruff --fix .
+    $BIN/ruff check --fix .
+    $BIN/ruff format .
 
 # setup/update local dev environment
 dev-setup: devenv
