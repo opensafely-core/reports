@@ -58,7 +58,10 @@ exclude = [
   "htmlcov",
   "venv",
 ]
-lint.extend-select = [
+
+[tool.ruff.lint]
+isort.lines-after-imports = 2
+extend-select = [
   "A",  # flake8-builtins
   "I",  # isort
   "INP",  # flake8-no-pep420
@@ -66,10 +69,11 @@ lint.extend-select = [
   "UP",  # pyupgrade
   "W",  # pycodestyle warning
 ]
-lint.extend-ignore = [
+extend-ignore = [
   "A005", # ignore stdlib-module-shadowing. Would need to re-name services.logging.
   "E501", # ignore line-length. We judge case-by-case.
 ]
 
-[tool.ruff.lint.isort]
-lines-after-imports = 2
+[tool.ruff.lint.per-file-ignores]
+"gunicorn.conf.py" = ["INP001"]
+"manage.py" = ["INP001"]
