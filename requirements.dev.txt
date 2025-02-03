@@ -169,9 +169,9 @@ ipython==8.21.0 \
     --hash=sha256:1050a3ab8473488d7eee163796b02e511d0735cf43a04ba2a8348bd0f2eaf8a5 \
     --hash=sha256:48fbc236fbe0e138b88773fa0437751f14c3645fb483f1d4c5dee58b37e5ce73
     # via ipdb
-isort==5.13.2 \
-    --hash=sha256:48fdfcb9face5d58a4f6dde2e72a1fb8dcaf8ab26f95ab49fab84c2ddefb0109 \
-    --hash=sha256:8ca5e72a8d85860d5a3fa69b8745237f2939afe12dbf656afbcb47fe72d947a6
+isort==6.0.0 \
+    --hash=sha256:567954102bb47bb12e0fae62606570faacddd441e45683968c8d1734fb1af892 \
+    --hash=sha256:75d9d8a1438a9432a7d7b54f2d3b45cad9a4a0fdba43617d9873379704a8bdf1
     # via -r requirements.dev.in
 jedi==0.19.1 \
     --hash=sha256:cf0496f3651bc65d7174ac1b7d043eff454892c708a87d1b683e57b569927ffd \
