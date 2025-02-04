@@ -50,10 +50,6 @@
     {% include 'partials/footer.html' %}
   </div>
 
-  {# Legacy browsers #}
-  {% vite_legacy_polyfills %}
-  {% vite_legacy_asset 'assets/src/scripts/main-legacy.js' %}
-
   {% block extra_js %}{% endblock %}
 </body>
 </html>
