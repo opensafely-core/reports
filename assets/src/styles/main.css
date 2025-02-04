@@ -1,13 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/*! purgecss start ignore */
-:root {
-  --animation-duration: 1s;
-  --transiton-duration: 0.5s;
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
 
-  --color-oxford: #002147;
+@theme {
+  --font-sans: Public Sans, ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
   --color-oxford-50: #f1f7ff;
   --color-oxford-100: #cfe5ff;
   --color-oxford-200: #9ccaff;
@@ -18,10 +17,30 @@
   --color-oxford-700: #00397a;
   --color-oxford-800: #002147;
   --color-oxford-900: #001936;
+  --color-oxford: var(--color-oxford-800);
+}
 
-  --color-gray-50: #f9fafb;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+:root {
+  --animation-duration: 1s;
+  --transiton-duration: 0.5s;
 }
 
 html {
@@ -256,5 +275,3 @@ html {
 [data-details] summary::-webkit-details-marker {
   display: none;
 }
-
-/*! purgecss end ignore */

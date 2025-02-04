@@ -2,17 +2,17 @@
 {% load static %}
 
 <div class="fixed h-screen overflow-y-auto w-64 z-40 bg-oxford-800">
-  <div class="flex items-center h-[63px] flex-shrink-0 px-4 bg-white border-b border-r border-gray-200">
+  <div class="flex items-center h-[63px] shrink-0 px-4 bg-white border-b border-r border-gray-200">
     <img class="inline-block w-auto h-12 mr-auto" src="{% static 'logo.svg' %}">
   </div>
   <nav class="flex-1 px-2 py-4 bg-oxford-800">
     <div class="space-y-1">
       <a href="/" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900">
-        {% include "icons/outline/home.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
+        {% include "icons/outline/home.svg" with htmlClass="text-gray-300 mr-3 shrink-0 h-6 w-6" %}
         Home
       </a>
       <a href="mailto:team@opensafely.org" class="text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-oxford-900">
-        {% include "icons/outline/mail-open.svg" with htmlClass="text-gray-300 mr-3 flex-shrink-0 h-6 w-6" %}
+        {% include "icons/outline/mail-open.svg" with htmlClass="text-gray-300 mr-3 shrink-0 h-6 w-6" %}
         Contact
       </a>
     </div>
@@ -33,10 +33,10 @@
                     class="
                       cursor-pointer text-white w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md relative z-10
                       hover:bg-oxford-900 hover:text-gray-50
-                      focus:outline-none focus:ring-2 focus:ring-oxford-400
+                      focus:outline-hidden focus:ring-2 focus:ring-oxford-400
                     "
                   >
-                    {% include "icons/outline/chevron-right.svg" with htmlClass="text-gray-300 mr-2 flex-shrink-0 h-5 w-5 transform transition-colors ease-in-out duration-150 group-hover:text-gray-400 group-open:rotate-90" %}
+                    {% include "icons/outline/chevron-right.svg" with htmlClass="text-gray-300 mr-2 shrink-0 h-5 w-5 transform transition-colors ease-in-out duration-150 group-hover:text-gray-400 group-open:rotate-90" %}
                     {{ category.name }}
                   </summary>
                   <ul>
