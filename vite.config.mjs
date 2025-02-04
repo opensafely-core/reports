@@ -1,3 +1,5 @@
+import tailwindcss from "@tailwindcss/vite";
+
 /**
  * @type {import('vite').UserConfig}
  */
@@ -14,6 +16,7 @@ const config = {
     outDir: "assets/dist",
     emptyOutDir: true,
   },
+  plugins: [tailwindcss()],
 };
 
 export default config;
