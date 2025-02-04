@@ -1,3 +1,3 @@
 import "@zachleat/details-utils";
-import "../styles/main.scss";
+import "../styles/main.css";
 import "./_ie11";

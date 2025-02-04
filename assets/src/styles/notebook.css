@@ -1,0 +1,57 @@
+.anchor-link:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+
+h1:hover .anchor-link,
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+h5:hover .anchor-link,
+h6:hover .anchor-link {
+  visibility: visible;
+}
+
+.overflow-wrapper {
+  background: linear-gradient(to right, #fff 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to right, rgba(255, 255, 255, 0), #fff 70%) 0 100%,
+    radial-gradient(
+      farthest-side at 0% 50%,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+        farthest-side at 100% 50%,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      )
+      0 100%;
+  background-attachment: local, local, scroll, scroll;
+  background-color: white;
+  background-position: 0 0, 100%, 0 0, 100%;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  overflow-x: auto;
+}
+
+@media (min-width: 768px) {
+  .overflow-wrapper {
+    background: none;
+  }
+}
+
+.overflow-wrapper table {
+  min-width: 640px;
+}
+
+@media (min-width: 768px) {
+  .overflow-wrapper table {
+    background: none;
+  }
+}
+
+.prose .overflow-wrapper pre {
+  background-color: transparent;
+  overflow-x: unset;
+}

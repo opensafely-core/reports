@@ -1,3 +1,3 @@
-import "../styles/notebook.scss";
+import "../styles/notebook.css";
 
 import "./_custom-elements";
