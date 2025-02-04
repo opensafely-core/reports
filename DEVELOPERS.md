@@ -78,8 +78,6 @@ Vite works by compiling JavaScript files, and outputs a manifest file, the JavaS
 Vite adds all JavaScript files to the page using [ES6 Module syntax](https://caniuse.com/es6-module).
 For legacy browsers, this project is utilising the [Vite Legacy Plugin](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) to provide a fallback using the [module/nomodule pattern](https://philipwalton.com/articles/deploying-es2015-code-in-production-today/).
 
-For styling this project uses [Scss](https://www.npmjs.com/package/sass) to compile the stylesheets, and then [PostCSS](https://github.com/postcss/postcss) for post-processing.
-
 ## Running the local asset server
 
 Vite has a built-in development server which will serve the assets and reload them on save.
