@@ -305,9 +305,9 @@ lxml[html-clean,html_clean]==5.2.0 \
     # via
     #   -r requirements.prod.in
     #   lxml-html-clean
-lxml-html-clean==0.1.0 \
-    --hash=sha256:003b61437129b2df4f6f6455e20f5f57707828e2067bc5524d0142e240bb4cd1 \
-    --hash=sha256:f21a33d279eb3bddd336ebfa0c73d3d5b359dbfa8113014f7d1f2d8738fdc305
+lxml-html-clean==0.4.0 \
+    --hash=sha256:3b5aedb6c2b4b684c0fbc8d4f1b901aae0a92c1ce525de84e71cc6dd1d9d4e3d \
+    --hash=sha256:a8b517d3f46c19e9303eafb2a1b4b422fe724ad42ae53793637a8e5cc36ffbc1
     # via lxml
 marshmallow==3.25.1 \
     --hash=sha256:ec5d00d873ce473b7f2ffcb7104286a376c354cab0c2fa12f5573dab03e87210 \
