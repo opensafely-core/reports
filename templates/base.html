@@ -2,7 +2,7 @@
 {% load django_vite %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html class="scroll-smooth motion-reduce:scroll-auto md:scroll-pt-16" lang="en">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,7 +33,16 @@
   <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
 </head>
 <body class="flex flex-nowrap">
-  <a id="skip-link" href="#content" class="sr-only focus:not-sr-only">
+  <a
+    class="
+      sr-only focus:not-sr-only
+      fixed z-50 top-4 left-4 px-8 py-4 rounded-lg bg-oxford-200 border-2 border-oxford-700 font-semibold text-oxford-800
+      hover:bg-oxford-50 hover:text-oxford-900 hover:border-oxford-600
+      focus:bg-oxford-50 focus:text-oxford-900 focus:border-oxford-600
+    "
+    id="skip-link"
+    href="#content"
+  >
     Skip to content
   </a>
 
@@ -42,7 +51,7 @@
   <div class="w-full flex-1 pt-16 lg:pt-0 bg-gray-50 overflow-x-hidden">
     {% include "partials/header.html" %}
 
-    <main class="min-h-screen ie-block lg:mx-auto lg:max-w-screen-md xl:max-w-screen-lg" id="content">
+    <main class="min-h-screen ie-block lg:mx-auto lg:max-w-(--breakpoint-md) xl:max-w-(--breakpoint-lg)" id="content">
       {% include "partials/alert.html" %}
       {% block content %}{% endblock content %}
     </main>
