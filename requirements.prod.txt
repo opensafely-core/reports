@@ -317,9 +317,9 @@ orderedmultidict==1.0.1 \
     --hash=sha256:04070bbb5e87291cc9bfa51df413677faf2141c73c61d2a5f7b26bea3cd882ad \
     --hash=sha256:43c839a17ee3cdd62234c47deca1a8508a3f2ca1d0678a3bf791c87cf84adbf3
     # via furl
-osgithub==0.3.5 \
-    --hash=sha256:94b8ce09b00f8c8841d8fd4607c685e95c971568367d19207fd84c937103f6cc \
-    --hash=sha256:abe47b385cc0634348589ee97e4851b0b1fb8c17a5bf790e002aea73edd54fbf
+osgithub==0.4.0 \
+    --hash=sha256:19da5218ac12508b9693351fb849339b02e92d044261622e598f0ea55e357ede \
+    --hash=sha256:8e41463f27eabf3f77c0eda15f1d6783ebe44a1fa9e38f95fbfeb4b993e8c85a
     # via -r requirements.prod.in
 packaging==23.1 \
     --hash=sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61 \
