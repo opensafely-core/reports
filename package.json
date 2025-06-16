@@ -12,7 +12,7 @@
   "dependencies": {
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
-    "@tailwindcss/vite": "^4.1.8",
+    "@tailwindcss/vite": "^4.1.10",
     "@zachleat/details-utils": "^2.0.2",
     "tailwindcss": "^4.1.6"
   }
