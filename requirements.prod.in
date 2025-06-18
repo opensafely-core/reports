@@ -4,7 +4,7 @@
 # pip-compile --generate-hashes --output-file=requirements.prod.txt requirements.prod.in
 bs4
 django
-django-csp
+django-csp<4.0
 django-extensions
 django-permissions-policy
 django-structlog
