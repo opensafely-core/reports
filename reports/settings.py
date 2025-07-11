@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import re
 from pathlib import Path
 
+from csp.constants import NONE, SELF, UNSAFE_INLINE
 from django.urls import reverse_lazy
 from environs import Env
 from furl import furl
@@ -211,24 +212,33 @@ CACHES = {
 
 # CSP
 # https://django-csp.readthedocs.io/en/latest/configuration.html
-CSP_REPORT_ONLY = DEBUG
-CSP_DEFAULT_SRC = ["'none'"]
-
-# Duplicate the *_ELEM settings for Firefox
-# https://bugzilla.mozilla.org/show_bug.cgi?id=1529338
-CSP_STYLE_SRC = CSP_STYLE_SRC_ELEM = ["'self'", "https://fonts.googleapis.com"]
-CSP_SCRIPT_SRC = CSP_SCRIPT_SRC_ELEM = ["'self'", "https://plausible.io"]
-
-CSP_CONNECT_SRC = ["https://plausible.io"]
-CSP_FONT_SRC = ["'self'", "https://fonts.gstatic.com"]
-CSP_IMG_SRC = ["'self'", "data:"]
-CSP_MANIFEST_SRC = ["'self'"]
+CONNECT_SRC = ["https://plausible.io"]
+FONT_SRC = [SELF, "https://fonts.gstatic.com"]
+SCRIPT_SRC = [SELF, "https://plausible.io"]
+STYLE_SRC = [SELF, "https://fonts.googleapis.com"]
 
 # configure django-csp to work with Vite when using it in dev mode
 if ASSETS_DEV_MODE:
-    CSP_CONNECT_SRC = ["ws://localhost:5173/static/"]
-    CSP_SCRIPT_SRC_ELEM = ["'self'", "http://localhost:5173"]
-    CSP_STYLE_SRC_ELEM = ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"]
+    CONNECT_SRC = SCRIPT_SRC + ["ws://localhost:5173/static/"]
+    SCRIPT_SRC = SCRIPT_SRC + ["http://localhost:5173"]
+    STYLE_SRC = STYLE_SRC + [UNSAFE_INLINE]
+
+CONTENT_SECURITY_POLICY = {
+    "EXCLUDE_URL_PREFIXES": ["/api"],
+    "DIRECTIVES": {
+        "connect-src": CONNECT_SRC,
+        "default-src": [NONE],
+        "font-src": FONT_SRC,
+        "img-src": [SELF, "data:"],
+        "manifest-src": [SELF],
+        "script-src": SCRIPT_SRC,
+        "style-src": STYLE_SRC,
+        # Duplicate the *_ELEM settings for Firefox
+        # https://bugzilla.mozilla.org/show_bug.cgi?id=1529338
+        "script-src-elem": SCRIPT_SRC,
+        "style-src-elem": STYLE_SRC,
+    },
+}
 
 
 # Permissions Policy
