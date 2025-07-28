@@ -352,9 +352,9 @@ requests-cache==1.2.1 \
     # via
     #   -r requirements.prod.in
     #   osgithub
-sentry-sdk==2.32.0 \
-    --hash=sha256:6cf51521b099562d7ce3606da928c473643abe99b00ce4cb5626ea735f4ec345 \
-    --hash=sha256:9016c75d9316b0f6921ac14c8cd4fb938f26002430ac5be9945ab280f78bec6b
+sentry-sdk==2.33.2 \
+    --hash=sha256:8d57a3b4861b243aa9d558fda75509ad487db14f488cbdb6c78c614979d77632 \
+    --hash=sha256:e85002234b7b8efac9b74c2d91dbd4f8f3970dc28da8798e39530e65cb740f94
     # via -r requirements.prod.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
