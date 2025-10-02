@@ -6,7 +6,6 @@
 coverage[toml]
 factory_boy
 httpretty
-ipdb
 pip-tools
 pre-commit
 pytest-django
