@@ -5,13 +5,13 @@
 # pip-compile --generate-hashes --output-file=requirements.dev.txt requirements.dev.in
 coverage[toml]
 factory_boy
-httpretty
 pip-tools
 pre-commit
 pytest-django
 pytest-env
 pytest-freezer
 pytest-mock
+responses
 ruff
 
 # Pin pip due to incompatibility of later releases with pip-tools

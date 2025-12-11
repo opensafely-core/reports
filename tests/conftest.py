@@ -2,8 +2,8 @@ import logging
 from os import environ
 from pathlib import Path
 
-import httpretty as _httpretty
 import pytest
+import responses
 import structlog
 from django.contrib.auth.models import Permission
 from structlog.testing import LogCapture
@@ -59,11 +59,9 @@ def fixture_configure_structlog(log_output):
 
 
 @pytest.fixture
-def httpretty():
-    _httpretty.reset()
-    _httpretty.enable()
-    yield _httpretty
-    _httpretty.disable()
+def http_responses():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        yield rsps
 
 
 @pytest.fixture

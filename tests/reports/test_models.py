@@ -1,6 +1,7 @@
 from os import environ
 
 import pytest
+import responses
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 
@@ -217,14 +218,14 @@ def test_report_menu_name_is_limited_to_sixty_characters(bennett_org):
 
 
 @pytest.mark.django_db
-def test_report_uses_github(bennett_org, httpretty):
+def test_report_uses_github(bennett_org, http_responses):
     report = Report(
         org=bennett_org,
         **REAL_REPO_DETAILS,
     )
     assert report.uses_github
 
-    httpretty.register_uri(httpretty.GET, "http://example.com", status=200)
+    http_responses.add(responses.GET, "http://example.com", status=200)
     report = Report(
         org=bennett_org,
         job_server_url="http://example.com/",
@@ -233,9 +234,8 @@ def test_report_uses_github(bennett_org, httpretty):
 
 
 @pytest.mark.django_db
-def test_report_with_missing_job_server_file(bennett_org, httpretty):
-    httpretty.register_uri(httpretty.HEAD, "http://example.com", status=404)
-
+def test_report_with_missing_job_server_file(bennett_org, http_responses):
+    http_responses.add(responses.HEAD, "http://example.com", status=404)
     with pytest.raises(ValidationError, match="Could not find specified file"):
         ReportFactory(
             org=bennett_org,
@@ -247,9 +247,8 @@ def test_report_with_missing_job_server_file(bennett_org, httpretty):
 
 
 @pytest.mark.django_db
-def test_report_with_unpublished_output_and_published(bennett_org, httpretty):
-    httpretty.register_uri(httpretty.HEAD, "http://example.com", status=200)
-
+def test_report_with_unpublished_output_and_published(bennett_org, http_responses):
+    http_responses.add(responses.HEAD, "http://example.com", status=200)
     msg = "Unpublished outputs cannot be used in public reports"
     with pytest.raises(ValidationError, match=msg):
         ReportFactory(
@@ -264,15 +263,10 @@ def test_report_with_unpublished_output_and_published(bennett_org, httpretty):
 
 @pytest.mark.django_db
 def test_report_with_published_job_server_url_adds_trailing_slash(
-    bennett_org, httpretty
+    bennett_org, http_responses
 ):
-    httpretty.register_uri(
-        httpretty.HEAD, "http://example.com/published/foo", status=200
-    )
-    httpretty.register_uri(
-        httpretty.HEAD, "http://example.com/published/foo/", status=200
-    )
-
+    http_responses.add(responses.HEAD, "http://example.com/published/foo", status=200)
+    http_responses.add(responses.HEAD, "http://example.com/published/foo/", status=200)
     report = ReportFactory(
         org=bennett_org,
         is_draft=False,
@@ -296,10 +290,12 @@ def test_report_with_published_job_server_url_adds_trailing_slash(
 
 @pytest.mark.django_db
 def test_report_with_unpublished_job_server_url_does_not_add_trailing_slash(
-    bennett_org, httpretty
+    bennett_org, http_responses
 ):
-    httpretty.register_uri(
-        httpretty.HEAD, "http://example.com/api/v2/releases/file/foo", status=200
+    http_responses.add(
+        responses.HEAD,
+        "http://example.com/api/v2/releases/file/foo",
+        status=200,
     )
 
     report = ReportFactory(

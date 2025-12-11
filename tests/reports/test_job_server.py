@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import pytest
+import responses
 from django.utils import timezone
 from django.utils.http import http_date
 
@@ -10,13 +11,11 @@ from ..factories import ReportFactory
 
 
 @pytest.mark.django_db
-def test_clear_cache_with_non_caching_session(httpretty, bennett_org):
+def test_clear_cache_with_non_caching_session(http_responses, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
-    httpretty.register_uri(
-        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
-    )
+    http_responses.add(responses.HEAD, url, status=200, body="")
 
     report = ReportFactory(
         org=bennett_org,
@@ -31,7 +30,7 @@ def test_clear_cache_with_non_caching_session(httpretty, bennett_org):
 
 
 @pytest.mark.django_db
-def test_clear_cache_with_caching_session(httpretty, bennett_org):
+def test_clear_cache_with_caching_session(http_responses, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -40,20 +39,13 @@ def test_clear_cache_with_caching_session(httpretty, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
-    httpretty.register_uri(
-        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
-    )
-
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(responses.HEAD, url, status=200, body="")
+    http_responses.add(
+        responses.GET,
         url,
-        responses=[
-            httpretty.Response(
-                status=200,
-                body=expected_html,
-                adding_headers={"Last-Modified": http_date(timezone.now().timestamp())},
-            )
-        ],
+        status=200,
+        body=expected_html,
+        headers={"Last-Modified": http_date(timezone.now().timestamp())},
     )
 
     report = ReportFactory(
@@ -74,7 +66,7 @@ def test_clear_cache_with_caching_session(httpretty, bennett_org):
 
 
 @pytest.mark.django_db
-def test_get_html_caches(httpretty, bennett_org):
+def test_get_html_caches(http_responses, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -83,20 +75,13 @@ def test_get_html_caches(httpretty, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
-    httpretty.register_uri(
-        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
-    )
-
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(responses.HEAD, url, status=200, body="")
+    http_responses.add(
+        responses.GET,
         url,
-        responses=[
-            httpretty.Response(
-                status=200,
-                body=expected_html,
-                adding_headers={"Last-Modified": http_date(timezone.now().timestamp())},
-            )
-        ],
+        status=200,
+        body=expected_html,
+        headers={"Last-Modified": http_date(timezone.now().timestamp())},
     )
 
     report = ReportFactory(
@@ -106,19 +91,19 @@ def test_get_html_caches(httpretty, bennett_org):
         branch="",
         report_html_file_path="",
     )
-    assert len(httpretty.latest_requests()) == 1
+    assert len(http_responses.calls) == 1
 
     job_server_report = JobServerReport(report)
 
     job_server_report.get_html()
-    assert len(httpretty.latest_requests()) == 3
+    assert len(http_responses.calls) == 3
 
     job_server_report.get_html()
-    assert len(httpretty.latest_requests()) == 3
+    assert len(http_responses.calls) == 3
 
 
 @pytest.mark.django_db
-def test_get_published_html_from_job_server(httpretty, bennett_org):
+def test_get_published_html_from_job_server(http_responses, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -127,21 +112,15 @@ def test_get_published_html_from_job_server(httpretty, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
-    httpretty.register_uri(
-        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
-    )
+    http_responses.add(responses.HEAD, url, status=200, body="")
 
     # Mock the job-server get_file() request
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         url,
-        responses=[
-            httpretty.Response(
-                status=200,
-                body=expected_html,
-                adding_headers={"Last-Modified": http_date(timezone.now().timestamp())},
-            )
-        ],
+        status=200,
+        body=expected_html,
+        headers={"Last-Modified": http_date(timezone.now().timestamp())},
     )
 
     report = ReportFactory(
@@ -156,25 +135,19 @@ def test_get_published_html_from_job_server(httpretty, bennett_org):
 
 
 @pytest.mark.django_db
-def test_get_unpublished_html_from_job_server(httpretty):
+def test_get_unpublished_html_from_job_server(http_responses):
     url = "https://jobs.opensafely.org/api/v2/releases/file/file_id"
 
     # Mock the job-server file_exists() request
-    httpretty.register_uri(
-        httpretty.HEAD,
-        url,
-        responses=[
-            httpretty.Response(status=200, body=""),
-        ],
-    )
+    http_responses.add(responses.HEAD, url, status=200, body="")
 
     JobServerClient(token="test").file_exists(url)
 
-    assert httpretty.latest_requests()[0].headers["Authorization"] == "test"
+    assert http_responses.calls[0].request.headers["Authorization"] == "test"
 
 
 @pytest.mark.django_db
-def test_last_updated(httpretty, bennett_org):
+def test_last_updated(http_responses, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -183,20 +156,14 @@ def test_last_updated(httpretty, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
-    httpretty.register_uri(
-        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
-    )
+    http_responses.add(responses.HEAD, url, status=200, body="")
 
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         url,
-        responses=[
-            httpretty.Response(
-                status=200,
-                body=expected_html,
-                adding_headers={"Last-Modified": http_date(timezone.now().timestamp())},
-            )
-        ],
+        status=200,
+        body=expected_html,
+        headers={"Last-Modified": http_date(timezone.now().timestamp())},
     )
 
     report = ReportFactory(
@@ -212,7 +179,7 @@ def test_last_updated(httpretty, bennett_org):
 
 
 @pytest.mark.django_db
-def test_report_last_updated_after_fetching(httpretty, bennett_org):
+def test_report_last_updated_after_fetching(http_responses, bennett_org):
     expected_html = """
     <html>
         <body><p>foo</p></body>
@@ -221,23 +188,17 @@ def test_report_last_updated_after_fetching(httpretty, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
-    httpretty.register_uri(
-        httpretty.HEAD, url, responses=[httpretty.Response(status=200, body="")]
-    )
+    http_responses.add(responses.HEAD, url, status=200, body="")
 
     now = timezone.now()
 
     # Mock the job-server get_file() request
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         url,
-        responses=[
-            httpretty.Response(
-                status=200,
-                body=expected_html,
-                adding_headers={"Last-Modified": http_date(now.timestamp())},
-            )
-        ],
+        status=200,
+        body=expected_html,
+        headers={"Last-Modified": http_date(now.timestamp())},
     )
 
     report = ReportFactory(
