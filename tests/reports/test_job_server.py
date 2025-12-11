@@ -94,6 +94,7 @@ def test_get_html_caches(http_responses, bennett_org):
     assert len(http_responses.calls) == 1
 
     job_server_report = JobServerReport(report)
+    job_server_report.clear_cache()
 
     job_server_report.get_html()
     assert len(http_responses.calls) == 3
@@ -130,7 +131,7 @@ def test_get_published_html_from_job_server(http_responses, bennett_org):
         branch="",
         report_html_file_path="",
     )
-    job_server_report = JobServerReport(report)
+    job_server_report = JobServerReport(report, use_cache=False)
     assert job_server_report.get_html() == expected_html
 
 
@@ -156,8 +157,8 @@ def test_last_updated(http_responses, bennett_org):
     url = "https://jobs.opensafely.org/org/project/workspace/published/file_id/"
 
     # Mock the job-server file_exists() request
-    http_responses.add(responses.HEAD, url, status=200, body="")
 
+    http_responses.add(responses.HEAD, url, status=200, body="")
     http_responses.add(
         responses.GET,
         url,
@@ -173,7 +174,7 @@ def test_last_updated(http_responses, bennett_org):
         branch="",
         report_html_file_path="",
     )
-    job_server_report = JobServerReport(report)
+    job_server_report = JobServerReport(report, use_cache=False)
 
     assert job_server_report.last_updated() == report.last_updated
 
@@ -210,11 +211,11 @@ def test_report_last_updated_after_fetching(http_responses, bennett_org):
         report_html_file_path="",
     )
 
-    JobServerReport(report).get_html()
+    JobServerReport(report, use_cache=False).get_html()
     report.refresh_from_db()
     assert report.last_updated == now.date()
 
     # check we don't write to the report when last_updated is the same
-    JobServerReport(report).get_html()
+    JobServerReport(report, use_cache=False).get_html()
     report.refresh_from_db()
     assert report.last_updated == now.date()
