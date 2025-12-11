@@ -218,14 +218,13 @@ def test_report_menu_name_is_limited_to_sixty_characters(bennett_org):
 
 
 @pytest.mark.django_db
-def test_report_uses_github(bennett_org, http_responses):
+def test_report_uses_github(bennett_org):
     report = Report(
         org=bennett_org,
         **REAL_REPO_DETAILS,
     )
     assert report.uses_github
 
-    http_responses.add(responses.GET, "http://example.com", status=200)
     report = Report(
         org=bennett_org,
         job_server_url="http://example.com/",
@@ -265,7 +264,6 @@ def test_report_with_unpublished_output_and_published(bennett_org, http_response
 def test_report_with_published_job_server_url_adds_trailing_slash(
     bennett_org, http_responses
 ):
-    http_responses.add(responses.HEAD, "http://example.com/published/foo", status=200)
     http_responses.add(responses.HEAD, "http://example.com/published/foo/", status=200)
     report = ReportFactory(
         org=bennett_org,
