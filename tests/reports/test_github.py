@@ -3,6 +3,7 @@ from base64 import b64encode
 from datetime import date
 
 import pytest
+import responses
 from osgithub import GithubAPIException, GithubClient, GithubRepo
 
 from reports.github import GithubReport
@@ -10,12 +11,12 @@ from reports.github import GithubReport
 from ..factories import ReportFactory
 
 
-def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
+def register_commits_uri(http_responses, owner, repo, path, sha, commit_dates):
     commit_dates = (
         [commit_dates] if not isinstance(commit_dates, list) else commit_dates
     )
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         f"https://api.github.com/repos/{owner}/{repo}/commits?sha={sha}&path={path}&per_page=1",
         status=200,
         body=json.dumps(
@@ -28,32 +29,28 @@ def register_commits_uri(httpretty, owner, repo, path, sha, commit_dates):
 
 
 @pytest.mark.django_db
-def test_get_normal_html_from_github(httpretty, bennett_org):
+def test_get_normal_html_from_github(http_responses, bennett_org):
     html = """
         <html>
             <body><p>foo</p></body>
         </html>
     """
     # Mock the github request
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         "https://api.github.com/repos/opensafely/test/contents/foo.html?ref=main",
-        responses=[
-            httpretty.Response(
-                status=200,
-                body=json.dumps(
-                    {
-                        "name": "foo.html",
-                        "sha": "abcd1234",
-                        "content": b64encode(html.encode()).decode(),
-                    }
-                ),
-                adding_headers={"Last-Modified": "Tue, 27 Apr 2021 10:00:00 GMT"},
-            )
-        ],
+        status=200,
+        body=json.dumps(
+            {
+                "name": "foo.html",
+                "sha": "abcd1234",
+                "content": b64encode(html.encode()).decode(),
+            }
+        ),
+        headers={"Last-Modified": "Tue, 27 Apr 2021 10:00:00 GMT"},
     )
     register_commits_uri(
-        httpretty,
+        http_responses,
         owner="opensafely",
         repo="test",
         path="foo.html",
@@ -69,7 +66,7 @@ def test_get_normal_html_from_github(httpretty, bennett_org):
 
 
 @pytest.mark.django_db
-def test_get_large_html_from_github(bennett_org, httpretty):
+def test_get_large_html_from_github(bennett_org, http_responses):
     """
     Test that a GithubException for a too-large file is caught and the content fetched
     from the git_blob by sha instead
@@ -81,8 +78,8 @@ def test_get_large_html_from_github(bennett_org, httpretty):
     """
     # Mock the github requests
     # /contents on the too-large file returns a 403
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         "https://api.github.com/repos/opensafely/test/contents/foo.html?ref=main",
         status=200,
         body=json.dumps(
@@ -97,8 +94,8 @@ def test_get_large_html_from_github(bennett_org, httpretty):
         ),
     )
     # /contents on the parent folder returns two files
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         "https://api.github.com/repos/opensafely/test/contents/?ref=main",
         status=200,
         body=json.dumps(
@@ -107,11 +104,11 @@ def test_get_large_html_from_github(bennett_org, httpretty):
                 {"name": "foo.html", "sha": "abcd1234"},
             ]
         ),
-        adding_headers={"Last-Modified": "Tue, 27 Apr 2021 10:00:00 GMT"},
+        headers={"Last-Modified": "Tue, 27 Apr 2021 10:00:00 GMT"},
     )
     # /git/blobs on the sha from the found file in the parent folder
-    httpretty.register_uri(
-        httpretty.GET,
+    http_responses.add(
+        responses.GET,
         "https://api.github.com/repos/opensafely/test/git/blobs/abcd1234",
         status=200,
         body=json.dumps(
@@ -126,7 +123,7 @@ def test_get_large_html_from_github(bennett_org, httpretty):
         ),
     )
     register_commits_uri(
-        httpretty,
+        http_responses,
         owner="opensafely",
         repo="test",
         path="foo.html",
@@ -150,7 +147,7 @@ def test_get_large_html_from_github(bennett_org, httpretty):
 
     # 4 calls were made, to /contents and /commits for the single file and its updated date,
     # then to /contents for the parent folder, and /git/blob for the file contents
-    assert len(httpretty.latest_requests()) == 4
+    assert len(http_responses.calls) == 4
 
     # After the first get_html call, use_git_blob is set to avoid re-attempting to call
     # get_contents on the single file, which will fail
@@ -159,7 +156,7 @@ def test_get_large_html_from_github(bennett_org, httpretty):
 
     # refetch; the html has now been stored on the GithubReport, so no additional calls are made
     assert github_report.get_html() == html
-    latest_requests = httpretty.latest_requests()
+    latest_requests = http_responses.calls
     assert len(latest_requests) == 4
 
     # instantiate a new GithubReport and re-fetch; get_contents is not called again on the single file,
@@ -168,27 +165,26 @@ def test_get_large_html_from_github(bennett_org, httpretty):
     assert github_report.get_html() == html
     # Only 3 more calls, to /contents for the parent folder, /git/blob for the file contents
     # and /commits for the update date
-    latest_requests = httpretty.latest_requests()
+    latest_requests = http_responses.calls
     assert len(latest_requests) == 7
     assert (
-        latest_requests[-3].url
+        latest_requests[-3].request.url
         == "https://api.github.com/repos/opensafely/test/contents/?ref=main"
     )
     assert (
-        latest_requests[-2].url
+        latest_requests[-2].request.url
         == "https://api.github.com/repos/opensafely/test/git/blobs/abcd1234"
     )
     assert (
-        latest_requests[-1].url
+        latest_requests[-1].request.url
         == "https://api.github.com/repos/opensafely/test/commits?sha=main&path=foo.html&per_page=1"
     )
 
 
 @pytest.mark.django_db
-def test_github_report_get_parent_contents_invalid_folder(bennett_org, httpretty):
-    # Mock the github request
-    httpretty.register_uri(
-        httpretty.GET,
+def test_github_report_get_parent_contents_invalid_folder(bennett_org, http_responses):
+    http_responses.add(
+        responses.GET,
         "https://api.github.com/repos/opensafely/test-repo/contents/test-folder?ref=main",
         status=404,
         body=json.dumps({"message": "Not found"}),
