@@ -3,7 +3,9 @@
 # To generate requirements file, run:
 # pip-compile --generate-hashes --output-file=requirements.prod.txt requirements.prod.in
 bs4
-django
+# The main Django web framework for building applications.
+# Pin to 5.2.x until we are happy with 6.0 compatibility.
+django>=5.2,<6.0
 django-csp
 django-extensions
 django-permissions-policy
