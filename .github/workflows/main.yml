@@ -63,7 +63,7 @@ jobs:
           install-just: true
 
       - name: Retrieve assets
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: node-assets
           path: assets/dist
