@@ -10,9 +10,9 @@
     "vite": "^7.3.0"
   },
   "dependencies": {
-    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.1.17",
+    "@tailwindcss/vite": "^4.1.18",
     "@zachleat/details-utils": "^2.0.2",
     "tailwindcss": "^4.1.17"
   }
