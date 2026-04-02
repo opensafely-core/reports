@@ -64,7 +64,11 @@ def report_view(request, slug):
     `force-update` query parameter.
     """
     try:
-        report = Report.objects.for_user(request.user).get(slug=slug)
+        report = (
+            Report.objects.for_user(request.user)
+            .select_related("category")
+            .get(slug=slug)
+        )
     except Report.DoesNotExist:
         raise Http404("Report matching query does not exist")
 
@@ -80,12 +84,15 @@ def report_view(request, slug):
 
     remote_cls = GithubReport if report.uses_github else JobServerReport
     remote = remote_cls(report)
+    is_archived_report = report.category.name.lower() == "archive"
 
-    return TemplateResponse(
+    response = TemplateResponse(
         request,
         "report.html",
-        {
-            "remote": remote,
-            "report": report,
-        },
+        {"remote": remote, "report": report},
     )
+
+    if is_archived_report:
+        response.headers["X-Robots-Tag"] = "noindex"
+
+    return response
