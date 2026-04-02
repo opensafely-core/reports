@@ -89,7 +89,7 @@ def report_view(request, slug):
     response = TemplateResponse(
         request,
         "report.html",
-        {"remote": remote, "report": report},
+        {"remote": remote, "report": report, "is_archived_report": is_archived_report},
     )
 
     if is_archived_report:

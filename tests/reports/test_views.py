@@ -339,6 +339,24 @@ def test_report_view_does_not_set_noindex_header_for_non_archive_reports(
 
 
 @pytest.mark.django_db
+def test_archive_banner_is_rendered_for_archive_reports(client, mocker, bennett_org):
+    remote = mocker.Mock()
+    remote.last_updated = date(2021, 1, 1)
+    remote.get_html.return_value = "<h1>Archived report</h1>"
+    mocker.patch("reports.views.GithubReport", return_value=remote)
+
+    report = ReportFactory(
+        category=CategoryFactory(name="Archive"),
+        org=bennett_org,
+    )
+
+    response = client.get(report.get_absolute_url())
+
+    assert response.status_code == 200
+    assert "This report has been archived" in response.rendered_content
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     "user_attributes,is_draft,expected_status",
     [
