@@ -1,12 +1,14 @@
 from datetime import date, timedelta
 
 import pytest
+from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 
 from gateway.models import User
 from reports.groups import setup_researchers
 from reports.models import Category, Report
 from reports.rendering import process_html
+from reports.views import report_view
 
 from ..factories import CategoryFactory, ReportFactory, UserFactory
 from .utils import assert_html_equal
@@ -268,6 +270,8 @@ def test_report_view(client, bennett_org):
     )
     response = client.get(report.get_absolute_url())
 
+    assert "X-Robots-Tag" not in response.headers
+
     assert_html_equal(
         process_html(response.context["remote"].get_html()),
         """
@@ -300,8 +304,56 @@ def test_archive_report_view(client, bennett_org):
 
     response = client.get(archive_report.get_absolute_url())
     assert response.status_code == 200
+    assert response.headers["X-Robots-Tag"] == "noindex"
     assert response.context["report"] == archive_report
     assert [category.id for category in response.context["categories"]] == [category.id]
+
+
+@pytest.mark.django_db
+def test_report_view_sets_noindex_header_for_archive_reports(rf, bennett_org):
+    report = ReportFactory(
+        category=CategoryFactory(name="Archive"),
+        org=bennett_org,
+    )
+    request = rf.get(report.get_absolute_url())
+    request.user = AnonymousUser()
+
+    response = report_view(request, slug=report.slug)
+
+    assert response.headers["X-Robots-Tag"] == "noindex"
+    assert response.context_data["is_archived_report"] is True
+
+
+@pytest.mark.django_db
+def test_report_view_does_not_set_noindex_header_for_non_archive_reports(
+    rf, bennett_org
+):
+    report = ReportFactory(org=bennett_org)
+    request = rf.get(report.get_absolute_url())
+    request.user = AnonymousUser()
+
+    response = report_view(request, slug=report.slug)
+
+    assert "X-Robots-Tag" not in response.headers
+    assert response.context_data["is_archived_report"] is False
+
+
+@pytest.mark.django_db
+def test_archive_banner_is_rendered_for_archive_reports(client, mocker, bennett_org):
+    remote = mocker.Mock()
+    remote.last_updated = date(2021, 1, 1)
+    remote.get_html.return_value = "<h1>Archived report</h1>"
+    mocker.patch("reports.views.GithubReport", return_value=remote)
+
+    report = ReportFactory(
+        category=CategoryFactory(name="Archive"),
+        org=bennett_org,
+    )
+
+    response = client.get(report.get_absolute_url())
+
+    assert response.status_code == 200
+    assert "This report has been archived" in response.rendered_content
 
 
 @pytest.mark.django_db
