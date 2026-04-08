@@ -86,7 +86,7 @@ def report_view(request, slug):
 
     remote_cls = GithubReport if report.uses_github else JobServerReport
     remote = remote_cls(report)
-    is_archived_report = report.category.name.lower() == archive_category_name
+    is_archived_report = report.category.name.casefold() == archive_category_name
 
     response = TemplateResponse(
         request,
