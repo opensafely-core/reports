@@ -12,6 +12,8 @@ from .models import Report
 
 logger = structlog.getLogger()
 
+archive_category_name = "archive"
+
 
 @never_cache
 def landing(request):
@@ -20,7 +22,7 @@ def landing(request):
     # back and compared their activity dates we don't know which ones we will be using, so we grab ten of each which
     # must be enough.
     all_reports = Report.objects.for_user(request.user).exclude(
-        category__name__iexact="archive"
+        category__name__iexact=archive_category_name
     )
 
     # To avoid duplication of reports in the activity list, we don't display the publication event for reports that
@@ -64,7 +66,11 @@ def report_view(request, slug):
     `force-update` query parameter.
     """
     try:
-        report = Report.objects.for_user(request.user).get(slug=slug)
+        report = (
+            Report.objects.for_user(request.user)
+            .select_related("category")
+            .get(slug=slug)
+        )
     except Report.DoesNotExist:
         raise Http404("Report matching query does not exist")
 
@@ -80,12 +86,15 @@ def report_view(request, slug):
 
     remote_cls = GithubReport if report.uses_github else JobServerReport
     remote = remote_cls(report)
+    is_archived_report = report.category.name.casefold() == archive_category_name
 
-    return TemplateResponse(
+    response = TemplateResponse(
         request,
         "report.html",
-        {
-            "remote": remote,
-            "report": report,
-        },
+        {"remote": remote, "report": report, "is_archived_report": is_archived_report},
     )
+
+    if is_archived_report:
+        response.headers["X-Robots-Tag"] = "noindex"
+
+    return response
