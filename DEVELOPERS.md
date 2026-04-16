@@ -58,6 +58,17 @@ just dev-reset
 Access at http://localhost:8000
 
 
+#### Manually add a report
+
+To add a report in local development:
+
+1. Log into the [admin](http://localhost:8000/admin/) with username `admin` and password `admin`.
+2. Under `Reports` section, click `Reports`.
+3. Click `Add Report` and complete the form.
+4. Set the category to `Reports` for a standard report, or `Archive` for an archived report.
+5. If the `Archive` category does not exist, go to `Categories` in the `Reports` section and add it first.
+
+
 #### Run tests
 
 ```sh
