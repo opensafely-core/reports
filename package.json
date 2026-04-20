@@ -7,7 +7,7 @@
     "serve": "vite preview"
   },
   "devDependencies": {
-    "vite": "^8.0.5"
+    "vite": "^8.0.8"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.11",
