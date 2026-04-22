@@ -58,6 +58,17 @@ just dev-reset
 Access at http://localhost:8000
 
 
+#### Manually add a report
+
+To add a report in local development:
+
+1. Log into the [admin](http://localhost:8000/admin/) with username `admin` and password `admin`.
+2. Under `Reports` section, click `Reports`.
+3. Click `Add Report` and complete the form.
+4. In the `Report file details` section, enter a valid Job Server URL(example [URL](https://jobs.opensafely.org/opensafely-internal/tpp-database-schema/published/01KNV8PMVN8EHGXGDTG3HW75GM/)).
+5. Set the category to `Reports` for a standard report, or `Archive` for an archived report.
+6. If the `Archive` category does not exist, go to `Categories` in the `Reports` section and add it first.
+
 #### Run tests
 
 ```sh
