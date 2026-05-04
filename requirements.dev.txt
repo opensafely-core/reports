@@ -4,9 +4,9 @@
 #
 #    pip-compile --allow-unsafe --generate-hashes --output-file=requirements.dev.txt requirements.dev.in
 #
-build==1.4.4 \
-    --hash=sha256:8c3f48a6090b39edec1a273d2d57949aaf13723b01e02f9d518396887519f64d \
-    --hash=sha256:f832ae053061f3fb524af812dc94b8b84bac6880cd587630e3b5d91a6a9c1703
+build==1.5.0 \
+    --hash=sha256:13f3eecb844759ab66efec90ca17639bbf14dc06cb2fdf37a9010322d9c50a6f \
+    --hash=sha256:302c22c3ba2a0fd5f3911918651341ebb3896176cbdec15bd421f80b1afc7647
     # via pip-tools
 cfgv==3.5.0 \
     --hash=sha256:a8dc6b26ad22ff227d2634a65cb388215ce6cc96bbcc5cfde7641ae87e8dacc0 \
@@ -337,9 +337,9 @@ six==1.17.0 \
     # via
     #   -c requirements.prod.txt
     #   python-dateutil
-virtualenv==21.2.4 \
-    --hash=sha256:29d21e941795206138d0f22f4e45ff7050e5da6c6472299fb7103318763861ac \
-    --hash=sha256:b294ef68192638004d72524ce7ef303e9d0cf5a44c95ce2e54a7500a6381cada
+virtualenv==21.3.0 \
+    --hash=sha256:4d28ee41f6d9ec8f1f00cd472b9ffbcedda1b3d3b9a575b5c94a2d004fd51bd7 \
+    --hash=sha256:733750db978ec95c2d8eb4feadaa57091002bce404cb39ba69899cf7bd28944e
     # via pre-commit
 wheel==0.47.0 \
     --hash=sha256:212281cab4dff978f6cedd499cd893e1f620791ca6ff7107cf270781e587eced \
