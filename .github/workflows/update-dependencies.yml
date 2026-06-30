@@ -25,6 +25,6 @@ jobs:
         app-id: 1031449  # opensafely-core Create PR app
         private-key: ${{ secrets.CREATE_PR_APP_PRIVATE_KEY }}
 
-    - uses: bennettoxford/update-dependencies-action@d9d335323c713d00eee39dbf0fae357e144729f0 # v1
+    - uses: bennettoxford/update-dependencies-action@b77a22bcfe1d06020d908e64c9828fe944da3a5e # v1
       with:
         token: ${{ steps.generate-token.outputs.token }}
