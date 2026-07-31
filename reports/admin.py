@@ -1,4 +1,5 @@
 from hashlib import shake_256
+from typing import ClassVar
 
 from django.contrib import admin, messages
 from django.utils.safestring import mark_safe
@@ -59,15 +60,21 @@ class LinkInline(admin.TabularInline):
 
 @admin.register(Org)
 class OrgAdmin(admin.ModelAdmin):
-    fields = ["name", "slug", "url", "logo"]
+    fields: ClassVar = ["name", "slug", "url", "logo"]
 
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
     inlines = (LinkInline,)
-    actions = ["update_cache"]
+    actions: ClassVar = ["update_cache"]
     list_display = ("__str__", "updated_at", "updated_by")
-    list_filter = ["org", IsExternalFilter, HostingFilter, "created_by", "updated_by"]
+    list_filter: ClassVar = [
+        "org",
+        IsExternalFilter,
+        HostingFilter,
+        "created_by",
+        "updated_by",
+    ]
     fieldsets = (
         ("Organisation", {"fields": ["org"]}),
         ("Navigation", {"fields": ["category", "menu_name"]}),
@@ -127,7 +134,7 @@ class ReportAdmin(admin.ModelAdmin):
             {"fields": ["created_at", "created_by", "updated_at", "updated_by"]},
         ),
     )
-    readonly_fields = [
+    readonly_fields: ClassVar = [
         "cache_token",
         "created_at",
         "created_by",

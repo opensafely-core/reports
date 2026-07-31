@@ -1,4 +1,5 @@
 import re
+from typing import ClassVar
 from uuid import uuid4
 
 import structlog
@@ -206,7 +207,7 @@ class Report(models.Model):
 
     class Meta:
         ordering = ("menu_name",)
-        permissions = [
+        permissions: ClassVar = [
             ("view_draft", "Can view draft reports"),
         ]
 
@@ -293,8 +294,7 @@ class Report(models.Model):
             # an existing folder, we don't want to use a previously cached request
             github_report = GithubReport(self, use_cache=False)
             try:
-                # noinspection PyStatementEffect
-                github_report.repo
+                github_report._repo = github_report.repo
             except GithubAPIException:
                 raise ValidationError(
                     {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}

@@ -5,7 +5,7 @@ class ReportsAuthenticationForm(AuthenticationForm):
     """Custom AuthenticationForm to override styling"""
 
     def __init__(self, request=None, *args, **kwargs):
-        super().__init__(request=request, *args, **kwargs)
+        super().__init__(*args, request=request, **kwargs)
         self.fields["username"].widget.attrs.update(
             {
                 "autocomplete": "username",
