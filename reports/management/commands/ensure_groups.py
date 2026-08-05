@@ -4,7 +4,7 @@ from reports.groups import setup_researchers
 
 
 class Command(BaseCommand):
-    help = (  # noqa: A003
+    help = (
         "Ensure the researchers group exists with relevant permissions."
     )
 
