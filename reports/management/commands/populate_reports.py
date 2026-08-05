@@ -58,7 +58,11 @@ class Command(BaseCommand):
             Report,
             category=category,
             org=org,
-            publication_date=datetime.datetime(year=2021, month=5, day=10),
+            publication_date=datetime.date(
+                year=2021,
+                month=5,
+                day=10,
+            ),
             created_by=user,
             updated_by=user,
             **kwargs,
