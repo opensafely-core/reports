@@ -4,9 +4,7 @@ from reports.groups import setup_researchers
 
 
 class Command(BaseCommand):
-    help = (
-        "Ensure the researchers group exists with relevant permissions."
-    )
+    help = "Ensure the researchers group exists with relevant permissions."
 
     def handle(self, *args, **options):
         setup_researchers()
