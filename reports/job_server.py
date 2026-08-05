@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import requests
 import requests_cache
@@ -64,7 +64,7 @@ class JobServerClient:
         last_updated = datetime.strptime(
             r.headers.get("Last-Modified"),
             rfc_7231_date_format,
-        )
+        ).replace(tzinfo=UTC)
 
         return r.text, last_updated
 
