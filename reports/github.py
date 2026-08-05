@@ -20,14 +20,7 @@ class GithubReport:
         return self._repo
 
     def file_exists(self):
-        if (
-            self.repo.get_matching_file_from_parent_contents(
-                self.report.report_html_file_path, self.report.branch
-            )
-            is None
-        ):
-            return False
-        return True
+        return self.repo.get_matching_file_from_parent_contents(self.report.report_html_file_path, self.report.branch) is not None
 
     def get_parent_contents(self):
         return self.repo.get_parent_contents(
