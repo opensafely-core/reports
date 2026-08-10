@@ -154,6 +154,9 @@ LABEL org.opencontainers.image.revision=$GITREF
 # accidents in the future.
 ARG USERID=10002
 ARG GROUPID=10002
+# USERID and GROUPID are numeric build arguments supplied by the deployment/build environment.
+# hadolint cannot resolve ARG expansion here.
+# hadolint ignore=DL3066
 USER ${USERID}:${GROUPID}
 
 ##################################################
@@ -178,4 +181,7 @@ ENTRYPOINT ["/app/docker/entrypoints/dev.sh"]
 # Run as non root user. Required when building image.
 ARG USERID
 ARG GROUPID
+# USERID and GROUPID are numeric build arguments supplied by Docker Compose.
+# hadolint cannot resolve ARG expansion here.
+# hadolint ignore=DL3066
 USER ${USERID}:${GROUPID}
