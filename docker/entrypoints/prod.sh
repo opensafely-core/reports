@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-./manage.py migrate
-./manage.py ensure_groups
-./manage.py createcachetable
+just manage migrate
+just manage ensure_groups
+just manage createcachetable
 
-exec gunicorn reports.wsgi --config=gunicorn.conf.py
+exec just prod-server

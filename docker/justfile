@@ -10,13 +10,26 @@ export DOCKER_BUILDKIT := "1"
 
 build env="dev":
     #!/usr/bin/env bash
+    set -euo pipefail
+
+    repo_root=$(git rev-parse --show-toplevel)
 
     # set build args for prod builds
     export BUILD_DATE=$(date -u +'%y-%m-%dT%H:%M:%SZ')
     export GITREF=$(git rev-parse --short HEAD)
 
+    export PYTHON_VERSION=$(tr -d '[:space:]' < "$repo_root/.python-version")
+    export NODE_VERSION=$(tr -d '[:space:]' < "$repo_root/.node-version")
+    export UV_VERSION=$(sed -n 's/^required-version = ">=\([^\"]*\)".*/\1/p' "$repo_root/pyproject.toml")
+    export JUST_VERSION=$(sed -n "s/^set minimum-version := '\([^']*\)'.*/\1/p" "$repo_root/justfile")
+
     # build the thing
-    docker compose build --pull {{ env }}
+    docker compose build --pull \
+        --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
+        --build-arg NODE_VERSION="$NODE_VERSION" \
+        --build-arg UV_VERSION="$UV_VERSION" \
+        --build-arg JUST_VERSION="$JUST_VERSION" \
+        {{ env }}
 
 
 # copy built node assets back to host
@@ -27,20 +40,23 @@ copy-assets: build
 
 
 # run tests in docker container
-test *args="": copy-assets
+test *args="":
+    just build test
     docker compose run --rm test {{ args }}
 
 
 # run dev server in docker container
-serve: copy-assets
+serve:
+    just build dev
     docker compose up dev
 
 
 # run command in dev container
-run *args="bash": copy-assets
+run *args="bash":
+    just build dev
     docker compose run dev {{ args }}
 
 
 # exec command in existing dev container
-exec *args="bash": copy-assets
+exec *args="bash":
     docker compose exec dev {{ args }}

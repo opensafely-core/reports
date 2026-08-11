@@ -1,0 +1,52 @@
+services:
+  prod:
+    image: reports
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: prod
+
+    entrypoint: ["/app/docker/entrypoints/prod.sh"]
+
+  dev:
+    image: reports-dev
+    container_name: reports-dev
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: dev
+    env_file:
+      - ../.env
+    user: root
+    volumes:
+      - ..:/app
+      - /app/.venv
+      - /app/assets/dist
+    ports:
+      - "8000:8000"
+    command: ["just", "manage", "runserver", "0.0.0.0:8000"]
+
+  test:
+    # Build from the repository root so the Dockerfile can access project files.
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+
+    environment:
+      # Include development dependencies when working locally
+      UV_NO_DEV: "0"
+      SECRET_KEY: "docker-test-secret-key"
+      REQUESTS_CACHE_NAME: "test_cache"
+      ASSETS_DEV_MODE: "false"
+
+    # Run as root during development so the environment is mutable
+    # Alternatively, you could set `UV_PROJECT_ENVIRONMENT` to a path owned by the non-root user
+    user: root
+
+    # Collect Django static files before running tests. The test entrypoint
+    # creates the manifest used by ManifestStaticFilesStorage.
+    entrypoint: ["/app/docker/entrypoints/test.sh"]
+
+    # Avoid the asset-building dependency; this image is dedicated to tests.
+    command: ["just", "--no-deps", "test"]

@@ -17,8 +17,6 @@
 .flake8
 .github/
 .pre-commit-config.yaml
-pyproject.toml
-tests
 .pytest_cache/
 
 node_modules/

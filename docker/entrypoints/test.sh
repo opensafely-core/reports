@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-./manage.py collectstatic --no-input
+just --no-deps assets-collect
 
 "$@"
