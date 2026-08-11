@@ -1,3 +1,14 @@
+set minimum-version := '1.55.0'
+
+# Load .env files by default
+set dotenv-load
+
+# Run `just` to list the available recipes
+set default-list
+
+# Enable Docker just recipes to run with `just docker [command]`
+mod docker
+
 # just has no idiom for setting a default value for an environment variable
 # so we shell out, as we need VIRTUAL_ENV in the justfile environment
 export VIRTUAL_ENV  := `echo ${VIRTUAL_ENV:-.venv}`
@@ -7,15 +18,6 @@ export BIN := VIRTUAL_ENV + "/bin"
 export PIP := BIN + "/python -m pip"
 # enforce our chosen pip compile flags
 export COMPILE := BIN + "/pip-compile --allow-unsafe --generate-hashes"
-
-# Load .env files by default
-set dotenv-load := true
-
-
-# list available commands
-default:
-    @{{ just_executable() }} --list
-
 
 # clean up temporary files
 clean:
@@ -233,28 +235,3 @@ assets-collect: devenv
 assets: assets-install assets-build assets-collect
 
 assets-rebuild: assets-clean assets
-
-
-# build docker image env=dev|prod
-docker-build env="dev": _env
-    {{ just_executable() }} docker/build {{ env }}
-
-
-# run tests in docker container
-docker-test *args="": _env
-    {{ just_executable() }} docker/test {{ args }}
-
-
-# run dev server in docker container
-docker-serve: _env
-    {{ just_executable() }} docker/serve
-
-
-# run cmd in dev docker continer
-docker-run *args="bash": _env
-    {{ just_executable() }} docker/run {{ args }}
-
-
-# exec command in an existing dev docker container
-docker-exec *args="bash": _env
-    {{ just_executable() }} docker/exec {{ args }}
