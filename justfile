@@ -9,75 +9,18 @@ set default-list
 # Enable Docker just recipes to run with `just docker [command]`
 mod docker
 
-# just has no idiom for setting a default value for an environment variable
-# so we shell out, as we need VIRTUAL_ENV in the justfile environment
-export VIRTUAL_ENV  := `echo ${VIRTUAL_ENV:-.venv}`
+# Ensure prod dependencies are installed and up to date
+[group('dependencies')]
+prod-env:
+    uv sync --frozen --no-dev
 
-# TODO: make it /scripts on windows?
-export BIN := VIRTUAL_ENV + "/bin"
-export PIP := BIN + "/python -m pip"
-# enforce our chosen pip compile flags
-export COMPILE := BIN + "/pip-compile --allow-unsafe --generate-hashes"
-
-# clean up temporary files
-clean:
-    rm -rf .venv
-
-
-# ensure valid virtualenv
-virtualenv:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # allow users to specify python version in .env
-    PYTHON_VERSION=${PYTHON_VERSION:-python3.12}
-
-    # create venv and upgrade pip
-    test -d $VIRTUAL_ENV || { $PYTHON_VERSION -m venv $VIRTUAL_ENV && $PIP install pip --upgrade; }
-
-    # ensure we have pip-tools so we can run pip-compile
-    test -e $BIN/pip-compile || $PIP install pip-tools
-
-
-_compile src dst *args: virtualenv
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # exit if src file is older than dst file (-nt = 'newer than', but we negate with || to avoid error exit code)
-    test "${FORCE:-}" = "true" -o {{ src }} -nt {{ dst }} || exit 0
-    $BIN/pip-compile --allow-unsafe --generate-hashes --output-file={{ dst }} {{ src }} {{ args }}
-
-
-# update requirements.prod.txt if requirements.prod.in has changed
-requirements-prod *args:
-    {{ just_executable() }} _compile requirements.prod.in requirements.prod.txt {{ args }}
-
-
-# update requirements.dev.txt if requirements.dev.in has changed
-requirements-dev *args: requirements-prod
-    {{ just_executable() }} _compile requirements.dev.in requirements.dev.txt {{ args }}
-
-
-# ensure prod requirements installed and up to date
-prodenv: requirements-prod
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
-    test requirements.prod.txt -nt $VIRTUAL_ENV/.prod || exit 0
-
-    $PIP install -r requirements.prod.txt
-    touch $VIRTUAL_ENV/.prod
-
-
-_env:
+copy-sample-env-file:
     #!/usr/bin/env bash
     set -euo pipefail
 
     test -f .env || cp dotenv-sample .env
 
-
-_dev-config:
+setup-dev-env-file: copy-sample-env-file
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -87,40 +30,22 @@ _dev-config:
     ./scripts/dev-env.sh .env
     touch .dev-configured
 
-
-# && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
-# a killer feature over Makefiles.
-#
 # ensure dev requirements installed and up to date
-devenv: _env prodenv requirements-dev && install-precommit
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
-    test requirements.dev.txt -nt $VIRTUAL_ENV/.dev || exit 0
-
-    $PIP install -r requirements.dev.txt
-    touch $VIRTUAL_ENV/.dev
-
-
-# ensure precommit is installed
-install-precommit:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    BASE_DIR=$(git rev-parse --show-toplevel)
-    test -f $BASE_DIR/.git/hooks/pre-commit || $BIN/pre-commit install
-
+devenv: copy-sample-env-file
+    uv sync --frozen
+    uv run pre-commit install
 
 # upgrade dev or prod dependencies (specify package to upgrade single package, all by default)
-upgrade env package="": virtualenv
+upgrade env package="":
     #!/usr/bin/env bash
     set -euo pipefail
 
-    opts="--upgrade"
-    test -z "{{ package }}" || opts="--upgrade-package {{ package }}"
-    FORCE=true {{ just_executable() }} requirements-{{ env }} $opts
-
+    if [ -n '{{ package }}' ]; then
+        uv lock --upgrade-package '{{ package }}'
+    else
+        uv lock --upgrade
+    fi
+    uv sync
 
 # Upgrade all dev and prod dependencies.
 # This is the default input command to update-dependencies action
@@ -129,51 +54,60 @@ update-dependencies:
     just upgrade prod
     just upgrade dev
 
-
 # *ARGS is variadic, 0 or more. This allows us to do `just test -k match`, for example.
 # Run the tests
 test *args: assets
-    $BIN/coverage run \
+    uv run coverage run \
         --branch \
         --source=gateway,reports,services,tests \
         --module pytest \
         {{ args }}
-    $BIN/coverage report || $BIN/coverage html
+    uv run coverage report
 
+[group('ruff')]
+format *args=".":
+    uv run ruff format --check {{ args }}
 
-format *args=".": devenv
-    $BIN/ruff format --check {{ args }}
-
-lint *args=".": devenv
-    $BIN/ruff check --output-format=full {{ args }}
+[group('ruff')]
+lint *args=".":
+    uv run ruff check --output-format=full {{ args }}
 
 # run the various dev checks but does not change any files
+[group('ruff')]
 check: format lint
 
-
 # fix formatting and import sort ordering
-fix: devenv
-    $BIN/ruff check --fix .
-    $BIN/ruff format .
+[group('ruff')]
+fix:
+    uv run ruff check --fix .
+    uv run ruff format .
+
+manage command *args:
+    uv run manage.py {{command}} {{args}}
+
+prod-server:
+    uv run gunicorn reports.wsgi --config=gunicorn.conf.py
 
 # setup/update local dev environment
-dev-setup: devenv
-    $BIN/python manage.py migrate
-    $BIN/python manage.py collectstatic --no-input --clear | grep -v '^Deleting '
-    # create an admin/admin superuser locally if necessary
-    $BIN/python manage.py ensure_superuser
-    # ensure the local app is populated with example reports
-    INCLUDE_PRIVATE=t $BIN/python manage.py populate_reports
-    # ensure the researchers group exists with relevant permissions
-    $BIN/python manage.py ensure_groups
-    # create the database cache table
-    $BIN/python manage.py createcachetable
+dev-setup:
+    just manage migrate
+    just assets-collect
 
+    # create an admin/admin superuser locally if necessary
+    just manage ensure_superuser
+
+    # ensure the local app is populated with example reports
+    INCLUDE_PRIVATE=t just manage populate_reports
+
+    # ensure the researchers group exists with relevant permissions
+    just manage ensure_groups
+
+    # create the database cache table
+    just manage createcachetable
 
 # Run the dev project
-run port="8000": _dev-config assets
-    $BIN/python manage.py runserver localhost:{{ port }}
-
+run port="8000": setup-dev-env-file assets
+    just manage runserver localhost:{{ port }}
 
 # blow away the local database and repopulate it
 dev-reset:
@@ -181,57 +115,31 @@ dev-reset:
     rm http_cache.sqlite
     just dev-setup
 
+# Initial set up of assets files
+[group('assets')]
+assets: assets-install assets-build assets-collect
+
+# Build the Node.js assets
+[group('assets')]
+assets-build:
+    npm run build
 
 # Remove built assets and collected static files
+[group('assets')]
 assets-clean:
     rm -rf assets/dist
     rm -rf staticfiles
 
+# Collect the static files
+[group('assets')]
+assets-collect:
+    just manage collectstatic --no-input
 
 # Install the Node.js dependencies
+[group('assets')]
 assets-install:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # exit if lock file has not changed since we installed them. -nt == "newer than",
-    # but we negate with || to avoid error exit code
-    test package-lock.json -nt node_modules/.written || exit 0
-
     npm ci
-    touch node_modules/.written
 
-
-# Build the Node.js assets
-assets-build:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # find files which are newer than dist/.written in the src directory. grep
-    # will exit with 1 if there are no files in the result.  We negate this
-    # with || to avoid error exit code
-    # we wrap the find in an if in case dist/.written is missing so we don't
-    # trigger a failure prematurely
-    if test -f assets/dist/.written; then
-        find assets/src -type f -newer assets/dist/.written | grep -q . || exit 0
-    fi
-
-    npm run build
-    touch assets/dist/.written
-
-
-# Collect the static files
-assets-collect: devenv
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # exit if nothing has changed in the built assets since we last collected staticfiles.
-    # -nt == "newer than", but we negate with || to avoid error exit code
-    test assets/dist/.written -nt staticfiles/.written || exit 0
-
-    $BIN/python manage.py collectstatic --no-input
-    touch staticfiles/.written
-
-
-assets: assets-install assets-build assets-collect
-
+# Remove existing assets and static files, then rebuild from scratch
+[group('assets')]
 assets-rebuild: assets-clean assets
