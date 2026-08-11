@@ -1,4 +1,3 @@
----
 name: CI
 
 env:
@@ -16,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -43,7 +42,7 @@ jobs:
 
   check:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -51,24 +50,23 @@ jobs:
           persist-credentials: false
       - uses: "opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17" # v1.7.0
         with:
-          python-version: "3.12"
-          cache-dependency-path: requirements.*.txt
+          install-uv: true
           install-just: true
       - name: Check formatting, linting and import sorting
         run: just check
 
   test:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: "opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17" # v1.7.0
+
+      - uses: opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17 # v1.7.0
         with:
-          python-version: "3.12"
-          cache-dependency-path: requirements.*.txt
+          install-uv: true
           install-just: true
 
       - name: Retrieve assets
@@ -89,7 +87,7 @@ jobs:
         run: just test
 
   lint-dockerfile:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -100,14 +98,16 @@ jobs:
           dockerfile: docker/Dockerfile
 
   docker-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: "opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17" # v1.7.0
+
+      - uses: opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17 # v1.7.0
         with:
+          install-uv: true
           install-just: true
 
       - name: Build docker image and run tests in it
@@ -118,7 +118,7 @@ jobs:
   deploy:
     needs: [test, docker-test, lint-dockerfile]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
@@ -132,8 +132,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: "opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17" # v1.7.0
+
+      - uses: opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17 # v1.7.0
         with:
+          install-uv: true
           install-just: true
 
       - name: Build docker image
