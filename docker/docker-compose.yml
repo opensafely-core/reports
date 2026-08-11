@@ -67,6 +67,8 @@ services:
   test:
     extends:
       service: dev-base
+    environment:
+      GITHUB_TOKEN: "${GITHUB_TOKEN:-dummy}"
     # add .test.env file for different default test environment variables
     # env_file:
     #   - ../.test.env
