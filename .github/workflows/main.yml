@@ -113,7 +113,7 @@ jobs:
       - name: Build docker image and run tests in it
         run: |
           # build docker and run test
-          just docker-test
+          just docker/test
 
   deploy:
     needs: [test, docker-test, lint-dockerfile]
@@ -141,7 +141,7 @@ jobs:
       - name: Build docker image
         run: |
           # docker-test step will build the dev image by default, so build the prod image
-          just docker-build prod
+          just docker/build prod
 
       - name: Login to Packages Container registry
         run: |
