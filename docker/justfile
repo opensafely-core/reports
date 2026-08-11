@@ -1,46 +1,49 @@
+# Load .env files by default; the project .env lives one directory up
+set dotenv-load
+set dotenv-filename := ".env"
+
+# used by docker compose
 export DEV_USERID := `id -u`
 export DEV_GROUPID := `id -g`
 
-# Load .env files by default
-set dotenv-load := true
+# set versions
 
-# enable modern docker build features
-export DOCKER_BUILDKIT := "1"
+# list available commands
+default:
+    @{{ just_executable() }} --list
 
+_dotenv:
+    {{ just_executable() }} --justfile {{ justfile_directory() }}/../justfile _dotenv
 
-build env="dev":
+build env="dev": _dotenv
     #!/usr/bin/env bash
-
-    # set build args for prod builds
+    test -z "${SKIP_BUILD:-}" || { echo "SKIP_BUILD set"; exit 0; }
+    # build the thing
     export BUILD_DATE=$(date -u +'%y-%m-%dT%H:%M:%SZ')
     export GITREF=$(git rev-parse --short HEAD)
-
-    # build the thing
     docker compose build --pull {{ env }}
 
+# run tests in dev container
+test *pytest_args="": _dotenv build
+    #!/bin/bash
+    # Note, we do *not* run coverage in docker, as we want to use xdist, and coverage does not seem to work reliably.
+    docker compose run --rm test pytest {{ pytest_args }}
 
-# copy built node assets back to host
-copy-assets: build
-    #!/usr/bin/env bash
-    docker compose build --pull node-assets
-    docker compose run --rm --no-deps --entrypoint /usr/bin/env node-assets rsync --delete -r /usr/src/app/assets/dist/ /app/assets/dist/
+# run command in dev|prod container
+run env="dev" *args="": _dotenv (build env)
+    docker compose run --rm --service-ports {{ env }} {{ args }}
 
+# exec command in existing dev|prod container
+exec env="dev" *args="bash": _dotenv (build env)
+    docker compose exec {{ env }} {{ args }}
 
-# run tests in docker container
-test *args="": copy-assets
-    docker compose run --rm test {{ args }}
+lint:
+    docker run --rm -i ghcr.io/hadolint/hadolint:v2.14.0-alpine < Dockerfile
 
-
-# run dev server in docker container
-serve: copy-assets
-    docker compose up dev
-
-
-# run command in dev container
-run *args="bash": copy-assets
-    docker compose run dev {{ args }}
-
-
-# exec command in existing dev container
-exec *args="bash": copy-assets
-    docker compose exec dev {{ args }}
+# stop and remove all project containers
+clean:
+    #!/bin/bash
+    set -eux
+    . .env
+    docker compose down
+    docker container prune --force --filter label=com.docker.compose.project=$COMPOSE_PROJECT_NAME
