@@ -119,22 +119,22 @@ Vite builds the assets and outputs them to the `assets/dist` folder.
 Run a local development server in docker:
 
 ```sh
-just docker-serve
+just docker/serve
 ```
 
 Run the tests in docker
 ```sh
-just docker-test
+just docker/test
 ```
 
 To run named test(s) or pass additional args, pass paths and args as you normally would to pytest:
 ```sh
-just docker-test tests/reports/test_models.py::test_report_model_validation -k some-mark --pdb
+just docker/test tests/reports/test_models.py::test_report_model_validation -k some-mark --pdb
 ```
 
 Run a command in the dev docker containter
 ```sh
-just docker-run <command>
+just docker/run <command>
 ```
 
 
