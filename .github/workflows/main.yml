@@ -18,7 +18,7 @@ permissions:
   contents: "read"
 
 jobs:
-  build:
+  build-assets:
     name: "Build: Assets"
     runs-on: "ubuntu-24.04"
 
@@ -45,9 +45,10 @@ jobs:
           name: "node-assets"
           path: "assets/dist"
 
-  check:
+  lint-python:
     name: "Lint: Python"
-    needs: ["build"]
+    needs:
+      - "build-assets"
     runs-on: "ubuntu-24.04"
 
     steps:
@@ -62,9 +63,11 @@ jobs:
       - name: "Check formatting, linting and import sorting"
         run: "just check"
 
-  test:
+  test-python:
     name: "Test: Python"
-    needs: ["build"]
+    needs:
+      - "build-assets"
+      - "lint-python"
     runs-on: "ubuntu-24.04"
 
     steps:
@@ -111,7 +114,9 @@ jobs:
 
   docker-test:
     name: "Test: Python in Docker"
-    needs: ["build"]
+    needs:
+      - "build-assets"
+      - "lint-dockerfile"
     runs-on: "ubuntu-24.04"
 
     steps:
@@ -139,12 +144,15 @@ jobs:
 
   deploy:
     name: "Deploy"
-    needs: ["test", "docker-test", "lint-dockerfile"]
+    needs:
+      - "build-assets"
+      - "docker-test"
+      - "test-python"
 
     runs-on: "ubuntu-24.04"
 
     permissions:
-      contents: read
+      contents: "read"
       packages: "write" # Required to push the production image to GitHub Container Registry.
 
     if: "github.ref == 'refs/heads/main'"
