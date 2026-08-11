@@ -10,6 +10,10 @@ on:
   push:
   workflow_dispatch:
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 permissions:
   contents: "read"
 
@@ -141,11 +145,13 @@ jobs:
 
     permissions:
       contents: read
-      packages: "write"
+      packages: "write" # Required to push the production image to GitHub Container Registry.
 
     if: "github.ref == 'refs/heads/main'"
 
-    concurrency: "deploy-production"
+    concurrency:
+      group: "deploy-production"
+      cancel-in-progress: false
 
     steps:
       - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
@@ -163,8 +169,10 @@ jobs:
           just docker/build prod
 
       - name: "Login to Packages Container registry"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
-          docker login "$REGISTRY" -u "${GITHUB_ACTOR}" --password "${{ secrets.GITHUB_TOKEN }}"
+          docker login "$REGISTRY" -u "$GITHUB_ACTOR" --password-stdin <<< "$GITHUB_TOKEN"
 
       - name: "publish docker image"
         run: |
@@ -172,9 +180,11 @@ jobs:
           docker push "$PUBLIC_IMAGE_NAME:latest"
 
       - name: "Setup SSH Agent"
+        env:
+          DOKKU3_DEPLOY_SSH_KEY: "${{ secrets.DOKKU3_DEPLOY_SSH_KEY }}"
         run: |
           ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-          ssh-add - <<< "${{ secrets.DOKKU3_DEPLOY_SSH_KEY }}"
+          ssh-add - <<< "$DOKKU3_DEPLOY_SSH_KEY"
 
       - name: "Deploy"
         run: |
