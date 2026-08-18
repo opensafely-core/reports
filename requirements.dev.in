@@ -1,4 +1,4 @@
--c requirements.prod.in
+-c requirements.prod.txt
 
 # Additional dev requirements
 # To generate a requirements file that includes both prod and dev requirements, run:
