@@ -3,6 +3,7 @@
 services:
   # base service, exists to hold common config, but is not actually used directly
   base:
+    platform: linux/amd64
     build:
       context: ..
       # path relative to context
@@ -20,9 +21,8 @@ services:
         - UV_VERSION
     # use dockers builitin PID daemon
     init: true
-    # uncomment if port forwarding is needed
-    # ports:
-    #   - "8000:8000"
+    ports:
+      - "8000:8000"
 
   # prod service. Used to build prod image and run/test it locally
   prod:
@@ -54,16 +54,15 @@ services:
     volumes:
       # Note: paths are relative to the *docker-compose* file
       - ..:/app
-      # uncomment for Django apps using a persistant inspectable cache for staticfiles
-      # - ./staticfiles:/opt/staticfiles
+      # uncomment for Django apps using a persistent inspectable cache for staticfiles
+      - ./staticfiles:/opt/staticfiles
 
   dev:
     extends:
       service: dev-base
-    # override command
-    command: echo "dev command not set"
+    command: python manage.py runserver 0.0.0.0:8000
 
-  # test runner service - uses dev-image with a different commnd
+  # test runner service - uses dev-image with a different command
   test:
     extends:
       service: dev-base
