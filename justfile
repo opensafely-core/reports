@@ -172,6 +172,14 @@ fix:
 run port="8000": devenv
     uv run manage.py runserver localhost:{{ port }}
 
+# Initialise or update the local development database
+dev-setup: devenv assets
+    uv run manage.py migrate
+    uv run manage.py ensure_groups
+    uv run manage.py ensure_superuser
+    INCLUDE_PRIVATE=t uv run manage.py populate_reports
+    uv run manage.py createcachetable
+
 # Blow away the local database and repopulate it
 dev-reset:
     rm db.sqlite3

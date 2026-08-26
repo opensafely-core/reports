@@ -159,8 +159,6 @@ COPY . /app
 
 # set the entrypoint to ensure some basic tasks are performed before the cli command
 ENTRYPOINT ["/app/docker/entrypoints/prod.sh"]
-# set a default command (if needed; replace this comment if you do so)
-CMD ["echo", "default command not set"]
 
 # finally, tag with build information. These will change regularly, therefore
 # we do them as the last action.
