@@ -212,6 +212,18 @@ assets-build:
     npm run build
     touch assets/dist/.written
 
-assets: assets-install assets-build
+# Collect the static files
+assets-collect: devenv
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # exit if nothing has changed in the built assets since we last collected staticfiles.
+    # -nt == "newer than", but we negate with || to avoid error exit code
+    test assets/dist/.written -nt staticfiles/.written || exit 0
+
+    uv run manage.py collectstatic --no-input
+    touch staticfiles/.written
+
+assets: assets-install assets-build assets-collect
 
 assets-rebuild: assets-clean assets
