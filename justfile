@@ -103,8 +103,12 @@ update-dependencies: bump-uv-cutoff upgrade-all
 # *args is variadic, 0 or more. This allows us to do `just test -k match`, for example.
 
 # Run the tests
-test *args:
-    uv run coverage run --module pytest "$@"
+test *args: assets
+    uv run coverage run \
+        --branch \
+        --source=gateway,reports,services,tests \
+        --module pytest \
+        "$@"
     uv run coverage report || uv run coverage html
 
 format *args:
