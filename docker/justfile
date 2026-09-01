@@ -41,9 +41,5 @@ lint:
     docker run --rm -i ghcr.io/hadolint/hadolint:v2.14.0-alpine < Dockerfile
 
 # stop and remove all project containers
-clean:
-    #!/bin/bash
-    set -eux
-    . .env
-    docker compose down
-    docker container prune --force --filter label=com.docker.compose.project=$COMPOSE_PROJECT_NAME
+clean: _dotenv
+    docker compose down --remove-orphans
