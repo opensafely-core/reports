@@ -1,213 +1,221 @@
-# just has no idiom for setting a default value for an environment variable
-# so we shell out, as we need VIRTUAL_ENV in the justfile environment
-export VIRTUAL_ENV  := `echo ${VIRTUAL_ENV:-.venv}`
+set dotenv-load
+set positional-arguments
 
-# TODO: make it /scripts on windows?
-export BIN := VIRTUAL_ENV + "/bin"
-export PIP := BIN + "/python -m pip"
-# enforce our chosen pip compile flags
-export COMPILE := BIN + "/pip-compile --allow-unsafe --generate-hashes"
-
-# Load .env files by default
-set dotenv-load := true
-
-
-# list available commands
+# List available commands
 default:
-    @{{ just_executable() }} --list
+    @"{{ just_executable() }}" --list
 
+# Create a valid .env if none exists
+_dotenv:
+    #!/usr/bin/env bash
+    set -euo pipefail
 
-# clean up temporary files
+    if [[ ! -f .env ]]; then
+      echo "No '.env' file found; creating a default '.env' from 'dotenv-sample'"
+      cp dotenv-sample .env
+    fi
+
+# Check if a .env exists
+# Use this (rather than _dotenv or devenv) for recipes that require that a .env file exists.
+# just will not pick up environment variables from a .env that it's just created,
+# and there isn't an easy way to load those into the environment, so we just
+
+# prompt the user to run just devenv to set up their local environment properly.
+_checkenv:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ ! -f .env ]]; then
+        echo "No '.env' file found; run 'just devenv' to create one"
+        exit 1
+    fi
+
+# Clean up temporary files
 clean:
     rm -rf .venv
 
-
-# ensure valid virtualenv
-virtualenv:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # allow users to specify python version in .env
-    PYTHON_VERSION=${PYTHON_VERSION:-python3.12}
-
-    # create venv and upgrade pip
-    test -d $VIRTUAL_ENV || { $PYTHON_VERSION -m venv $VIRTUAL_ENV && $PIP install pip --upgrade; }
-
-    # ensure we have pip-tools so we can run pip-compile
-    test -e $BIN/pip-compile || $PIP install pip-tools
-
-
-_compile src dst *args: virtualenv
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # exit if src file is older than dst file (-nt = 'newer than', but we negate with || to avoid error exit code)
-    test "${FORCE:-}" = "true" -o {{ src }} -nt {{ dst }} || exit 0
-    $BIN/pip-compile --allow-unsafe --generate-hashes --output-file={{ dst }} {{ src }} {{ args }}
-
-
-# update requirements.prod.txt if requirements.prod.in has changed
-requirements-prod *args:
-    {{ just_executable() }} _compile requirements.prod.in requirements.prod.txt {{ args }}
-
-
-# update requirements.dev.txt if requirements.dev.in has changed
-requirements-dev *args: requirements-prod
-    {{ just_executable() }} _compile requirements.dev.in requirements.dev.txt {{ args }}
-
-
-# ensure prod requirements installed and up to date
-prodenv: requirements-prod
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
-    test requirements.prod.txt -nt $VIRTUAL_ENV/.prod || exit 0
-
-    $PIP install -r requirements.prod.txt
-    touch $VIRTUAL_ENV/.prod
-
-
-_env:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    test -f .env || cp dotenv-sample .env
-
-
-_dev-config:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # configure the local dev env
-    set -eu
-    test -f .dev-configured && exit
-    ./scripts/dev-env.sh .env
-    touch .dev-configured
-
+# Install production requirements into and remove extraneous packages from venv
+prodenv:
+    uv sync --no-dev
 
 # && dependencies are run after the recipe has run. Needs just>=0.9.9. This is
 # a killer feature over Makefiles.
 #
-# ensure dev requirements installed and up to date
-devenv: _env prodenv requirements-dev && install-precommit
-    #!/usr/bin/env bash
-    set -euo pipefail
 
-    # exit if .txt file has not changed since we installed them (-nt == "newer than', but we negate with || to avoid error exit code)
-    test requirements.dev.txt -nt $VIRTUAL_ENV/.dev || exit 0
+# Install dev requirements into venv without removing extraneous packages
+devenv: _dotenv && install-precommit
+    uv sync --inexact
 
-    $PIP install -r requirements.dev.txt
-    touch $VIRTUAL_ENV/.dev
-
-
-# ensure precommit is installed
+# Ensure precommit is installed
 install-precommit:
     #!/usr/bin/env bash
     set -euo pipefail
 
     BASE_DIR=$(git rev-parse --show-toplevel)
-    test -f $BASE_DIR/.git/hooks/pre-commit || $BIN/pre-commit install
+    test -f $BASE_DIR/.git/hooks/pre-commit || uv run pre-commit install
 
+# Upgrade a single package to the latest version as of the cutoff in pyproject.toml
+upgrade-package package: && uvmirror devenv
+    uv lock --upgrade-package {{ package }}
 
-# upgrade dev or prod dependencies (specify package to upgrade single package, all by default)
-upgrade env package="": virtualenv
-    #!/usr/bin/env bash
-    set -euo pipefail
+# Upgrade all packages to the latest versions as of the cutoff in pyproject.toml
+upgrade-all: && uvmirror devenv
+    uv lock --upgrade
 
-    opts="--upgrade"
-    test -z "{{ package }}" || opts="--upgrade-package {{ package }}"
-    FORCE=true {{ just_executable() }} requirements-{{ env }} $opts
+# update the uv mirror requirements file
+uvmirror file="requirements.uvmirror.txt":
+    rm -f {{ file }}
+    uv export --format requirements-txt --frozen --no-hashes --all-groups --all-extras > {{ file }}
 
+# Move the cutoff date in pyproject.toml to N days ago (default: 7) at midnight UTC
+bump-uv-cutoff days="7":
+    #!/usr/bin/env -S uvx --with tomlkit python3.13
+    # Note we specify the python version here and we don't care if it's different to
+    # the .python-version; we need 3.11+ for the datetime code used.
 
-# Upgrade all dev and prod dependencies.
+    import datetime
+    import tomlkit
+
+    with open("pyproject.toml", "rb") as f:
+        content = tomlkit.load(f)
+
+    new_datetime = (
+        datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=int("{{ days }}"))
+    ).replace(hour=0, minute=0, second=0, microsecond=0)
+    new_timestamp = new_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    if existing_timestamp := content["tool"]["uv"].get("exclude-newer"):
+        if new_datetime < datetime.datetime.fromisoformat(existing_timestamp):
+            print(
+                f"Existing cutoff {existing_timestamp} is more recent than {new_timestamp}, not updating."
+            )
+            exit(0)
+    content["tool"]["uv"]["exclude-newer"] = new_timestamp
+
+    with open("pyproject.toml", "w") as f:
+        tomlkit.dump(content, f)
+
 # This is the default input command to update-dependencies action
 # https://github.com/bennettoxford/update-dependencies-action
-update-dependencies:
-    just upgrade prod
-    just upgrade dev
 
+# Bump the timestamp cutoff to midnight UTC 7 days ago and upgrade all dependencies
+update-dependencies: bump-uv-cutoff upgrade-all
 
-# *ARGS is variadic, 0 or more. This allows us to do `just test -k match`, for example.
+# *args is variadic, 0 or more. This allows us to do `just test -k match`, for example.
+
 # Run the tests
 test *args: assets
-    $BIN/coverage run \
+    uv run coverage run \
         --branch \
         --source=gateway,reports,services,tests \
         --module pytest \
-        {{ args }}
-    $BIN/coverage report || $BIN/coverage html
+        "$@"
+    uv run coverage report || uv run coverage html
 
+format *args:
+    uv run ruff format --diff --quiet "$@"
 
-format *args=".": devenv
-    $BIN/ruff format --check {{ args }}
+lint *args:
+    uv run ruff check "$@" .
 
-lint *args=".": devenv
-    $BIN/ruff check --output-format=full {{ args }}
+lint-actions:
+    docker run --rm -v $(pwd):/repo:ro --workdir /repo rhysd/actionlint:1.7.8@sha256:96d4a8c87dbbfb3bdd324f8fdc285fc3df5261e2decc619a4dd7e8ee52bbfd46 -color
 
-# run the various dev checks but does not change any files
-check: format lint
+# Run the various dev checks but does not change any files
+check:
+    #!/usr/bin/env bash
+    set -euo pipefail
 
+    failed=0
 
-# fix formatting and import sort ordering
-fix: devenv
-    $BIN/ruff check --fix .
-    $BIN/ruff format .
+    check() {
+      echo -e "\e[1m=> ${1}\e[0m"
+      rc=0
+      # Run it
+      eval $1 || rc=$?
+      # Increment the counter on failure
+      if [[ $rc != 0 ]]; then
+        failed=$((failed + 1))
+        # Add spacing to separate the error output from the next check
+        echo -e "\n"
+      fi
+    }
 
-# setup/update local dev environment
-dev-setup: devenv
-    $BIN/python manage.py migrate
-    $BIN/python manage.py collectstatic --no-input --clear | grep -v '^Deleting '
-    # create an admin/admin superuser locally if necessary
-    $BIN/python manage.py ensure_superuser
-    # ensure the local app is populated with example reports
-    INCLUDE_PRIVATE=t $BIN/python manage.py populate_reports
-    # ensure the researchers group exists with relevant permissions
-    $BIN/python manage.py ensure_groups
-    # create the database cache table
-    $BIN/python manage.py createcachetable
+    check "just check-lockfile"
+    check "just format"
+    check "just lint"
+    check "just lint-actions"
+    test -d docker/ && check "just docker/lint"
 
+    if [[ $failed > 0 ]]; then
+      echo -en "\e[1;31m"
+      echo "   $failed checks failed"
+      echo -e "\e[0m"
+      exit 1
+    fi
+
+# validate uv.lock
+check-lockfile:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Make sure dates in pyproject.toml and uv.lock are in sync
+    unset UV_EXCLUDE_NEWER
+    rc=0
+    uv lock --check || rc=$?
+    if test "$rc" != "0" ; then
+        echo "Timestamp cutoffs in uv.lock must match those in pyproject.toml. See DEVELOPERS.md for details and hints." >&2
+        exit $rc
+    fi
+
+# Fix formatting, import sort ordering, and justfile
+fix:
+    -uv run ruff check --fix .
+    -uv run ruff format .
+    -just --fmt --unstable
 
 # Run the dev project
-run port="8000": _dev-config assets
-    $BIN/python manage.py runserver localhost:{{ port }}
+run port="8000": devenv
+    uv run manage.py runserver localhost:{{ port }}
 
+# Initialise or update the local development database
+dev-setup: devenv assets
+    uv run manage.py migrate
+    uv run manage.py ensure_groups
+    uv run manage.py ensure_superuser
+    INCLUDE_PRIVATE=t uv run manage.py populate_reports
+    uv run manage.py createcachetable
 
-# blow away the local database and repopulate it
+# Blow away the local database and repopulate it
 dev-reset:
     rm db.sqlite3
     rm http_cache.sqlite
     just dev-setup
-
 
 # Remove built assets and collected static files
 assets-clean:
     rm -rf assets/dist
     rm -rf staticfiles
 
-
 # Install the Node.js dependencies
 assets-install:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # exit if lock file has not changed since we installed them. -nt == "newer than",
+    # Exit if lock file has not changed since we installed them. -nt == "newer than",
     # but we negate with || to avoid error exit code
     test package-lock.json -nt node_modules/.written || exit 0
 
     npm ci
     touch node_modules/.written
 
-
 # Build the Node.js assets
 assets-build:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # find files which are newer than dist/.written in the src directory. grep
+    # Find files which are newer than dist/.written in the src directory. grep
     # will exit with 1 if there are no files in the result.  We negate this
     # with || to avoid error exit code
-    # we wrap the find in an if in case dist/.written is missing so we don't
+    # We wrap the find in an if in case dist/.written is missing so we don't
     # trigger a failure prematurely
     if test -f assets/dist/.written; then
         find assets/src -type f -newer assets/dist/.written | grep -q . || exit 0
@@ -215,7 +223,6 @@ assets-build:
 
     npm run build
     touch assets/dist/.written
-
 
 # Collect the static files
 assets-collect: devenv
@@ -226,35 +233,9 @@ assets-collect: devenv
     # -nt == "newer than", but we negate with || to avoid error exit code
     test assets/dist/.written -nt staticfiles/.written || exit 0
 
-    $BIN/python manage.py collectstatic --no-input
+    uv run manage.py collectstatic --no-input
     touch staticfiles/.written
-
 
 assets: assets-install assets-build assets-collect
 
 assets-rebuild: assets-clean assets
-
-
-# build docker image env=dev|prod
-docker-build env="dev": _env
-    {{ just_executable() }} docker/build {{ env }}
-
-
-# run tests in docker container
-docker-test *args="": _env
-    {{ just_executable() }} docker/test {{ args }}
-
-
-# run dev server in docker container
-docker-serve: _env
-    {{ just_executable() }} docker/serve
-
-
-# run cmd in dev docker continer
-docker-run *args="bash": _env
-    {{ just_executable() }} docker/run {{ args }}
-
-
-# exec command in an existing dev docker container
-docker-exec *args="bash": _env
-    {{ just_executable() }} docker/exec {{ args }}

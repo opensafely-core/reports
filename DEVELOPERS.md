@@ -2,17 +2,20 @@
 
 ## Deployment
 
-Deployment uses `dokku` and requires the environment variables defined in `dotenv-sample`.
-It is deployed to our `dokku3` instance (see [dokku docs](https://bennettinstitute-team-manual.pages.dev/tools-systems/dokku/)).
+The application is deployed as a Docker image to the `dokku3` instance. See the
+[team's Dokku documentation](https://bennettinstitute-team-manual.pages.dev/tools-systems/dokku/).
+Production configuration is based on the production variables documented in
+`dotenv-sample`.
 
 ## Local development
 
-### Prerequisites:
+### Prerequisites
 
 - **Python v3.12.x**
-- **Pip**
-- **Node.js v20.x** ([fnm](https://github.com/Schniz/fnm#installation) is recommended)
+- **[uv v0.9 or later](https://docs.astral.sh/uv/getting-started/installation/)**
+- **Node.js v24.x** ([fnm](https://github.com/Schniz/fnm#installation) is recommended)
 - **[Just](#install-just)**
+- **Docker**, when using the Docker development workflow
 
 ### Install just
 
@@ -30,11 +33,22 @@ source <(just --completions bash)
 just #  shortcut for just --list
 ```
 
-**Build the assets:**
+### Set up or update the local development environment
 
-See the [Compiling assets](#compiling-assets) section.
+```sh
+just devenv
+```
 
-#### Set up/update local dev environment
+This creates `.env` from `dotenv-sample` when necessary and installs the Python
+dependencies. Replace the dummy `GITHUB_TOKEN` in `.env` with a token that can
+read the report repositories. Team members with the Bitwarden CLI configured
+can populate it with:
+
+```sh
+scripts/dev-env.sh .env
+```
+
+Then initialise or update the database:
 
 ```sh
 just dev-setup
@@ -44,19 +58,26 @@ just dev-setup
 
 The development server can be run locally, as described below, or in [docker](#using-docker-for-development-and-tests).
 
-#### Run local django server
+#### Run the local Django server
 
 ```sh
+# Prepare the assets
+just assets
+
+# Run the server
 just run
 ```
 
-#### Delete local database and cache and repopulate db
+Access the application at http://localhost:8000.
+
+#### Reset the local database and cache
+
+This deletes the local development database and HTTP cache, then recreates and
+populates the database:
+
 ```sh
 just dev-reset
 ```
-
-Access at http://localhost:8000
-
 
 #### Manually add a report
 
@@ -65,7 +86,7 @@ To add a report in local development:
 1. Log into the [admin](http://localhost:8000/admin/) with username `admin` and password `admin`.
 2. Under `Reports` section, click `Reports`.
 3. Click `Add Report` and complete the form.
-4. In the `Report file details` section, enter a valid Job Server URL(example [URL](https://jobs.opensafely.org/opensafely-internal/tpp-database-schema/published/01KNV8PMVN8EHGXGDTG3HW75GM/)).
+4. In the `Report file details (Jobs site)` section, enter a valid Job Server URL (for example, [this published output](https://jobs.opensafely.org/opensafely-internal/tpp-database-schema/published/01KNV8PMVN8EHGXGDTG3HW75GM/)).
 5. Set the category to `Reports` for a standard report, or `Archive` for an archived report.
 6. If the `Archive` category does not exist, go to `Categories` in the `Reports` section and add it first.
 
@@ -86,8 +107,7 @@ Vite integrates into the Django project using the [django-vite](https://github.c
 
 Vite works by compiling JavaScript files, and outputs a manifest file, the JavaScript files, and any included assets such as stylesheets or images.
 
-Vite adds all JavaScript files to the page using [ES6 Module syntax](https://caniuse.com/es6-module).
-For legacy browsers, this project is utilising the [Vite Legacy Plugin](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) to provide a fallback using the [module/nomodule pattern](https://philipwalton.com/articles/deploying-es2015-code-in-production-today/).
+Vite adds JavaScript files to the page using [ES module syntax](https://caniuse.com/es6-module).
 
 ## Running the local asset server
 
@@ -95,13 +115,14 @@ Vite has a built-in development server which will serve the assets and reload th
 
 To run the Vite server locally, after completing the local dev env setup:
 
-1. Set `ASSETS_DEV_MODE = True` in `reports/settings.py`
+1. Set `ASSETS_DEV_MODE=True` in `.env`
 2. Open a terminal and run Django with `just run`
 3. Open a new terminal tab or window
 4. Run `npm run dev` to start the vite server
 5. Any changes you make in the `assets/` folder will now be updated without requiring a page refresh
 
-This will start the Vite dev server at [localhost:3000](http://localhost:3000/) and inject the relevant scripts into the Django templates.
+This starts the Vite development server at [localhost:5173](http://localhost:5173/)
+and injects the relevant scripts into the Django templates.
 
 ### Compiling assets
 
@@ -112,35 +133,41 @@ To view the compiled assets:
 
 Vite builds the assets and outputs them to the `assets/dist` folder.
 
-[Django Staticfiles app](https://docs.djangoproject.com/en/3.2/ref/contrib/staticfiles/) then collects the files and places them in the `staticfiles/assets` folder, with the manifest file located at `staticfiles/manifest.json`.
+Vite writes its manifest to `assets/dist/.vite/manifest.json`. The
+[Django staticfiles app](https://docs.djangoproject.com/en/5.2/ref/contrib/staticfiles/)
+then collects the built assets into `staticfiles/assets` and writes its manifest
+to `staticfiles/staticfiles.json`.
 
 ### Using docker for development and tests
 
 Run a local development server in docker:
 
 ```sh
-just docker-serve
+just docker/run dev
 ```
 
 Run the tests in docker
+
 ```sh
-just docker-test
+just docker/test
 ```
 
 To run named test(s) or pass additional args, pass paths and args as you normally would to pytest:
+
 ```sh
-just docker-test tests/reports/test_models.py::test_report_model_validation -k some-mark --pdb
+just docker/test tests/reports/test_models.py::test_report_model_validation -k some-mark --pdb
 ```
 
-Run a command in the dev docker containter
-```sh
-just docker-run <command>
-```
+Run a command in the dev docker container
 
+```sh
+just docker/run dev <command>
+```
 
 ## Rotating the GitHub token
+
 1. Log into the `opensafely-readonly` GitHub account (credentials are in Bitwarden).
-1. Got to the [Personal access tokens (classic) page](https://github.com/settings/tokens).
+1. Go to the [Personal access tokens (classic) page](https://github.com/settings/tokens).
 1. Click on `reports-private-repo-token`.
 1. Click "Regenerate token".
 1. Set the expiry to 90 days.
