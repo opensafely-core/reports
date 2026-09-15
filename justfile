@@ -186,8 +186,8 @@ dev-setup: devenv assets
 
 # Blow away the local database and repopulate it
 dev-reset:
-    rm db.sqlite3
-    rm http_cache.sqlite
+    rm -f db.sqlite3
+    rm -f http_cache.sqlite
     just dev-setup
 
 # Remove built assets and collected static files
