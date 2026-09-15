@@ -176,6 +176,10 @@ fix:
 run port="8000": devenv
     uv run manage.py runserver localhost:{{ port }}
 
+# Run the prod project
+run-prod port="8000": prodenv
+    uv run manage.py runserver localhost:{{ port }}
+
 # Initialise or update the local development database
 dev-setup: devenv assets
     uv run manage.py migrate
