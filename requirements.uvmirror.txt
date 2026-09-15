@@ -17,7 +17,7 @@ bs4==0.0.2
     # via reports
 build==1.6.0
     # via pip-tools
-cattrs==26.1.0
+cattrs==26.2.0
     # via requests-cache
 certifi==2026.7.22
     # via
@@ -89,7 +89,7 @@ idna==3.19
     #   url-normalize
 iniconfig==2.3.0
     # via pytest
-lxml==6.1.2
+lxml==6.1.3
     # via
     #   lxml-html-clean
     #   reports
@@ -155,7 +155,7 @@ requests-cache==1.3.3
     # via
     #   osgithub
     #   reports
-ruff==0.16.5
+ruff==0.16.6
 sentry-sdk==2.68.1
     # via reports
 setuptools==84.0.0
