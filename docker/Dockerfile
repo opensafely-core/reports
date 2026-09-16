@@ -29,6 +29,7 @@
 # These build args have defaults, but are usually set from docker/.env. They
 # are used in FROM lines, so need to be declared globally and have defaults
 # set.
+ARG NODE_VERSION=24
 ARG UBUNTU_VERSION=24.04
 ARG UV_VERSION=0.9
 
@@ -81,6 +82,31 @@ ENV UV_PROJECT_ENVIRONMENT="/opt/venv"
 #
 #
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv-cli
+
+#################################################
+#
+# Create node image.
+#
+FROM node:${NODE_VERSION} AS node-builder
+COPY --from=base-python /root/docker-apt-install.sh /root/docker-apt-install.sh
+
+RUN /root/docker-apt-install.sh rsync
+
+WORKDIR /usr/src/app
+
+# copy just what npm ci needs
+COPY package-lock.json package.json ./
+RUN --mount=type=cache,target=/usr/src/app/.npm \
+    npm set cache /usr/src/app/.npm && \
+    npm ci
+
+# just copy in the files `npm run build` needs
+COPY vite.config.mjs ./
+COPY assets/src ./assets/src
+COPY static ./static
+COPY templates ./templates
+
+RUN --mount=type=cache,target=./npm npm run build
 
 ##################################################
 #
@@ -156,6 +182,14 @@ LABEL org.opencontainers.image.title="reports" \
 
 # copy application code except for things in .dockerignore
 COPY . /app
+
+# copy node assets over from node-builder image. These will have root:root ownership, but
+# are readable by all.
+COPY --from=node-builder /usr/src/app/assets/dist /app/assets/dist
+
+# collect static files
+RUN SECRET_KEY=dummy-key \
+    python /app/manage.py collectstatic --no-input
 
 # set the entrypoint to ensure some basic tasks are performed before the cli command
 ENTRYPOINT ["/app/docker/entrypoints/prod.sh"]
