@@ -201,6 +201,16 @@ LABEL org.opencontainers.image.created=$BUILD_DATE
 ARG GITREF=unknown
 LABEL org.opencontainers.image.revision=$GITREF
 
+# 10001 is jobrunner (used by job-server on the opensafely dokku server).
+# Although this runs on the bennett dokku server, choose 10002 to avoid
+# accidents in the future.
+ARG USERID=10002
+ARG GROUPID=10002
+# USERID and GROUPID are numeric build arguments supplied by the deployment/build environment.
+# hadolint cannot resolve ARG expansion here.
+# hadolint ignore=DL3066
+USER ${USERID}:${GROUPID}
+
 ##################################################
 #
 # Dev image
