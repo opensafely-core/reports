@@ -18,6 +18,7 @@ jobs:
       - uses: "opensafely-core/setup-action@d9171097dd0d37bdb7bed58f701eb03ff317ed17" # v1.7.0
         with:
           python-version: "3.12"
+          install-uv: true
           install-just: true
 
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
