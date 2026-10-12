@@ -25,7 +25,7 @@ certifi==2026.7.22
     #   sentry-sdk
 cfgv==3.5.0
     # via pre-commit
-charset-normalizer==3.5.1
+charset-normalizer==3.5.2
     # via requests
 click==8.5.0
     # via pip-tools
@@ -67,9 +67,9 @@ django-vite==3.2.0
 environs==15.2.0
     # via reports
 factory-boy==3.3.3
-faker==40.39.0
+faker==40.40.0
     # via factory-boy
-filelock==4.0.4
+filelock==4.0.10
     # via
     #   python-discovery
     #   virtualenv
@@ -109,11 +109,12 @@ packaging==26.3
     #   build
     #   django-csp
     #   pytest
+    #   virtualenv
     #   wheel
 pip==26.2.1
     # via pip-tools
 pip-tools==7.6.1
-platformdirs==4.12.0
+platformdirs==4.12.3
     # via
     #   requests-cache
     #   virtualenv
@@ -140,11 +141,11 @@ python-dateutil==2.9.0.post0
     # via freezegun
 python-discovery==1.6.1
     # via virtualenv
-python-dotenv==1.2.3
+python-dotenv==1.2.4
     # via
     #   environs
     #   pytest-env
-python-ipware==4.1.0
+python-ipware==4.1.1
     # via django-ipware
 pyyaml==6.0.3
     # via pre-commit
@@ -156,8 +157,8 @@ requests-cache==1.3.3
     # via
     #   osgithub
     #   reports
-ruff==0.16.9
-sentry-sdk==2.70.0
+ruff==0.16.10
+sentry-sdk==2.71.0
     # via reports
 setuptools==84.0.0
     # via pip-tools
@@ -176,7 +177,7 @@ typing-extensions==4.16.0
     # via
     #   beautifulsoup4
     #   cattrs
-tzdata==2026.4 ; sys_platform == 'win32'
+tzdata==2026.5 ; sys_platform == 'win32'
     # via
     #   django
     #   faker
@@ -187,7 +188,7 @@ urllib3==2.8.0
     #   requests
     #   requests-cache
     #   sentry-sdk
-virtualenv==21.13.0
+virtualenv==21.14.5
     # via pre-commit
 wheel==0.48.0
     # via pip-tools
