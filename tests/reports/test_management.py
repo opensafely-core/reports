@@ -24,12 +24,12 @@ def test_ensure_superuser():
 @pytest.mark.django_db
 def test_ensure_superuser_with_existing_superuser():
     User.objects.create_superuser(
-        username="admin", password="test", email="super@user.test"
+        username="admin", password="test", email="super@example.com"
     )
     management.call_command("ensure_superuser")
 
     assert User.objects.count() == 1
-    assert User.objects.first().email == "super@user.test"
+    assert User.objects.first().email == "super@example.com"
 
 
 @pytest.mark.django_db
