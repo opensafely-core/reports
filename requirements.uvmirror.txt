@@ -188,7 +188,7 @@ urllib3==2.8.0
     #   requests
     #   requests-cache
     #   sentry-sdk
-virtualenv==21.14.5
+virtualenv==21.7.13
     # via pre-commit
 wheel==0.48.0
     # via pip-tools
