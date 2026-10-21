@@ -1,0 +1,10 @@
+# Ignore Bennett owned domains and emails
+@dokku3.ebmdatalab.net
+@opensafely.org
+bennett@phc.ox.ac.uk
+
+# Ignore example domain
+@example.com
+
+# dotenv-sample
+xxx@xxx.ingest.sentry.io
