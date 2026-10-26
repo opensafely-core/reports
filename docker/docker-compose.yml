@@ -16,6 +16,7 @@ services:
         # dynamic env vars supplied by just
         - BUILD_DATE
         - GITREF
+        - NODE_VERSION
         # env vars from .env
         - UBUNTU_VERSION
         - UV_VERSION

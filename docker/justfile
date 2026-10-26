@@ -18,9 +18,12 @@ _dotenv:
 build env="dev": _dotenv
     #!/usr/bin/env bash
     test -z "${SKIP_BUILD:-}" || { echo "SKIP_BUILD set"; exit 0; }
+
     # build the thing
     export BUILD_DATE=$(date -u +'%y-%m-%dT%H:%M:%SZ')
     export GITREF=$(git rev-parse --short HEAD)
+    export NODE_VERSION=$(cat ../.node-version)
+
     docker compose build --pull {{ env }}
 
 # run tests in dev container
