@@ -22,7 +22,7 @@ dependencies = [
     "furl>=2.1.4",
     "gunicorn>=26.0.0",
     "lxml[html-clean]>=6.1.1",
-    "osgithub>=0.7.1",
+    "osgithub>=0.8.0",
     "requests-cache>=1.3.3",
     "sentry-sdk>=2.67.1",
     "whitenoise[brotli]>=6.12.0",
@@ -44,8 +44,8 @@ dev = [
 
 [tool.uv]
 required-version = ">=0.9"
-exclude-newer = "2026-10-05T00:00:00Z"
-exclude-newer-package = { certifi = false }
+exclude-newer = "2026-10-19T00:00:00Z"
+exclude-newer-package = { certifi = false, osgithub = false }
 
 [tool.coverage.run]
 branch = true
