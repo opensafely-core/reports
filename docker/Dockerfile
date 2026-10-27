@@ -29,7 +29,8 @@
 # These build args have defaults, but are usually set from docker/.env. They
 # are used in FROM lines, so need to be declared globally and have defaults
 # set.
-ARG NODE_VERSION=24
+# NODE_VERSION comes in from .node-version file via Just
+ARG NODE_VERSION=unknown
 ARG UBUNTU_VERSION=24.04
 ARG UV_VERSION=0.13
 
