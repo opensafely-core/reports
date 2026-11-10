@@ -32,6 +32,16 @@ test *pytest_args="": _dotenv build
     # Note, we do *not* run coverage in docker, as we want to use xdist, and coverage does not seem to work reliably.
     docker compose run --rm test pytest {{ pytest_args }}
 
+# run the application in a dev or prod container
+serve env="dev" *args="": _dotenv (build env)
+    docker compose up {{ args }} {{ env }}
+
+# check that the running application responds
+smoke-test host="http://localhost:8000": _dotenv
+    #!/bin/bash
+    set -eu
+    curl -I {{ host }} -s --compressed --fail --retry 20 --retry-delay 1 --retry-all-errors
+
 # run command in dev|prod container
 run env="dev" *args="": _dotenv (build env)
     docker compose run --rm --service-ports {{ env }} {{ args }}
