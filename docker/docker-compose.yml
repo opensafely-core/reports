@@ -34,6 +34,12 @@ services:
     # this compose file is only used for production-like testing - so we
     # don't worry about potentially leaking dummy env vars into actual prod
     env_file: ../.env
+    environment:
+      DATABASE_URL: sqlite:////tmp/reports-smoke.sqlite3
+      BASE_URL: http://localhost:8000
+      DEBUG: "False"
+      PORT: "8000"
+
 
   # base development service
   # broken out so we can have a common base for dev and test since depends_on
