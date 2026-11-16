@@ -113,7 +113,7 @@ jobs:
           dockerfile: docker/Dockerfile
 
   docker-test:
-    name: "Test: Python and smoke test in Docker"
+    name: "Test: Python in Docker"
     needs:
       - "build-assets"
       - "lint-dockerfile"
