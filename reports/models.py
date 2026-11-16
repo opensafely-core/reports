@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from environs import Env
 from furl import furl
-from osgithub import GithubAPIException, GithubRepo
+from osgithub import GithubAPIException
 
 from .github import GithubReport
 from .job_server import JobServerReport
@@ -413,10 +413,7 @@ class Report(models.Model):
             url__icontains=f"github.com/opensafely/{self.repo}"
         ).exists()
         if self.repo and not source_repo_link_exists:
-            # get the repo url from the GithubRepo directly, to avoid calling the github api just to build the url
-            repo_url = furl(
-                GithubRepo(client=None, owner="opensafely", name=self.repo).url
-            )
+            repo_url = furl(f"https://github.com/opensafely/{self.repo}")
             Link.objects.create(
                 report=self,
                 url=repo_url,
