@@ -3,9 +3,9 @@ from base64 import b64encode
 from datetime import date
 
 import pytest
-from osgithub import GithubAPIException, GithubClient, GithubRepo
+from osgithub import GithubClient, GithubRepo
 
-from reports.github import GithubReport
+from reports.github import GithubException, GithubReport
 
 from ..factories import ReportFactory
 
@@ -204,7 +204,7 @@ def test_github_report_get_parent_contents_invalid_folder(bennett_org, httpretty
     )
 
     github_report = GithubReport(report, repo=repo)
-    with pytest.raises(GithubAPIException, match="Not found"):
+    with pytest.raises(GithubException, match="Not found"):
         github_report.get_parent_contents()
 
 
@@ -244,3 +244,21 @@ def test_integration(bennett_org):
 </html>
 """
     )
+
+
+@pytest.mark.django_db
+def test_github_report_invalid_repo(bennett_org, httpretty):
+    httpretty.register_uri(
+        httpretty.GET,
+        "https://api.github.com/repos/opensafely/non-existent-repo",
+        status=404,
+        body=json.dumps({"message": "Not Found"}),
+    )
+    report = ReportFactory(
+        org=bennett_org,
+        repo="non-existent-repo",
+    )
+    github_report = GithubReport(report, use_cache=False)
+
+    with pytest.raises(GithubException, match="Not Found"):
+        _ = github_report.repo

@@ -1,4 +1,4 @@
-from osgithub import GithubClient
+from osgithub import GithubAPIException, GithubClient
 
 
 class GithubReport:
@@ -16,7 +16,10 @@ class GithubReport:
     @property
     def repo(self):
         if self._repo is None:
-            self._repo = self.client.get_repo("opensafely", self.report.repo)
+            try:
+                self._repo = self.client.get_repo("opensafely", self.report.repo)
+            except GithubAPIException as error:
+                raise GithubException(str(error)) from error
         return self._repo
 
     def file_exists(self):
@@ -28,9 +31,12 @@ class GithubReport:
         )
 
     def get_parent_contents(self):
-        return self.repo.get_parent_contents(
-            self.report.report_html_file_path, self.report.branch
-        )
+        try:
+            return self.repo.get_parent_contents(
+                self.report.report_html_file_path, self.report.branch
+            )
+        except GithubAPIException as error:
+            raise GithubException(str(error)) from error
 
     def get_html(self):
         """
@@ -74,3 +80,7 @@ class GithubReport:
         # point that the field it rendered, otherwise the pre-fetched (possibly stale) date will be
         # rendered and cached in the template.
         return self.report.last_updated
+
+
+class GithubException(Exception):
+    """An error accessing a report's GitHub source."""
