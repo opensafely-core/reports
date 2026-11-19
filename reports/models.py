@@ -12,9 +12,8 @@ from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
 from environs import Env
 from furl import furl
-from osgithub import GithubAPIException, GithubRepo
 
-from .github import GithubReport
+from .github import GithubException, GithubReport
 from .job_server import JobServerReport
 
 
@@ -294,14 +293,14 @@ class Report(models.Model):
             github_report = GithubReport(self, use_cache=False)
             try:
                 github_report.repo  # noqa: B018
-            except GithubAPIException:
+            except GithubException:
                 raise ValidationError(
                     {"repo": _("'%(repo)s' could not be found") % {"repo": self.repo}}
                 )
 
             try:
                 github_report.get_parent_contents()
-            except GithubAPIException as error:
+            except GithubException as error:
                 # This happens if either the branch or the report file's parent path is invalid
                 raise ValidationError(
                     _("Error fetching report file: %(error_message)s"),
@@ -413,10 +412,7 @@ class Report(models.Model):
             url__icontains=f"github.com/opensafely/{self.repo}"
         ).exists()
         if self.repo and not source_repo_link_exists:
-            # get the repo url from the GithubRepo directly, to avoid calling the github api just to build the url
-            repo_url = furl(
-                GithubRepo(client=None, owner="opensafely", name=self.repo).url
-            )
+            repo_url = furl(f"https://github.com/opensafely/{self.repo}")
             Link.objects.create(
                 report=self,
                 url=repo_url,
