@@ -1,5 +1,7 @@
 from osgithub import GithubAPIException, GithubClient
 
+from .github_client import GithubException
+
 
 class GithubReport:
     """
@@ -80,7 +82,3 @@ class GithubReport:
         # point that the field it rendered, otherwise the pre-fetched (possibly stale) date will be
         # rendered and cached in the template.
         return self.report.last_updated
-
-
-class GithubException(Exception):
-    """An error accessing a report's GitHub source."""
