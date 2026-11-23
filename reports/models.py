@@ -13,7 +13,8 @@ from django_extensions.db.fields import AutoSlugField
 from environs import Env
 from furl import furl
 
-from .github import GithubException, GithubReport
+from .github import GithubReport
+from .github_client import GithubException
 from .job_server import JobServerReport
 
 

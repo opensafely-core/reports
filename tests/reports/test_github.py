@@ -3,9 +3,10 @@ from base64 import b64encode
 from datetime import date
 
 import pytest
-from osgithub import GithubClient, GithubRepo
+from osgithub import GithubRepo
 
-from reports.github import GithubException, GithubReport
+from reports.github import GithubReport
+from reports.github_client import GithubClient, GithubException
 
 from ..factories import ReportFactory
 
